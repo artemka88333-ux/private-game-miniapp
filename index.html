@@ -1,0 +1,1165 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Демократия — Финал</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; }
+body { background: #2b1a0e; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }
+#app { width: 100%; max-width: 440px; height: 100vh; max-height: 900px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+
+/* ВЕРХНЯЯ ПАНЕЛЬ */
+.top-panel { position: relative; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; }
+.val-box { position: absolute; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); pointer-events: none; height: 30px; gap: 2px; }
+.val-box img.icon { height: 28px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); transform: scale(1.1); }
+.val-box img.icon-coin { height: 34px; }
+#score-box { top: 5%; left: 22%; }
+#coins-box { top: 5%; left: 51%; }
+#moves-box { top: 5%; left: 78%; }
+
+.hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
+.hitbox:active { background: rgba(255,255,255,0.2); }
+.hit-rating { left: 3%; top: 20%; width: 17%; height: 35%; }
+.hit-shop { left: 36%; top: 20%; width: 17%; height: 35%; }
+.hit-pause { left: 68%; top: 20%; width: 15%; height: 35%; }
+.hit-jurist { right: 0%; top: 2%; width: 15%; height: 45%; display: flex; justify-content: center; align-items: flex-start; }
+.hit-jurist img { width: 100%; height: auto; object-fit: contain; pointer-events: none; transform: scale(1.1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+
+/* БЕЙДЖ НА КОНВЕРТЕ (ПОЧТА) */
+.mail-badge {
+position: absolute;
+top: -5px; right: -5px;
+background: #ff3333;
+color: #fff;
+font-size: 14px;
+font-weight: bold;
+width: 22px; height: 22px;
+border-radius: 50%;
+display: none;
+justify-content: center;
+align-items: center;
+border: 2px solid #fff;
+z-index: 30;
+box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+}
+.mail-badge.show { display: flex; }
+
+.num-container { display: flex; align-items: center; justify-content: center; height: 100%; }
+.num-container img { height: 16px; width: auto; margin: 0; object-fit: contain; }
+
+/* ПОЛЕ */
+#board { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
+.cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; transition: 0.2s; }
+.cell.occupied { background: rgba(0,0,0,0.35); }
+.cell.hover { background: rgba(168, 212, 124, 0.4); box-shadow: 0 0 10px #a8d47c inset; }
+.cell.hover-bad { background: rgba(212, 124, 124, 0.4); box-shadow: 0 0 10px #d47c7c inset; }
+.ghost { position: fixed; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 6px; pointer-events: none; z-index: 2000; overflow: visible; }
+
+.cell img, .next-block img, .jail-block img, .ghost img { width: 90%; height: 90%; object-fit: contain; pointer-events: none; display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
+.cell span, .next-block span, .jail-block span, .ghost span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
+
+.cell.large-tile { z-index: 10; }
+.cell.large-tile img, .cell.large-tile span { width: 130%; height: 130%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
+
+/* АНИМАЦИИ */
+@keyframes merge-pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); filter: drop-shadow(0 0 12px #ffd700); } 100% { transform: translate(-50%, -50%) scale(1); } }
+.cell.merge-hint img, .cell.merge-hint span, .ghost.merge-hint { animation: merge-pulse 0.48s infinite ease-in-out; z-index: 10; }
+@keyframes printer-print { 0% { filter: brightness(1); } 50% { filter: brightness(2) drop-shadow(0 0 15px #00ffff); transform: translate(-50%, -50%) scale(1.1); } 100% { filter: brightness(1); } }
+.cell.printer-print img, .cell.printer-print span { animation: printer-print 0.5s ease-in-out; }
+@keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
+.cell.anim-omon { animation: omonFade 0.4s ease-in; }
+
+/* НИЖНЯЯ ПАНЕЛЬ */
+.bottom-panel { position: relative; width: 100%; aspect-ratio: 1320 / 733; background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat; flex-shrink: 0; }
+.bottom-slots { position: absolute; inset: 0; display: flex; }
+.jail-block { width: 32%; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 8% 10% 10%; }
+.next-block { flex: 1; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 6% 10% 4%; }
+.hint-block { width: 32%; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10% 10% 10% 8%; }
+
+.jail-block .content, .next-block .content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.next-block .content { transform: translate(-15%, 5%); }
+.jail-block .content { transform: translate(-5%, 0); } /* Одинаковый размер с Далее */
+
+#log { font-size: 12px; height: 22px; line-height: 22px; text-align: center; color: #ffd700; flex-shrink: 0; background: #1a1208; z-index: 10; position: absolute; bottom: 0; width: 100%; }
+
+/* МОДАЛКИ ОБЩИЕ */
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
+.modal.open { display: flex; }
+.modal-content { background: #2b1a0e; border: 3px solid #ffd700; border-radius: 12px; padding: 20px; width: 100%; max-width: 380px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
+.modal h2 { text-align: center; color: #ffd700; margin-bottom: 15px; }
+.close-btn { width: 100%; padding: 12px; margin-top: 10px; background: #8b3a3a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
+
+/* ИДЕАЛЬНЫЙ МАГАЗИН (КАРТИНКА + ХИТБОКСЫ) */
+.shop-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2600; padding: 10px; }
+.shop-modal.open { display: flex; }
+.shop-window {
+position: relative;
+background: #6b7a4e url('img/shop_bg.png') center / 100% 100% no-repeat;
+border: 3px solid #4a2c14;
+border-radius: 12px;
+width: 100%;
+max-width: 360px;
+aspect-ratio: 1080 / 1920;
+overflow: hidden;
+}
+.shop-hitbox { position: absolute; cursor: pointer; border-radius: 8px; }
+.shop-hitbox:active { background: rgba(255,255,255,0.2); }
+.slot-1 { top: 12%; left: 6%; width: 42%; height: 14%; }
+.slot-2 { top: 12%; left: 52%; width: 42%; height: 14%; }
+.slot-3 { top: 27.5%; left: 6%; width: 42%; height: 14%; }
+.slot-4 { top: 27.5%; left: 52%; width: 42%; height: 14%; }
+.slot-5 { top: 43%; left: 6%; width: 42%; height: 14%; }
+.slot-6 { top: 43%; left: 52%; width: 42%; height: 14%; }
+.slot-7 { top: 58.5%; left: 6%; width: 42%; height: 14%; }
+.slot-8 { top: 58.5%; left: 52%; width: 42%; height: 14%; }
+.slot-9 { top: 74%; left: 6%; width: 42%; height: 14%; }
+.slot-10 { top: 74%; left: 52%; width: 42%; height: 14%; }
+.slot-close { top: 2%; right: 3%; width: 12%; height: 6%; }
+
+/* ИДЕАЛЬНАЯ ПАУЗА */
+.pause-window {
+background: #93a576 url('img/pause_bg.png') center / 100% 100% no-repeat;
+border: 3px solid #4a5c31;
+border-radius: 12px;
+width: 100%;
+max-width: 340px;
+height: 75vh;
+display: flex;
+flex-direction: column;
+overflow: hidden;
+box-shadow: 0 10px 30px rgba(0,0,0,0.8);
+position: relative;
+}
+.pause-hitbox-top { position: absolute; top: 8%; left: 5%; width: 90%; height: 18%; display: flex; gap: 4px; }
+.pause-hitbox-top > div { flex: 1; cursor: pointer; border-radius: 10px; }
+.pause-hitbox-top > div:active { background: rgba(255,255,255,0.2); }
+.pause-missions-area { position: absolute; top: 30%; left: 5%; width: 90%; height: 48%; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
+.pause-missions-area::-webkit-scrollbar { display: none; }
+.mission-img-card { width: 100%; position: relative; }
+.mission-img-card img { width: 100%; display: block; border-radius: 8px; }
+.pause-hitbox-bottom { position: absolute; bottom: 2%; left: 5%; width: 90%; height: 16%; display: flex; gap: 4px; }
+.pause-hitbox-bottom > div { flex: 1; cursor: pointer; border-radius: 10px; }
+.pause-hitbox-bottom > div:active { background: rgba(255,255,255,0.2); }
+
+/* ПОЧТА */
+.mail-card { width: 100%; cursor: pointer; position: relative; margin-bottom: 8px;}
+.mail-card img { width: 100%; display: block; border-radius: 8px; }
+.mail-claim-btn { position: absolute; right: 1%; top: 2%; width: 20%; height: 96%; cursor: pointer; border-radius: 8px; }
+.mail-claim-btn:active { background: rgba(255,255,255,0.3); }
+
+/* МЕМЫ */
+.meme-popup { position: fixed; bottom: 0; right: 0; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5000; pointer-events: none; }
+.meme-popup.show { transform: translateX(0); }
+.meme-popup img { max-height: 60vh; max-width: 90vw; display: block; object-fit: contain; object-position: bottom right; }
+
+/* КНИГА */
+.book-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
+.book-tab { flex: 1; padding: 8px; background: #4a2c14; border: 1px solid #8b6f2e; border-radius: 6px; text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; color: #fff;}
+.book-tab.active { background: #ffd700; color: #000; border-color: #fff; }
+.book-scroll { flex: 1; overflow-y: auto; display: grid; grid-template-columns: 1fr 1fr; gap: 8px; align-content: start; padding-right: 5px; }
+.book-card { background: #4a2c14; border: 2px solid #8b6f2e; border-radius: 8px; padding: 6px; display: flex; flex-direction: column; justify-content: space-between; }
+.book-card.locked { opacity: 0.5; filter: grayscale(1); }
+.book-icon { width: 40px; height: 40px; background: #2b1a0e; border-radius: 6px; display: flex; justify-content: center; align-items: center; margin-bottom: 4px; }
+.book-icon img { max-width: 90%; max-height: 90%; object-fit: contain; }
+.book-icon span { font-size: 20px; }
+.book-desc { font-size: 9px; line-height: 1.1; color: #ccc; margin-bottom: 6px; }
+
+.discovery-popup { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(100px); background: #ffd700; border: 3px solid #8b6f2e; border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; z-index: 3000; opacity: 0; transition: all 0.4s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.6); max-width: 90%; pointer-events: none; }
+.discovery-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.disc-img { width: 40px; height: 40px; background: #fff; border-radius: 8px; border: 2px solid #8b6f2e; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.disc-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
+.disc-text { display: flex; flex-direction: column; color: #2b1a0e; }
+.disc-title { font-weight: 900; font-size: 14px; text-transform: uppercase; }
+.disc-desc { font-size: 11px; font-weight: bold; line-height: 1.1; }
+
+.float-text { position: fixed; pointer-events: none; font-size: 16px; font-weight: 900; color: #ffe066; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index: 500; animation: floatUp 1s ease-out forwards; display: flex; align-items: center; gap: 4px; }
+.float-text img { height: 16px; width: auto; }
+@keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50px) scale(1.4); } }
+
+/* АНИМАЦИЯ СЛИЯНИЯ */
+.merging { transition: transform 0.2s ease-in, opacity 0.2s; z-index: 100; }
+</style>
+</head>
+<body>
+<div id="app">
+<div class="top-panel">
+<div class="val-box" id="score-box">
+<img src="img/Cup_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="score-num"></div>
+</div>
+<div class="val-box" id="coins-box">
+<img src="img/Coin_1.png" class="icon icon-coin" onerror="this.style.display='none'"><div class="num-container" id="coins-num"></div>
+</div>
+<div class="val-box" id="moves-box">
+<img src="img/Clock_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="moves-num"></div>
+</div>
+
+<!-- Кнопка Почты (Конверт) -->
+<div class="hitbox hit-rating" onclick="openMail()">
+<div class="mail-badge" id="mail-badge">!</div>
+</div>
+
+<div class="hitbox hit-shop" onclick="openModal('shop-modal')"></div>
+<div class="hitbox hit-pause" onclick="openPause()"></div>
+
+<div class="hitbox hit-jurist" onclick="useJurist()">
+<img src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
+</div>
+</div>
+
+<div id="board"></div>
+
+<div class="bottom-panel">
+<div class="bottom-slots">
+<div class="jail-block" id="jail" onclick="takeFromJail()">
+<div class="content" id="jail-content">—</div>
+</div>
+<div class="next-block" id="next-tile">
+<div class="content" id="next-content">—</div>
+</div>
+<div class="hint-block" onclick="openBook()"></div>
+</div>
+</div>
+
+<div id="log">Собери свою империю</div>
+</div>
+
+<div class="meme-popup" id="meme-popup">
+<img src="" id="meme-img">
+</div>
+
+<!-- МАГАЗИН -->
+<div class="shop-modal" id="shop-modal">
+<div class="shop-window">
+<div class="shop-hitbox slot-close" onclick="closeModal('shop-modal')"></div>
+<div class="shop-hitbox slot-1" onclick="buyItem({ name: 'Деньги', price: 150, tile: { kind: 'chain', level: 1 } })"></div>
+<div class="shop-hitbox slot-2" onclick="buyItem({ name: 'Баран', price: 450, tile: { kind: 'chain', level: 2 } })"></div>
+<div class="shop-hitbox slot-3" onclick="buyItem({ name: 'Избиратель', price: 1200, tile: { kind: 'chain', level: 3 } })"></div>
+<div class="shop-hitbox slot-4" onclick="buyItem({ name: 'Школа', price: 2500, tile: { kind: 'chain', level: 4 } })"></div>
+<div class="shop-hitbox slot-5" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })"></div>
+<div class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })"></div>
+<div class="shop-hitbox slot-7" onclick="document.getElementById('log').textContent='В разработке'"></div>
+<div class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })"></div>
+<div class="shop-hitbox slot-9" onclick="document.getElementById('log').textContent='В разработке'"></div>
+<div class="shop-hitbox slot-10" onclick="document.getElementById('log').textContent='В разработке'"></div>
+</div>
+</div>
+
+<div class="modal" id="rating-modal">
+<div class="modal-content">
+<h2>РЕЙТИНГ</h2>
+<div style="text-align:center; padding: 20px;">Топ игроков скоро появится!</div>
+<button class="close-btn" onclick="closeModal('rating-modal')">Закрыть</button>
+</div>
+</div>
+
+<!-- МЕНЮ ПАУЗЫ -->
+<div class="modal" id="pause-modal">
+<div class="pause-window">
+<div class="pause-hitbox-top">
+<div onclick="buyUndo()"></div>
+<div onclick="document.getElementById('log').textContent='Список в разработке'"></div>
+<div onclick="newGame()"></div>
+<div onclick="closeModal('pause-modal')"></div>
+</div>
+<div class="pause-missions-area" id="missions-area"></div>
+<div class="pause-hitbox-bottom">
+<div onclick="claimSocialBonus(5000)"></div>
+<div onclick="claimSocialBonus(5000)"></div>
+<div onclick="claimSocialBonus(5000)"></div>
+</div>
+</div>
+</div>
+
+<!-- ПОЧТА -->
+<div class="modal" id="mail-modal">
+<div class="modal-content" style="background:#93a576; border-color:#4a5c31;">
+<h2 style="color:#fff; text-shadow:1px 1px 0 #000;">ПОЧТА (Награды)</h2>
+<div id="mail-area" style="flex:1; overflow-y:auto; padding:4px;"></div>
+<button class="close-btn" onclick="closeModal('mail-modal')">Закрыть</button>
+</div>
+</div>
+
+<div class="modal" id="book-modal">
+<div class="modal-content">
+<div class="book-tabs">
+<div class="book-tab active" data-branch="chain" onclick="switchTab('chain', this)">Паша</div>
+<div class="book-tab" data-branch="care" onclick="switchTab('care', this)">Забота</div>
+<div class="book-tab" data-branch="income" onclick="switchTab('income', this)">Доход</div>
+</div>
+<div class="book-scroll" id="book-scroll"></div>
+<button class="close-btn" onclick="closeModal('book-modal')">Закрыть</button>
+</div>
+</div>
+
+<div class="discovery-popup" id="disc-popup">
+<div class="disc-img" id="disc-img">?</div>
+<div class="disc-text">
+<div class="disc-title" id="disc-title">Название</div>
+<div class="disc-desc" id="disc-desc">Описание</div>
+</div>
+</div>
+
+<script>
+const SIZE = 6;
+const SAVE_KEY = 'pasha_match_v46';
+const SEEN_KEY = 'pasha_match_seen_v46';
+
+const CHAIN = ['💵','🐑','🗳️','🏫','📜','🧑‍💼','🏛️','👔','🤴','👑','👴','🧔','✍️','👨‍🚀','🍕','🏠','🛠️','🚀','🌌','🎩','💼','🏦','🎖️','🗽','🏰','💎','🚁','🛸'];
+const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
+const CARE = ['🐻','🪙','🥇','🏛️','📜','💰','🏦','👑','🌍','🚀','🦁','🐯','🐘','🐳','🦅','🦉','🦄','🐉','👽','🛸'];
+const INCOME = ['💻','📺','🏦','🏢','🥚'];
+const INCOME_PER_TURN = [5, 15, 50, 150, 500];
+
+let grid = [], score = 0, coins = 0, moves = 0;
+let nextTile = null, jailTile = null, bufferedNext = null, drag = null, undoState = null;
+let isSawMode = false, isNanoboxMode = false;
+let testSpawnIndex = 0;
+let discovered = new Set();
+let sawStreak = 0;
+
+// Статусы заданий: 'active' - висит в паузе, 'completed' - висит в почте, 'claimed' - исчезло
+let missions = {
+forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
+elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
+saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
+};
+
+function loadDiscovered() { try { let r = localStorage.getItem(SEEN_KEY); if(r) discovered = new Set(JSON.parse(r)); } catch(e){} }
+function saveDiscovered() { try { localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(discovered))); } catch(e){} }
+loadDiscovered();
+
+function renderNumber(num, containerId) {
+const el = document.getElementById(containerId);
+el.innerHTML = '';
+const str = num.toString();
+for (let i = 0; i < str.length; i++) {
+const digit = str[i];
+const img = document.createElement('img');
+img.src = `img/num_${digit}.png`;
+img.onerror = function() {
+this.style.display = 'none';
+const span = document.createElement('span');
+span.textContent = digit;
+span.style.fontSize = '16px';
+span.style.color = '#ffd700';
+span.style.fontWeight = 'bold';
+el.appendChild(span);
+};
+el.appendChild(img);
+}
+}
+
+function getTileImage(tile) {
+if (!tile) return null;
+if (tile.kind === 'chain') return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
+if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
+if (tile.kind === 'income') return `img/income_${tile.level}.png`;
+if (tile.kind === 'omon') return tile.level === 1 ? 'img/omon_1.png' : 'img/omon_2.png';
+if (tile.kind === 'pioneer') return 'img/Pioner_1.png';
+if (tile.kind === 'tool') return `img/tool_${tile.tool}.png`;
+return null;
+}
+
+function tileEmoji(tile) {
+if (tile.kind === 'chain') return CHAIN[tile.level - 1] || '?';
+if (tile.kind === 'care') return CARE[tile.level - 1] || '?';
+if (tile.kind === 'income') return INCOME[tile.level - 1] || '?';
+if (tile.kind === 'omon') return '🚔';
+if (tile.kind === 'pioneer') return '🧑‍🎓';
+if (tile.kind === 'tool') return '🛠️';
+return '?';
+}
+
+function makeTileContent(tile) {
+let imgSrc = getTileImage(tile);
+if (imgSrc) {
+let img = document.createElement('img');
+img.src = imgSrc;
+if (tile.kind === 'chain' && tile.level === 5) img.style.transform = 'translate(-50%, -50%) scale(1.2)';
+if (tile.kind === 'omon' && tile.level === 2) img.style.transform = 'translate(-50%, -50%) scale(1.25)';
+if (tile.kind === 'care' && (tile.level === 1 || tile.level === 2)) img.style.transform = 'translate(-50%, -50%) scale(1.25)';
+img.onerror = function() { this.parentNode.innerHTML = '<span style="font-size:32px;">' + tileEmoji(tile) + '</span>'; };
+return img;
+} else {
+let span = document.createElement('span');
+span.style.fontSize = '32px';
+span.textContent = tileEmoji(tile);
+return span;
+}
+}
+
+function checkDiscovery(tile) {
+if (!tile) return;
+let key = tile.kind + '_' + (tile.level || '');
+if (tile.kind === 'tool') key = 'tool_' + tile.tool;
+if (discovered.has(key)) return;
+
+discovered.add(key);
+saveDiscovered();
+
+let name = "Неизвестно", desc = "";
+if (tile.kind === 'chain') { name = "Паша ур." + tile.level; desc = "Описание уровня " + tile.level; }
+else if (tile.kind === 'care') { name = "Забота ур." + tile.level; desc = "Описание уровня " + tile.level; }
+else if (tile.kind === 'income') { name = "Доход ур." + tile.level; desc = "Описание уровня " + tile.level; }
+else if (tile.kind === 'pioneer') { name = "Пионер"; desc = "Всегда готов!"; }
+else if (tile.kind === 'omon') { name = "ОМОН"; desc = "Стоять! Бояться!"; }
+
+let discImg = document.getElementById('disc-img');
+let imgSrc = getTileImage(tile);
+discImg.innerHTML = imgSrc ? `<img src="${imgSrc}" onerror="this.parentNode.innerHTML='<span>${tileEmoji(tile)}</span>'">` : `<span>${tileEmoji(tile)}</span>`;
+
+document.getElementById('disc-title').textContent = name;
+document.getElementById('disc-desc').textContent = desc;
+
+let popup = document.getElementById('disc-popup');
+popup.classList.add('show');
+setTimeout(() => popup.classList.remove('show'), 3000);
+}
+
+function showMeme(imgSrc) {
+const popup = document.getElementById('meme-popup');
+const img = document.getElementById('meme-img');
+img.src = imgSrc;
+popup.classList.add('show');
+setTimeout(() => { popup.classList.remove('show'); }, 4000);
+}
+
+function updateMailBadge() {
+let hasCompleted = Object.values(missions).some(m => m.status === 'completed');
+const badge = document.getElementById('mail-badge');
+if (hasCompleted) badge.classList.add('show');
+else badge.classList.remove('show');
+}
+
+function init() {
+grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
+isSawMode = false; isNanoboxMode = false;
+sawStreak = 0;
+localStorage.removeItem(SEEN_KEY);
+discovered = new Set();
+
+missions = {
+forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
+elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
+saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
+};
+updateMailBadge();
+
+let spawned = 0;
+while(spawned < 25) {
+let r = Math.floor(Math.random() * SIZE);
+let c = Math.floor(Math.random() * SIZE);
+if(!grid[r][c]) {
+grid[r][c] = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+let grp = findGroup(r, c);
+if (grp && grp.length >= 3) grid[r][c] = null;
+else { spawned++; checkDiscovery(grid[r][c]); }
+}
+}
+nextTile = newRandomTile();
+render();
+document.getElementById('log').textContent = 'Игра начата!';
+}
+
+function newRandomTile() {
+testSpawnIndex++;
+if (testSpawnIndex <= 5) return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+if (testSpawnIndex === 6) return { kind: 'omon', level: 1 };
+if (testSpawnIndex === 7) return { kind: 'omon', level: 2 };
+if (testSpawnIndex >= 8 && testSpawnIndex <= 12) return { kind: 'pioneer' };
+
+let r = Math.random();
+if (r < 0.05) return { kind: 'pioneer' };
+if (r < 0.10) return { kind: 'chain', level: 1 };
+if (r < 0.15) return { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+}
+
+function render() {
+try {
+const b = document.getElementById('board');
+b.innerHTML = '';
+let bearsOnBoard = 0;
+
+for (let r = 0; r < SIZE; r++) {
+for (let c = 0; c < SIZE; c++) {
+const cell = document.createElement('div');
+cell.className = 'cell';
+cell.dataset.r = r; cell.dataset.c = c;
+const d = grid[r][c];
+if (d) {
+cell.classList.add('occupied');
+cell.appendChild(makeTileContent(d));
+if (d.kind !== 'omon' && d.kind !== 'pioneer' && LARGE_TILES.includes(d.level)) {
+cell.classList.add('large-tile');
+}
+if (d.justSpawned) {
+cell.classList.add('anim-omon');
+delete d.justSpawned;
+}
+if (d.kind === 'care' && d.level === 1) bearsOnBoard++;
+}
+b.appendChild(cell);
+}
+}
+
+// Проверка задания "В лесу"
+if (missions.forest.status === 'active' && bearsOnBoard >= 10) {
+missions.forest.status = 'completed';
+updateMailBadge();
+document.getElementById('log').textContent = 'Задание "В ЛЕСУ" выполнено! Проверь почту.';
+}
+
+renderNumber(score, 'score-num');
+renderNumber(coins, 'coins-num');
+renderNumber(moves, 'moves-num');
+
+const nextCont = document.getElementById('next-content');
+nextCont.innerHTML = '';
+if (nextTile) nextCont.appendChild(makeTileContent(nextTile));
+else nextCont.textContent = '—';
+
+const jailCont = document.getElementById('jail-content');
+jailCont.innerHTML = '';
+if (jailTile) jailCont.appendChild(makeTileContent(jailTile));
+else jailCont.textContent = '—';
+} catch (e) { console.log("Ошибка рендера:", e); }
+}
+
+function findGroup(startR, startC, tempGrid = null) {
+let g = tempGrid || grid;
+const start = g[startR][startC];
+if (!start || start.kind === 'omon' || start.kind === 'pioneer' || start.kind === 'tool') return null;
+let visited = {}, stack = [[startR, startC]], group = [];
+while (stack.length) {
+const [r, c] = stack.pop();
+const key = r + ',' + c;
+if (visited[key]) continue;
+if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) continue;
+const t = g[r][c];
+if (!t || t.kind !== start.kind || t.level !== start.level) continue;
+visited[key] = true;
+group.push([r, c]);
+stack.push([r-1, c], [r+1, c], [r, c-1], [r, c+1]);
+}
+return group;
+}
+
+function processCascades(anchorR, anchorC, isSackMerge = false) {
+let cas = 0;
+while (cas < 50) {
+const group = findGroup(anchorR, anchorC);
+if (!group || group.length < 3) break;
+
+const tile = grid[anchorR][anchorC];
+const lvl = tile.level, kind = tile.kind;
+const maxL = kind === 'chain' ? CHAIN.length : (kind === 'care' ? CARE.length : INCOME.length);
+if (lvl >= maxL) break;
+
+group.forEach(([r, c]) => {
+let cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+if (cell) {
+let img = cell.querySelector('img') || cell.querySelector('span');
+if (img) {
+let dx = (anchorC - c) * 100;
+let dy = (anchorR - r) * 100;
+img.classList.add('merging');
+img.style.transform = `translate(-50%, -50%) translate(${dx}%, ${dy}%) scale(0.5)`;
+img.style.opacity = '0';
+}
+}
+});
+
+setTimeout(() => {
+group.forEach(([r, c]) => grid[r][c] = null);
+let newLevel = lvl + 1;
+
+if (kind === 'chain' && lvl === 14) {
+const parts = [15, 16, 17];
+for (let p of parts) {
+let has = false;
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].level === p) has = true;
+if (!has) { newLevel = p; break; }
+}
+}
+
+if (kind === 'chain' && newLevel === 5) {
+if (!discovered.has('meme_urna')) {
+discovered.add('meme_urna');
+saveDiscovered();
+showMeme('img/popup_urna.png');
+}
+}
+if (kind === 'chain' && newLevel === 9) {
+if (!discovered.has('meme_president')) {
+discovered.add('meme_president');
+saveDiscovered();
+showMeme('img/popup_president.png');
+}
+}
+
+if (kind === 'chain' && lvl === 8 && newLevel === 9) {
+if (!isSackMerge && missions.elections.status === 'active') {
+missions.elections.status = 'completed';
+updateMailBadge();
+document.getElementById('log').textContent = 'Задание "ЧЕСТНЫЕ ВЫБОРЫ" выполнено!';
+}
+}
+
+grid[anchorR][anchorC] = { kind, level: newLevel };
+checkDiscovery(grid[anchorR][anchorC]);
+
+score += lvl * 15 * group.length;
+coins += lvl * 2 * group.length;
+
+render();
+
+setTimeout(() => { processCascades(anchorR, anchorC); }, 100);
+}, 200);
+
+cas++;
+break;
+}
+}
+
+function endMove() {
+moves++;
+sawStreak = 0;
+
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'income') {
+coins += INCOME_PER_TURN[grid[r][c].level - 1] || 5;
+}
+}
+
+let omons = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'omon') {
+if (grid[r][c].skipMove) delete grid[r][c].skipMove;
+else omons.push([r, c]);
+}
+}
+
+if (omons.length > 0) {
+omons.forEach(([r, c]) => {
+let cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
+if (cell) { cell.style.transition = 'opacity 0.4s'; cell.style.opacity = '0'; }
+});
+
+setTimeout(() => {
+omons.forEach(([r, c]) => {
+let empty = [];
+for (let r2 = 0; r2 < SIZE; r2++) for (let c2 = 0; c2 < SIZE; c2++) if (!grid[r2][c2]) empty.push([r2, c2]);
+if (empty.length) {
+let p = empty[Math.floor(Math.random() * empty.length)];
+grid[p[0]][p[1]] = grid[r][c];
+grid[p[0]][p[1]].justSpawned = true;
+grid[r][c] = null;
+}
+});
+
+let pioneers = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
+pioneers.forEach(([r, c]) => {
+if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
+let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
+dirs.forEach(d => {
+let nr = r + d[0], nc = c + d[1];
+if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
+else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
+}
+});
+if (valid.length) {
+let move = valid[Math.floor(Math.random() * valid.length)];
+if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
+grid[move.r][move.c] = { kind: 'pioneer' };
+grid[r][c] = null;
+}
+});
+
+let trapped = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'pioneer') {
+let hasMove = false;
+[[0,1], [0,-1], [1,0], [-1,0]].forEach(d => {
+let nr = r + d[0], nc = c + d[1];
+if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
+}
+});
+if (!hasMove) trapped.push([r, c]);
+}
+}
+trapped.forEach(([r, c]) => {
+grid[r][c] = { kind: 'care', level: 1 };
+processCascades(r, c);
+});
+
+if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+
+render(); saveGame();
+}, 400);
+} else {
+let pioneers = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
+pioneers.forEach(([r, c]) => {
+if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
+let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
+dirs.forEach(d => {
+let nr = r + d[0], nc = c + d[1];
+if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
+else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
+}
+});
+if (valid.length) {
+let move = valid[Math.floor(Math.random() * valid.length)];
+if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
+grid[move.r][move.c] = { kind: 'pioneer' };
+grid[r][c] = null;
+}
+});
+
+let trapped = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'pioneer') {
+let hasMove = false;
+[[0,1], [0,-1], [1,0], [-1,0]].forEach(d => {
+let nr = r + d[0], nc = c + d[1];
+if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
+}
+});
+if (!hasMove) trapped.push([r, c]);
+}
+}
+trapped.forEach(([r, c]) => {
+grid[r][c] = { kind: 'care', level: 1 };
+processCascades(r, c);
+});
+
+if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+render(); saveGame();
+}
+}
+
+document.getElementById('next-tile').addEventListener('pointerdown', e => {
+if (!nextTile || isSawMode || isNanoboxMode) return;
+e.preventDefault();
+const rect = document.querySelector('.cell').getBoundingClientRect();
+const ghost = document.createElement('div');
+ghost.className = 'ghost';
+ghost.style.width = rect.width + 'px'; ghost.style.height = rect.height + 'px';
+ghost.style.left = (e.clientX - rect.width/2) + 'px'; ghost.style.top = (e.clientY - rect.height/2) + 'px';
+ghost.appendChild(makeTileContent(nextTile));
+if (nextTile.kind !== 'omon' && nextTile.kind !== 'pioneer' && LARGE_TILES.includes(nextTile.level)) ghost.classList.add('large-tile');
+document.body.appendChild(ghost);
+drag = { type: 'fromNext', ghost, offsetX: rect.width/2, offsetY: rect.height/2 };
+window.addEventListener('pointermove', onMove);
+window.addEventListener('pointerup', onUp);
+});
+
+document.getElementById('jail').addEventListener('pointerdown', e => {
+if (!jailTile || isSawMode || isNanoboxMode) return;
+e.preventDefault();
+const rect = document.querySelector('.cell').getBoundingClientRect();
+const ghost = document.createElement('div');
+ghost.className = 'ghost';
+ghost.style.width = rect.width + 'px'; ghost.style.height = rect.height + 'px';
+ghost.style.left = (e.clientX - rect.width/2) + 'px'; ghost.style.top = (e.clientY - rect.height/2) + 'px';
+ghost.appendChild(makeTileContent(jailTile));
+if (jailTile.kind !== 'omon' && jailTile.kind !== 'pioneer' && LARGE_TILES.includes(jailTile.level)) ghost.classList.add('large-tile');
+document.body.appendChild(ghost);
+drag = { type: 'fromJail', ghost, offsetX: rect.width/2, offsetY: rect.height/2 };
+window.addEventListener('pointermove', onMove);
+window.addEventListener('pointerup', onUp);
+});
+
+function onMove(e) {
+if (!drag) return;
+drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
+drag.ghost.style.top = (e.clientY - drag.offsetY) + 'px';
+document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(el => el.classList.remove('hover', 'hover-bad'));
+const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('.cell');
+if (el) {
+const r = +el.dataset.r, c = +el.dataset.c;
+el.classList.add(!grid[r][c] ? 'hover' : 'hover-bad');
+}
+}
+
+function onUp(e) {
+if (!drag) return;
+window.removeEventListener('pointermove', onMove);
+window.removeEventListener('pointerup', onUp);
+drag.ghost.remove();
+document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(el => el.classList.remove('hover', 'hover-bad'));
+
+const el = document.elementFromPoint(e.clientX, e.clientY);
+const cell = el?.closest('.cell');
+
+// ИЗ ТЮРЬМЫ
+if (drag.type === 'fromJail') {
+if (cell) {
+const r = +cell.dataset.r, c = +cell.dataset.c;
+
+if (jailTile.kind === 'tool') {
+// Применение инструмента из тюрьмы
+undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: {...jailTile}, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+let tool = jailTile;
+jailTile = null;
+
+if (tool.tool === 'jurist') {
+if (grid[r][c] && grid[r][c].kind !== 'omon') {
+let taken = grid[r][c]; grid[r][c] = null;
+nextTile = taken;
+endMove();
+} else { render(); }
+}
+else if (tool.tool === 'saw') {
+if (grid[r][c]) {
+if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
+grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
+} else {
+grid[r][c] = null;
+}
+endMove();
+} else { render(); }
+}
+else if (tool.tool === 'nanobox') {
+if (grid[r][c]) {
+nextTile = { ...grid[r][c] };
+render(); saveGame();
+} else { render(); }
+}
+else if (tool.tool === 'sack') {
+if (!grid[r][c]) {
+let neighbors = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]], tryKinds = [];
+for (let i = 0; i < neighbors.length; i++) {
+let nr = neighbors[i][0], nc = neighbors[i][1];
+if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
+let nt = grid[nr][nc];
+if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+let found = false;
+for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
+if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
+}
+tryKinds.sort((a, b) => {
+if (a.kind === 'income' && b.kind !== 'income') return -1;
+if (b.kind === 'income' && a.kind !== 'income') return 1;
+return b.level - a.level;
+});
+let merged = false;
+for (let j = 0; j < tryKinds.length; j++) {
+let tk = tryKinds[j]; grid[r][c] = { kind: tk.kind, level: tk.level };
+let grp = findGroup(r, c);
+let maxL = tk.kind === 'chain' ? CHAIN.length : (tk.kind === 'care' ? CARE.length : INCOME.length);
+if (grp && grp.length >= 3 && tk.level < maxL) { processCascades(r, c); merged = true; break; }
+grid[r][c] = null;
+}
+if (!merged) { grid[r][c] = { kind: 'income', level: 1 }; if (findGroup(r, c) && findGroup(r, c).length >= 3) processCascades(r, c); }
+endMove();
+} else { render(); }
+}
+return;
+} else {
+// Обычная фишка из тюрьмы
+if (!grid[r][c]) {
+undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: {...jailTile}, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+grid[r][c] = jailTile;
+jailTile = null;
+checkDiscovery(grid[r][c]);
+if (grid[r][c].kind === 'omon') grid[r][c].skipMove = true;
+processCascades(r, c);
+endMove();
+}
+}
+}
+drag = null;
+return;
+}
+
+// В ТЮРЬМУ
+if (el && el.closest('#jail')) {
+if (drag.type === 'fromNext') {
+if (jailTile) bufferedNext = jailTile;
+jailTile = nextTile;
+nextTile = bufferedNext || newRandomTile();
+bufferedNext = null;
+render(); saveGame();
+drag = null;
+return;
+}
+}
+
+// НА ПОЛЕ ИЗ ДАЛЕЕ
+if (cell) {
+const r = +cell.dataset.r, c = +cell.dataset.c;
+
+if (nextTile && nextTile.kind === 'tool') {
+if (nextTile.tool !== 'sack' && !grid[r][c]) {
+document.getElementById('log').textContent = 'Инструмент нужно кидать на фишку!';
+drag = null;
+return;
+}
+
+undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: jailTile ? {...jailTile} : null, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+
+if (nextTile.tool === 'jurist') {
+nextTile = grid[r][c]; grid[r][c] = null;
+}
+else if (nextTile.tool === 'saw') {
+if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
+grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
+} else {
+grid[r][c] = null;
+}
+nextTile = bufferedNext || newRandomTile();
+bufferedNext = null;
+
+sawStreak++;
+if (sawStreak >= 2 && missions.saw.status === 'active') {
+missions.saw.status = 'completed';
+updateMailBadge();
+document.getElementById('log').textContent = 'Задание "ПИЛА-РАМА" выполнено!';
+}
+}
+else if (nextTile.tool === 'nanobox') {
+nextTile = { ...grid[r][c] };
+}
+else if (nextTile.tool === 'sack') {
+if (grid[r][c]) {
+document.getElementById('log').textContent = 'Мешок нужно ставить на пустую клетку!';
+drag = null; return;
+}
+
+let neighbors = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]], tryKinds = [];
+for (let i = 0; i < neighbors.length; i++) {
+let nr = neighbors[i][0], nc = neighbors[i][1];
+if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
+let nt = grid[nr][nc];
+if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+let found = false;
+for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
+if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
+}
+
+tryKinds.sort((a, b) => {
+if (a.kind === 'income' && b.kind !== 'income') return -1;
+if (b.kind === 'income' && a.kind !== 'income') return 1;
+return b.level - a.level;
+});
+
+let merged = false;
+for (let j = 0; j < tryKinds.length; j++) {
+let tk = tryKinds[j];
+grid[r][c] = { kind: tk.kind, level: tk.level };
+let grp = findGroup(r, c);
+let maxL = tk.kind === 'chain' ? CHAIN.length : (tk.kind === 'care' ? CARE.length : INCOME.length);
+if (grp && grp.length >= 3 && tk.level < maxL) {
+processCascades(r, c); merged = true; break;
+}
+grid[r][c] = null;
+}
+
+if (!merged) {
+grid[r][c] = { kind: 'income', level: 1 };
+if (findGroup(r, c) && findGroup(r, c).length >= 3) processCascades(r, c);
+}
+
+nextTile = bufferedNext || newRandomTile();
+bufferedNext = null;
+endMove();
+drag = null;
+return;
+}
+render(); saveGame(); drag = null;
+return;
+}
+
+if (!grid[r][c]) {
+undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: jailTile ? {...jailTile} : null, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+grid[r][c] = nextTile;
+checkDiscovery(nextTile);
+if (nextTile.kind === 'omon') grid[r][c].skipMove = true;
+
+let isSack = false;
+if (nextTile.tool === 'sack') isSack = true;
+
+processCascades(r, c, isSack);
+nextTile = bufferedNext || newRandomTile();
+bufferedNext = null;
+endMove();
+}
+}
+drag = null;
+}
+
+// --- ПОЧТА ---
+function openMail() {
+renderMail();
+openModal('mail-modal');
+}
+
+function renderMail() {
+const c = document.getElementById('mail-area');
+c.innerHTML = '';
+let hasMail = false;
+
+if (missions.forest.status === 'completed') {
+c.innerHTML += `<div class="mail-card"><img src="${missions.forest.img}"><div class="mail-claim-btn" onclick="claimReward('forest')"></div></div>`;
+hasMail = true;
+}
+if (missions.elections.status === 'completed') {
+c.innerHTML += `<div class="mail-card"><img src="${missions.elections.img}"><div class="mail-claim-btn" onclick="claimReward('elections')"></div></div>`;
+hasMail = true;
+}
+if (missions.saw.status === 'completed') {
+c.innerHTML += `<div class="mail-card"><img src="${missions.saw.img}"><div class="mail-claim-btn" onclick="claimReward('saw')"></div></div>`;
+hasMail = true;
+}
+
+if (!hasMail) {
+c.innerHTML = '<div style="text-align:center; padding:20px; font-size:18px; font-weight:bold; color:#3e2a16;">Пока пусто!</div>';
+}
+}
+
+function claimReward(id) {
+if (missions[id] && missions[id].status === 'completed') {
+coins += missions[id].reward;
+missions[id].status = 'claimed';
+render(); saveGame();
+renderMail();
+updateMailBadge();
+}
+}
+
+function openPause() {
+renderMissions();
+openModal('pause-modal');
+}
+
+function renderMissions() {
+const c = document.getElementById('missions-area');
+c.innerHTML = '';
+let html = '';
+
+// В паузе показываем ТОЛЬКО активные задания
+if (missions.forest.status === 'active') {
+html += `<div class="mission-img-card"><img src="${missions.forest.img}"></div>`;
+}
+if (missions.elections.status === 'active') {
+html += `<div class="mission-img-card"><img src="${missions.elections.img}"></div>`;
+}
+if (missions.saw.status === 'active') {
+html += `<div class="mission-img-card"><img src="${missions.saw.img}"></div>`;
+}
+
+c.innerHTML = html;
+}
+
+function buyUndo() {
+if (coins >= 1500) {
+coins -= 1500;
+undoMove();
+closeModal('pause-modal');
+} else {
+document.getElementById('log').textContent = 'Не хватает монет!';
+}
+}
+
+function claimSocialBonus(amount) {
+coins += amount;
+render(); saveGame();
+document.getElementById('log').textContent = 'Бонус получен: +' + amount + ' монет!';
+}
+
+function useJurist() {
+if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
+if (nextTile) bufferedNext = nextTile;
+nextTile = { kind: 'tool', tool: 'jurist' };
+render(); saveGame();
+}
+
+function takeFromJail() { }
+
+function undoMove() {
+if (!undoState) return;
+grid = undoState.grid; score = undoState.score; coins = undoState.coins; moves = undoState.moves;
+nextTile = undoState.nextTile; jailTile = undoState.jailTile; bufferedNext = undoState.bufferedNext;
+undoState = null;
+render(); saveGame();
+}
+
+function buyItem(item) {
+if (coins < item.price) { document.getElementById('log').textContent = 'Мало монет!'; return; }
+coins -= item.price;
+if (nextTile) bufferedNext = nextTile;
+nextTile = item.tile;
+render(); closeModal('shop-modal');
+}
+
+function openModal(id) {
+document.getElementById(id).classList.add('open');
+}
+
+let currentBranch = 'chain';
+function switchTab(branch, el) {
+currentBranch = branch;
+document.querySelectorAll('.book-tab').forEach(t => t.classList.remove('active'));
+el.classList.add('active');
+renderBook();
+}
+
+function openBook() {
+renderBook();
+document.getElementById('book-modal').classList.add('open');
+}
+
+function renderBook() {
+let names = currentBranch === 'chain' ? CHAIN : (currentBranch === 'care' ? CARE : INCOME);
+let scroll = document.getElementById('book-scroll');
+scroll.innerHTML = '';
+for (let i = 0; i < names.length; i++) {
+let key = currentBranch + '_' + (i + 1);
+let isDiscovered = discovered.has(key);
+let card = document.createElement('div');
+card.className = 'book-card' + (isDiscovered ? '' : ' locked');
+let testTile = { kind: currentBranch, level: i + 1 };
+let imgSrc = getTileImage(testTile);
+let iconHTML = isDiscovered ? (imgSrc ? `<img src="${imgSrc}">` : names[i]) : '<span>❓</span>';
+card.innerHTML = `<div class="book-icon">${iconHTML}</div><div class="book-desc">${isDiscovered ? 'Уровень ' + (i + 1) : 'Соберите в игре'}</div>`;
+scroll.appendChild(card);
+}
+}
+
+function showFloatText(r, c, amount) {
+var cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
+if (!cell) return;
+var rect = cell.getBoundingClientRect();
+var el = document.createElement('div');
+el.className = 'float-text';
+el.innerHTML = '<img src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
+el.style.left = (rect.left + rect.width / 2) + 'px';
+el.style.top = (rect.top + rect.height / 3) + 'px';
+document.body.appendChild(el);
+setTimeout(function() { el.remove(); }, 1000);
+}
+
+function saveGame() {
+try {
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions }));
+} catch(e){}
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function newGame() { if(confirm('Начать заново?')) { clearSave(); init(); closeModal('pause-modal'); } }
+function clearSave() { localStorage.removeItem(SAVE_KEY); }
+
+init();
+</script>
+</body>
+</html>
