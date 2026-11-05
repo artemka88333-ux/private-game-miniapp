@@ -188,11 +188,36 @@ position: relative;
 /* АНИМАЦИЯ СЛИЯНИЯ */
 .merging { transition: transform 0.2s ease-in, opacity 0.2s; z-index: 100; }
 
-@keyframes pieceSlide {
-0% { transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)); }
-100% { transform: translate(-50%, -50%) translate(0, 0); }
+/* Пионер: прямой ход между центрами клеток и одно покачивание вокруг ступней.
+   Сдвиг — ease-in-out, поворот — один синус (влево, затем вправо). Тайминг линейный, кривые запечены в кадры. */
+@keyframes pieceWalk {
+0% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 1), calc(var(--dy) * 1)) rotate(0deg); }
+5% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.9952), calc(var(--dy) * 0.9952)) rotate(-3.71deg); }
+10% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.9803), calc(var(--dy) * 0.9803)) rotate(-7.05deg); }
+15% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.9548), calc(var(--dy) * 0.9548)) rotate(-9.71deg); }
+20% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.9183), calc(var(--dy) * 0.9183)) rotate(-11.41deg); }
+25% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.8708), calc(var(--dy) * 0.8708)) rotate(-12deg); }
+30% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.8126), calc(var(--dy) * 0.8126)) rotate(-11.41deg); }
+35% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.7445), calc(var(--dy) * 0.7445)) rotate(-9.71deg); }
+40% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.6681), calc(var(--dy) * 0.6681)) rotate(-7.05deg); }
+45% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.5857), calc(var(--dy) * 0.5857)) rotate(-3.71deg); }
+50% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.5), calc(var(--dy) * 0.5)) rotate(0deg); }
+55% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.4143), calc(var(--dy) * 0.4143)) rotate(3.71deg); }
+60% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.3319), calc(var(--dy) * 0.3319)) rotate(7.05deg); }
+65% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.2555), calc(var(--dy) * 0.2555)) rotate(9.71deg); }
+70% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.1874), calc(var(--dy) * 0.1874)) rotate(11.41deg); }
+75% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.1292), calc(var(--dy) * 0.1292)) rotate(12deg); }
+80% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.0817), calc(var(--dy) * 0.0817)) rotate(11.41deg); }
+85% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.0452), calc(var(--dy) * 0.0452)) rotate(9.71deg); }
+90% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.0197), calc(var(--dy) * 0.0197)) rotate(7.05deg); }
+95% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0.0048), calc(var(--dy) * 0.0048)) rotate(3.71deg); }
+100% { transform: translate(-50%, -50%) translate(calc(var(--dx) * 0), calc(var(--dy) * 0)) rotate(0deg); }
 }
-.cell.anim-slide > img, .cell.anim-slide > span { animation: pieceSlide 0.2s ease-out; }
+.cell.anim-walk { z-index: 8; }
+.cell.anim-walk > img, .cell.anim-walk > span {
+transform-origin: var(--walk-ox, 50%) var(--walk-oy, 80%);
+animation: pieceWalk 0.28s linear both;
+}
 @keyframes omonHop {
 0% { transform: translate(-50%, -50%) translateY(8px) scale(0.72); opacity: 0.15; }
 45% { transform: translate(-50%, -50%) translateY(-14px) scale(1.08); opacity: 1; }
@@ -305,7 +330,7 @@ cursor: pointer;
 }
 .pause-extra.alt { background: #f4f0d8; }
 @media (prefers-reduced-motion: reduce) {
-.cell.anim-slide > img, .cell.anim-slide > span,
+.cell.anim-walk > img, .cell.anim-walk > span,
 .cell.anim-hop > img, .cell.anim-hop > span,
 .cell.tut-target, #tut-arrow { animation: none !important; }
 }
@@ -963,6 +988,29 @@ finishUnits();
 }
 }
 
+/* Ступни пионера в исходнике Pioner_1.png (низ непрозрачных пикселей, центр по ширине). */
+const PIONEER_FEET = { x: 0.5, y: 1105 / 1296, w: 1520, h: 1296 };
+
+function pioneerFeetOrigin(el) {
+if (!el || el.tagName !== 'IMG') return ['50%', '100%'];
+const board = document.getElementById('board');
+const bw = board ? board.clientWidth : 0;
+const bh = board ? board.clientHeight : 0;
+const nw = el.naturalWidth || PIONEER_FEET.w;
+const nh = el.naturalHeight || PIONEER_FEET.h;
+if (!bw || !bh || !nw || !nh) return ['50%', '80%'];
+const ew = bw / SIZE * 0.9;
+const eh = bh / SIZE * 0.9;
+const scale = Math.min(ew / nw, eh / nh);
+const rw = nw * scale;
+const rh = nh * scale;
+const padX = (ew - rw) / 2;
+const padY = (eh - rh) / 2;
+const x = (padX + PIONEER_FEET.x * rw) / ew * 100;
+const y = (padY + PIONEER_FEET.y * rh) / eh * 100;
+return [x.toFixed(2) + '%', y.toFixed(2) + '%'];
+}
+
 function applyMoveAnim(cell, r, c) {
 if (!moveAnims.length) return;
 const anim = moveAnims.find(a => a.r === r && a.c === c);
@@ -970,9 +1018,12 @@ if (!anim) return;
 const img = cell.querySelector('img, span');
 if (anim.hop) cell.classList.add('anim-hop');
 else if (img) {
-cell.classList.add('anim-slide');
+const origin = pioneerFeetOrigin(img);
 img.style.setProperty('--dx', anim.dx || '0px');
 img.style.setProperty('--dy', anim.dy || '0px');
+img.style.setProperty('--walk-ox', origin[0]);
+img.style.setProperty('--walk-oy', origin[1]);
+cell.classList.add('anim-walk');
 }
 }
 
