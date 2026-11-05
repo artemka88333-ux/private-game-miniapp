@@ -187,6 +187,128 @@ position: relative;
 
 /* АНИМАЦИЯ СЛИЯНИЯ */
 .merging { transition: transform 0.2s ease-in, opacity 0.2s; z-index: 100; }
+
+@keyframes pieceSlide {
+0% { transform: translate(-50%, -50%) translate(var(--dx, 0px), var(--dy, 0px)); }
+100% { transform: translate(-50%, -50%) translate(0, 0); }
+}
+.cell.anim-slide > img, .cell.anim-slide > span { animation: pieceSlide 0.2s ease-out; }
+@keyframes omonHop {
+0% { transform: translate(-50%, -50%) translateY(8px) scale(0.72); opacity: 0.15; }
+45% { transform: translate(-50%, -50%) translateY(-14px) scale(1.08); opacity: 1; }
+100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: 1; }
+}
+.cell.anim-hop > img, .cell.anim-hop > span { animation: omonHop 0.22s ease-out; }
+@keyframes targetPulse {
+0%, 100% { box-shadow: inset 0 0 0 3px rgba(255, 215, 0, 0.35); }
+50% { box-shadow: inset 0 0 0 4px #ffe566, 0 0 12px rgba(255, 214, 80, 0.85); }
+}
+.cell.tut-target { background: rgba(255, 214, 80, 0.38); animation: targetPulse 1s ease-in-out infinite; z-index: 5; }
+#next-tile.tut-source { outline: 3px solid #ffe566; outline-offset: -8px; border-radius: 12px; }
+
+.hint-block { position: relative; }
+#hint-recipe {
+position: absolute;
+left: 5%;
+right: 8%;
+top: 16%;
+bottom: 14%;
+display: none;
+align-items: center;
+justify-content: center;
+flex-wrap: nowrap;
+gap: 1px 2px;
+pointer-events: none;
+padding: 4px 2px;
+}
+#hint-recipe.has-recipe {
+display: flex;
+background: #62844a;
+border-radius: 14px;
+box-shadow: inset 0 0 0 2px rgba(35, 55, 24, 0.45);
+}
+.hint-ico { width: 26px; height: 26px; object-fit: contain; flex: 0 0 auto; }
+#hint-recipe.compact .hint-ico { width: 18px; height: 18px; }
+#hint-recipe.compact .hint-arrow, #hint-recipe.compact .hint-x { font-size: 11px; }
+.hint-emoji { font-size: 16px; line-height: 1; }
+.hint-arrow, .hint-x { color: #17210f; font-weight: 900; font-size: 13px; line-height: 1; flex: 0 0 auto; }
+.hint-empty {
+width: 16px; height: 16px; border: 2px dashed #17210f; border-radius: 4px; flex: 0 0 auto;
+}
+
+#tutorial {
+position: absolute; inset: 0; z-index: 1900; display: none; pointer-events: none;
+}
+#tutorial.on { display: block; }
+.tut-bubble {
+pointer-events: auto;
+position: absolute;
+left: 4%;
+width: 64%;
+top: 18%;
+background: #fff8e8;
+color: #2b1a0e;
+border: 3px solid #4a2c14;
+border-radius: 16px;
+padding: 14px 14px 10px;
+box-shadow: 0 10px 28px rgba(0,0,0,0.4);
+font-size: 15px;
+line-height: 1.35;
+font-weight: 700;
+}
+.tut-bubble.tut-low { top: auto; bottom: 31%; }
+.tut-bubble:after {
+content: '';
+position: absolute;
+left: 28px;
+bottom: -12px;
+border-width: 12px 10px 0 10px;
+border-style: solid;
+border-color: #4a2c14 transparent transparent transparent;
+}
+.tut-actions { display: flex; gap: 8px; margin-top: 10px; }
+.tut-actions button {
+flex: 1;
+padding: 9px 8px;
+border-radius: 10px;
+font-weight: 900;
+font-size: 14px;
+border: 2px solid #4a2c14;
+cursor: pointer;
+}
+#tut-next { background: #ffd700; color: #2b1a0e; }
+#tut-skip { background: #fff; color: #6b5344; }
+#tut-finger {
+position: fixed; left: 0; top: 0; z-index: 1950; width: 46px; height: 60px;
+pointer-events: none; display: none; filter: drop-shadow(0 3px 2px rgba(0,0,0,0.45));
+}
+#tut-arrow {
+position: absolute; z-index: 1960; display: none; pointer-events: none;
+font-size: 40px; line-height: 1; filter: drop-shadow(0 2px 0 #2b1a0e);
+animation: arrowBounce 0.7s ease-in-out infinite;
+}
+@keyframes arrowBounce {
+0%, 100% { transform: translateY(0); }
+50% { transform: translateY(-8px); }
+}
+.pause-extra {
+width: 100%;
+padding: 10px 8px;
+margin-bottom: 8px;
+border-radius: 10px;
+border: 2px solid #3e4a28;
+background: #ffe08a;
+color: #2b1a0e;
+font-weight: 900;
+font-size: 15px;
+cursor: pointer;
+}
+.pause-extra.alt { background: #f4f0d8; }
+@media (prefers-reduced-motion: reduce) {
+.cell.anim-slide > img, .cell.anim-slide > span,
+.cell.anim-hop > img, .cell.anim-hop > span,
+.cell.tut-target, #tut-arrow { animation: none !important; }
+}
 </style>
 </head>
 <body>
@@ -226,11 +348,21 @@ position: relative;
 <div class="next-block" id="next-tile">
 <div class="content" id="next-content">—</div>
 </div>
-<div class="hint-block" onclick="openBook()"></div>
+<div class="hint-block" onclick="openBook()"><div id="hint-recipe"></div></div>
 </div>
 </div>
 
 <div id="log">Собери свою империю</div>
+<div id="tutorial" aria-live="polite">
+<div class="tut-bubble" id="tut-bubble">
+<div id="tut-text"></div>
+<div class="tut-actions">
+<button type="button" id="tut-next" onclick="tutNext()">Дальше</button>
+<button type="button" id="tut-skip" onclick="skipTutorial()">Пропустить</button>
+</div>
+</div>
+<div id="tut-arrow">⬆</div>
+</div>
 </div>
 
 <div class="meme-popup" id="meme-popup">
@@ -301,6 +433,22 @@ position: relative;
 </div>
 </div>
 
+<div id="tut-finger" aria-hidden="true">
+<svg viewBox="0 0 64 84" width="46" height="60">
+<rect x="24" y="2" width="16" height="50" rx="8" fill="#ffd8b8" stroke="#3a2415" stroke-width="3"/>
+<rect x="28" y="8" width="8" height="7" rx="3" fill="#f0c09a"/>
+<ellipse cx="32" cy="64" rx="20" ry="15" fill="#ffd8b8" stroke="#3a2415" stroke-width="3"/>
+</svg>
+</div>
+
+<div class="modal" id="gameover-modal">
+<div class="modal-content">
+<h2>ПОЛЕ ЗАПОЛНЕНО</h2>
+<div style="text-align:center; padding: 8px 0 4px; font-weight: 700;">Свободных клеток не осталось — игру некуда продолжать.</div>
+<button class="close-btn" onclick="restartAfterOver()">Заново</button>
+</div>
+</div>
+
 <div class="discovery-popup" id="disc-popup">
 <div class="disc-img" id="disc-img">?</div>
 <div class="disc-text">
@@ -326,6 +474,17 @@ let isSawMode = false, isNanoboxMode = false;
 let testSpawnIndex = 0;
 let discovered = new Set();
 let sawStreak = 0;
+let gameOver = false;
+let moveAnims = [];
+let busyUntil = 0;
+let tutorial = { active: false, index: 0 };
+let fingerSig = '';
+let tutMute = false;
+const TUT_KEY = 'pasha_tutorial_done_v1';
+const SFX_KEY = 'pasha_sfx_muted';
+let sfxMuted = false;
+try { sfxMuted = localStorage.getItem(SFX_KEY) === '1'; } catch (e) {}
+let audioCtx = null;
 
 // Статусы заданий: 'active' - висит в паузе, 'completed' - висит в почте, 'claimed' - исчезло
 let missions = {
@@ -415,6 +574,7 @@ if (discovered.has(key)) return;
 
 discovered.add(key);
 saveDiscovered();
+if (tutorial.active) return;
 
 let name = "Неизвестно", desc = "";
 if (tile.kind === 'chain') { name = "Паша ур." + tile.level; desc = "Описание уровня " + tile.level; }
@@ -455,6 +615,9 @@ grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
 isSawMode = false; isNanoboxMode = false;
 sawStreak = 0;
+gameOver = false;
+hideTutorial();
+closeModal('gameover-modal');
 localStorage.removeItem(SEEN_KEY);
 discovered = new Set();
 
@@ -525,12 +688,22 @@ if (d.justSpawned) {
 cell.classList.add('anim-omon');
 delete d.justSpawned;
 }
-if (d.pop) delete d.pop;
+if (d.pop) {
+const popped = d;
+setTimeout(() => { if (popped.pop) delete popped.pop; }, 0);
+}
 if (d.kind === 'care' && d.level === 1) bearsOnBoard++;
+applyMoveAnim(cell, r, c);
+}
+if (tutorial.active && tutorial.step) {
+const exp = tutorial.step.expect;
+const sug = tutorial.step.suggest;
+if ((exp && exp.r === r && exp.c === c) || (sug && sug.r === r && sug.c === c)) cell.classList.add('tut-target');
 }
 b.appendChild(cell);
 }
 }
+moveAnims = [];
 
 // Проверка задания "В лесу"
 if (missions.forest.status === 'active' && bearsOnBoard >= 10) {
@@ -550,7 +723,8 @@ nextCont.appendChild(makeTileContent(nextTile));
 if (nextTile.pop) {
 const nextVisual = nextCont.querySelector('img, span');
 if (nextVisual) nextVisual.classList.add('piece-pop');
-delete nextTile.pop;
+const poppedNext = nextTile;
+setTimeout(() => { if (poppedNext.pop) delete poppedNext.pop; }, 0);
 }
 } else nextCont.textContent = '—';
 
@@ -558,6 +732,8 @@ const jailCont = document.getElementById('jail-content');
 jailCont.innerHTML = '';
 if (jailTile) jailCont.appendChild(makeTileContent(jailTile));
 else jailCont.textContent = '—';
+renderHint();
+if (tutorial.active) layoutTutorial();
 } catch (e) { console.log("Ошибка рендера:", e); }
 }
 
@@ -643,6 +819,8 @@ document.getElementById('log').textContent = 'Задание "ЧЕСТНЫЕ В�
 
 grid[anchorR][anchorC] = { kind, level: newLevel, pop: true };
 checkDiscovery(grid[anchorR][anchorC]);
+sfx('merge');
+notifyTutorial({ type: 'merge', tile: grid[anchorR][anchorC], r: anchorR, c: anchorC });
 
 score += lvl * 15 * group.length;
 coins += lvl * 2 * group.length;
@@ -655,6 +833,101 @@ setTimeout(() => { processCascades(anchorR, anchorC); }, 100);
 cas++;
 break;
 }
+}
+
+function cellPx() {
+const board = document.getElementById('board');
+return (board && board.clientWidth ? board.clientWidth : 240) / SIZE;
+}
+
+function pioneerOptions(r, c) {
+let valid = [];
+[[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(d => {
+let nr = r + d[0], nc = c + d[1];
+if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+if (!grid[nr][nc]) valid.push({ r: nr, c: nc, type: 'empty' });
+else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({ r: nr, c: nc, type: 'money' });
+}
+});
+return valid;
+}
+
+function stepPioneers() {
+let pioneers = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
+}
+let moved = false;
+const px = cellPx();
+pioneers.forEach(([r, c]) => {
+if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
+let valid = pioneerOptions(r, c);
+if (!valid.length) return;
+let move = valid[Math.floor(Math.random() * valid.length)];
+if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
+grid[move.r][move.c] = { kind: 'pioneer' };
+grid[r][c] = null;
+moveAnims.push({ r: move.r, c: move.c, dx: (c - move.c) * px + 'px', dy: (r - move.r) * px + 'px', hop: false });
+moved = true;
+});
+if (moved) sfx('step');
+}
+
+function trapPioneers() {
+let trapped = [];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'pioneer' && !pioneerOptions(r, c).length) trapped.push([r, c]);
+}
+if (trapped.length) sfx('trap');
+trapped.forEach(([r, c]) => {
+grid[r][c] = { kind: 'care', level: 1 };
+processCascades(r, c);
+});
+if (trapped.length) notifyTutorial({ type: 'trap', n: trapped.length });
+}
+
+function omonJumpTargets(r, c, level) {
+let empty = [];
+for (let r2 = 0; r2 < SIZE; r2++) for (let c2 = 0; c2 < SIZE; c2++) {
+if (grid[r2][c2]) continue;
+let dist = Math.max(Math.abs(r2 - r), Math.abs(c2 - c));
+if (dist === 0) continue;
+empty.push({ r: r2, c: c2, dist });
+}
+if (!empty.length) return empty;
+if (level >= 2) {
+let far = empty.filter(e => e.dist >= 3);
+if (far.length) return far;
+} else {
+let mid = empty.filter(e => e.dist >= 2 && e.dist <= 3);
+if (mid.length) return mid;
+}
+return empty;
+}
+
+function stepOmons(omons) {
+let taken = {};
+omons.forEach(([r, c]) => {
+if (!grid[r][c] || grid[r][c].kind !== 'omon') return;
+let level = grid[r][c].level || 1;
+let pool = omonJumpTargets(r, c, level).filter(p => !taken[p.r + ',' + p.c]);
+if (!pool.length) return;
+let p = pool[Math.floor(Math.random() * pool.length)];
+taken[p.r + ',' + p.c] = true;
+let tile = grid[r][c];
+grid[r][c] = null;
+grid[p.r][p.c] = tile;
+moveAnims.push({ r: p.r, c: p.c, hop: true });
+});
+}
+
+function finishUnits() {
+stepPioneers();
+trapPioneers();
+if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
+render();
+saveGame();
+checkGameOver();
 }
 
 function endMove() {
@@ -678,104 +951,28 @@ else omons.push([r, c]);
 if (omons.length > 0) {
 omons.forEach(([r, c]) => {
 let cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-if (cell) { cell.style.transition = 'opacity 0.4s'; cell.style.opacity = '0'; }
+if (cell) { cell.style.transition = 'opacity 0.18s'; cell.style.opacity = '0.2'; }
 });
-
+markBusy(460);
 setTimeout(() => {
-omons.forEach(([r, c]) => {
-let empty = [];
-for (let r2 = 0; r2 < SIZE; r2++) for (let c2 = 0; c2 < SIZE; c2++) if (!grid[r2][c2]) empty.push([r2, c2]);
-if (empty.length) {
-let p = empty[Math.floor(Math.random() * empty.length)];
-grid[p[0]][p[1]] = grid[r][c];
-grid[p[0]][p[1]].justSpawned = true;
-grid[r][c] = null;
-}
-});
-
-let pioneers = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
-pioneers.forEach(([r, c]) => {
-if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
-let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
-dirs.forEach(d => {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
-else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
-}
-});
-if (valid.length) {
-let move = valid[Math.floor(Math.random() * valid.length)];
-if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
-grid[move.r][move.c] = { kind: 'pioneer' };
-grid[r][c] = null;
-}
-});
-
-let trapped = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'pioneer') {
-let hasMove = false;
-[[0,1], [0,-1], [1,0], [-1,0]].forEach(d => {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
-}
-});
-if (!hasMove) trapped.push([r, c]);
-}
-}
-trapped.forEach(([r, c]) => {
-grid[r][c] = { kind: 'care', level: 1 };
-processCascades(r, c);
-});
-
-if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
-
-render(); saveGame();
-}, 400);
+stepOmons(omons);
+finishUnits();
+}, 200);
 } else {
-let pioneers = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
-pioneers.forEach(([r, c]) => {
-if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
-let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
-dirs.forEach(d => {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
-else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
+finishUnits();
 }
-});
-if (valid.length) {
-let move = valid[Math.floor(Math.random() * valid.length)];
-if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
-grid[move.r][move.c] = { kind: 'pioneer' };
-grid[r][c] = null;
 }
-});
 
-let trapped = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'pioneer') {
-let hasMove = false;
-[[0,1], [0,-1], [1,0], [-1,0]].forEach(d => {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
-}
-});
-if (!hasMove) trapped.push([r, c]);
-}
-}
-trapped.forEach(([r, c]) => {
-grid[r][c] = { kind: 'care', level: 1 };
-processCascades(r, c);
-});
-
-if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
-render(); saveGame();
+function applyMoveAnim(cell, r, c) {
+if (!moveAnims.length) return;
+const anim = moveAnims.find(a => a.r === r && a.c === c);
+if (!anim) return;
+const img = cell.querySelector('img, span');
+if (anim.hop) cell.classList.add('anim-hop');
+else if (img) {
+cell.classList.add('anim-slide');
+img.style.setProperty('--dx', anim.dx || '0px');
+img.style.setProperty('--dy', anim.dy || '0px');
 }
 }
 
@@ -821,7 +1018,7 @@ hideCellHighlight();
 }
 
 function startTrayDrag(e, type, tile) {
-if (!tile || isSawMode || isNanoboxMode) return;
+if (!tile || isSawMode || isNanoboxMode || gameOver || isBusy() || tutorialBlocksBoard()) return;
 e.preventDefault();
 if (drag) { detachDragListeners(); clearDragVisuals(); drag = null; }
 const rect = document.querySelector('.cell').getBoundingClientRect();
@@ -869,6 +1066,8 @@ clearDragVisuals();
 
 const el = document.elementFromPoint(e.clientX, e.clientY);
 const cell = el?.closest('.cell');
+
+if (tutorialReject(el, cell)) { drag = null; return; }
 
 // ИЗ ТЮРЬМЫ
 if (drag.type === 'fromJail') {
@@ -956,9 +1155,11 @@ if (el && el.closest('#jail')) {
 if (drag.type === 'fromNext') {
 if (jailTile) bufferedNext = jailTile;
 jailTile = nextTile;
-nextTile = bufferedNext || newRandomTile();
+nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 render(); saveGame();
+sfx('place');
+notifyTutorial({ type: 'jail' });
 drag = null;
 return;
 }
@@ -979,14 +1180,21 @@ undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coi
 
 if (nextTile.tool === 'jurist') {
 nextTile = grid[r][c]; grid[r][c] = null;
+sfx('ui');
+render(); saveGame();
+notifyTutorial({ type: 'jurist' });
+drag = null;
+return;
 }
 else if (nextTile.tool === 'saw') {
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
+sfx('trap');
 } else {
 grid[r][c] = null;
+sfx('place');
 }
-nextTile = bufferedNext || newRandomTile();
+nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 
 sawStreak++;
@@ -998,6 +1206,7 @@ document.getElementById('log').textContent = 'Задание "ПИЛА-РАМА"
 }
 else if (nextTile.tool === 'nanobox') {
 nextTile = { ...grid[r][c] };
+sfx('ui');
 }
 else if (nextTile.tool === 'sack') {
 if (grid[r][c]) {
@@ -1039,9 +1248,12 @@ grid[r][c] = { kind: 'income', level: 1 };
 if (findGroup(r, c) && findGroup(r, c).length >= 3) processCascades(r, c);
 }
 
-nextTile = bufferedNext || newRandomTile();
+nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 endMove();
+sfx('trap');
+markBusy(480);
+notifyTutorial({ type: 'sack' });
 drag = null;
 return;
 }
@@ -1059,9 +1271,12 @@ let isSack = false;
 if (nextTile.tool === 'sack') isSack = true;
 
 processCascades(r, c, isSack);
-nextTile = bufferedNext || newRandomTile();
+nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 endMove();
+sfx('place');
+markBusy(480);
+notifyTutorial({ type: 'placed' });
 }
 }
 drag = null;
@@ -1127,7 +1342,9 @@ if (missions.saw.status === 'active') {
 html += `<div class="mission-img-card"><img decoding="async" src="${missions.saw.img}"></div>`;
 }
 
-c.innerHTML = html;
+c.innerHTML = '<button type="button" class="pause-extra" onclick="replayTutorial()">Обучение</button>'
++ '<button type="button" class="pause-extra alt" id="sfx-toggle" onclick="toggleSfx()">' + (sfxMuted ? 'Звук: выкл' : 'Звук: вкл') + '</button>'
++ html;
 }
 
 function buyUndo() {
@@ -1147,6 +1364,9 @@ document.getElementById('log').textContent = 'Бонус получен: +' + am
 }
 
 function useJurist() {
+sfx('ui');
+if (tutorial.active) { document.getElementById('log').textContent = 'Сначала дойди по подсказке'; return; }
+if (gameOver) return;
 if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
@@ -1164,6 +1384,7 @@ render(); saveGame();
 }
 
 function buyItem(item) {
+if (tutorial.active) { document.getElementById('log').textContent = 'Пока только посмотри — покупки после обучения'; return; }
 if (coins < item.price) { document.getElementById('log').textContent = 'Мало монет!'; return; }
 coins -= item.price;
 if (nextTile) bufferedNext = nextTile;
@@ -1173,6 +1394,8 @@ render(); closeModal('shop-modal');
 
 function openModal(id) {
 document.getElementById(id).classList.add('open');
+if (id === 'shop-modal') notifyTutorial({ type: 'shop' });
+sfx('ui');
 }
 
 let currentBranch = 'chain';
@@ -1184,6 +1407,7 @@ renderBook();
 }
 
 function openBook() {
+sfx('ui');
 renderBook();
 document.getElementById('book-modal').classList.add('open');
 }
@@ -1225,11 +1449,445 @@ localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextT
 } catch(e){}
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function newGame() { if(confirm('Начать заново?')) { clearSave(); init(); closeModal('pause-modal'); } }
-function clearSave() { localStorage.removeItem(SAVE_KEY); }
+function dealNext() {
+if (tutorial.active) return { kind: 'chain', level: 1 };
+return newRandomTile();
+}
 
+function isBusy() { return Date.now() < busyUntil; }
+function markBusy(ms) { busyUntil = Math.max(busyUntil, Date.now() + ms); }
+
+function tutorialBlocksBoard() {
+if (!tutorial.active || !tutorial.step) return false;
+if (tutorial.step.mode === 'info') return true;
+if (tutorial.step.expect && tutorial.step.expect.shop) return true;
+return false;
+}
+
+function tutorialReject(el, cell) {
+if (!tutorial.active || !tutorial.step || tutorial.step.mode !== 'action') return false;
+const exp = tutorial.step.expect || {};
+if (exp.shop) return true;
+if (exp.jail) return !(el && el.closest && el.closest('#jail') && drag && drag.type === 'fromNext');
+if (!cell) return true;
+const r = +cell.dataset.r, c = +cell.dataset.c;
+if (exp.any) return !!grid[r][c];
+if (exp.r != null) return r !== exp.r || c !== exp.c;
+return false;
+}
+
+function chainTile(level) { return { kind: 'chain', level: level }; }
+function putTile(r, c, tile) { grid[r][c] = tile ? { ...tile } : null; }
+function firstEmpty() {
+for (let r = 2; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (!grid[r][c]) return [r, c];
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (!grid[r][c]) return [r, c];
+return null;
+}
+function fingerToSuggest() {
+const s = tutorial.step && tutorial.step.suggest;
+return s ? ['#next-tile', '.cell[data-r="' + s[0] + '"][data-c="' + s[1] + '"]'] : null;
+}
+
+const TUT_STEPS = [
+{ mode: 'info', text: 'Строим демократию: соединяй одинаковые фигурки и поднимайся всё выше по цепочке.' },
+{ mode: 'info', text: 'Если поле заполнится и фигурку некуда поставить — игра окончена.' },
+{ mode: 'info', text: 'Пионеры каждый ход шагают на соседнюю клетку. Замкни пионера — получишь Медведя. ОМОН вёрткий: прыгает по пустым клеткам и боится только пилы.' },
+{ mode: 'action', success: 'merge2', expect: { r: 2, c: 4 }, text: 'Перетяни фигурку в свободную клетку.',
+enter() {
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) grid[r][c] = null;
+putTile(2, 2, chainTile(1)); putTile(2, 3, chainTile(1)); putTile(2, 4, null);
+nextTile = chainTile(1); jailTile = null;
+},
+finger() { return ['#next-tile', '.cell[data-r="2"][data-c="4"]']; }
+},
+{ mode: 'action', success: 'place', expect: { any: true }, text: 'Из трёх пачек получился Баран! Давай построим ещё несколько и эволюционируем их в Избирателя.',
+enter() { nextTile = chainTile(2); },
+finger: fingerToSuggest
+},
+{ mode: 'action', success: 'trap', expect: { r: 3, c: 1 }, text: 'Отлично! Теперь попробуй замкнуть пионера, чтобы получить Медведя!',
+enter() {
+putTile(1, 1, chainTile(2)); putTile(2, 0, chainTile(2)); putTile(2, 1, { kind: 'pioneer' }); putTile(2, 2, chainTile(2)); putTile(3, 1, null);
+nextTile = chainTile(2);
+},
+finger() { return ['#next-tile', '.cell[data-r="3"][data-c="1"]']; }
+},
+{ mode: 'action', success: 'place', expect: { any: true }, text: 'У нас есть Чиновник! Запомни: из трёх Чиновников получается следующая ступень — к Правительству.',
+enter() { putTile(5, 0, chainTile(6)); nextTile = chainTile(6); },
+finger: fingerToSuggest
+},
+{ mode: 'action', success: 'trap', expect: { r: 5, c: 4 }, text: 'Если пионер путается под ногами — замкни его другой фигуркой!',
+enter() {
+putTile(3, 4, chainTile(2)); putTile(4, 3, chainTile(2)); putTile(4, 4, { kind: 'pioneer' }); putTile(4, 5, chainTile(2)); putTile(5, 4, null);
+nextTile = chainTile(2);
+},
+finger() { return ['#next-tile', '.cell[data-r="5"][data-c="4"]']; }
+},
+{ mode: 'action', success: 'jurist', expect: { r: 3, c: 5 }, text: 'Юрист снимает фигурку с поля в лоток. Перетяни его на нужную клетку.',
+enter() { putTile(3, 5, chainTile(2)); nextTile = { kind: 'tool', tool: 'jurist' }; },
+finger() { return ['#next-tile', '.cell[data-r="3"][data-c="5"]']; }
+},
+{ mode: 'action', success: 'shop', expect: { shop: true }, bubbleLow: true, text: 'Покупай недостающие фигурки в магазинчике',
+enter() {},
+arrow() { return ['.hit-shop', '⬆', 'shop']; }
+},
+{ mode: 'action', success: 'sack', expect: { r: 2, c: 4 }, text: 'С помощью мешка бабла можно легко соединить две одинаковые фигурки! Поставь мешок в клетку между ними.',
+enter() { putTile(2, 3, chainTile(2)); putTile(2, 4, null); putTile(2, 5, chainTile(2)); nextTile = { kind: 'tool', tool: 'sack' }; },
+finger() { return ['#next-tile', '.cell[data-r="2"][data-c="4"]']; }
+},
+{ mode: 'action', success: 'jail', expect: { jail: true }, text: 'Неподходящие фигурки можно временно отложить в тюрьму.',
+enter() { nextTile = chainTile(1); },
+finger() { return ['#next-tile', '#jail']; },
+arrow() { return ['#jail', '⬇', 'above']; }
+},
+{ mode: 'info', done: true, text: 'Обучение пройдено. Дальше фигурки приходят сами. Удачи строить демократию!' }
+];
+
+function hideTutorial() {
+tutorial.active = false;
+tutorial.step = null;
+fingerSig = '';
+const t = document.getElementById('tutorial');
+if (t) t.classList.remove('on');
+const f = document.getElementById('tut-finger');
+if (f) { f.getAnimations().forEach(a => a.cancel()); f.style.display = 'none'; }
+const a = document.getElementById('tut-arrow');
+if (a) a.style.display = 'none';
+const n = document.getElementById('next-tile');
+if (n) n.classList.remove('tut-source');
+}
+
+function showFinger(fromEl, toEl) {
+const f = document.getElementById('tut-finger');
+if (!f || !fromEl || !toEl) { if (f) f.style.display = 'none'; return; }
+f.style.display = 'block';
+f.getAnimations().forEach(a => a.cancel());
+const a = fromEl.getBoundingClientRect();
+const b = toEl.getBoundingClientRect();
+const x1 = a.left + a.width / 2 - 23;
+const y1 = a.top + a.height / 2 - 4;
+const x2 = b.left + b.width / 2 - 23;
+const y2 = b.top + b.height / 2 - 4;
+f.animate([
+{ transform: 'translate(' + x1 + 'px,' + y1 + 'px) scale(1)', offset: 0 },
+{ transform: 'translate(' + x1 + 'px,' + y1 + 'px) scale(0.86)', offset: 0.18 },
+{ transform: 'translate(' + x2 + 'px,' + y2 + 'px) scale(1)', offset: 0.72 },
+{ transform: 'translate(' + x2 + 'px,' + y2 + 'px) scale(1)', offset: 1 }
+], { duration: 1500, iterations: Infinity, easing: 'ease-in-out' });
+}
+
+function pointArrow(el, symbol, place) {
+const root = document.getElementById('tutorial');
+const arrow = document.getElementById('tut-arrow');
+if (!root || !arrow || !el) return;
+const rb = root.getBoundingClientRect();
+const r = el.getBoundingClientRect();
+arrow.textContent = symbol || '⬆';
+arrow.style.display = 'block';
+arrow.style.left = (r.left - rb.left + r.width / 2 - 16) + 'px';
+if (place === 'shop') arrow.style.top = (r.top - rb.top + r.height * 0.05) + 'px';
+else if (place === 'above') arrow.style.top = (r.top - rb.top - 44) + 'px';
+else arrow.style.top = (r.bottom - rb.top + 2) + 'px';
+}
+
+function layoutTutorial() {
+if (!tutorial.active || !tutorial.step) return;
+const step = tutorial.step;
+const sug = step.suggest ? step.suggest.r + ',' + step.suggest.c : '';
+const exp = step.expect && step.expect.r != null ? step.expect.r + ',' + step.expect.c : '';
+const sig = tutorial.index + ':' + sug + ':' + exp;
+if (sig === fingerSig) return;
+fingerSig = sig;
+const finger = document.getElementById('tut-finger');
+const arrow = document.getElementById('tut-arrow');
+const nextEl = document.getElementById('next-tile');
+if (nextEl) nextEl.classList.toggle('tut-source', step.mode === 'action' && !(step.expect && step.expect.shop));
+if (step.finger) {
+const pair = step.finger();
+if (pair) showFinger(document.querySelector(pair[0]), document.querySelector(pair[1]));
+else if (finger) finger.style.display = 'none';
+} else if (finger) {
+finger.getAnimations().forEach(a => a.cancel());
+finger.style.display = 'none';
+}
+if (step.arrow) {
+const spec = step.arrow();
+pointArrow(document.querySelector(spec[0]), spec[1], spec[2]);
+} else if (arrow) arrow.style.display = 'none';
+}
+
+function enterStep() {
+const step = TUT_STEPS[tutorial.index];
+if (!step) { completeTutorial(); return; }
+tutorial.step = step;
+if (step.enter) step.enter();
+if (step.expect && step.expect.any) {
+const spot = firstEmpty();
+step.suggest = spot ? { r: spot[0], c: spot[1] } : null;
+} else step.suggest = null;
+fingerSig = '';
+const bubble = document.getElementById('tut-bubble');
+if (bubble) bubble.classList.toggle('tut-low', !!step.bubbleLow);
+document.getElementById('tut-text').textContent = step.text;
+const next = document.getElementById('tut-next');
+const skip = document.getElementById('tut-skip');
+if (step.done) { next.style.display = ''; next.textContent = 'Играть'; skip.style.display = 'none'; }
+else if (step.mode === 'info') { next.style.display = ''; next.textContent = 'Дальше'; skip.style.display = ''; }
+else { next.style.display = 'none'; skip.style.display = ''; }
+document.getElementById('tutorial').classList.add('on');
+tutorial.active = true;
+render();
+}
+
+function advanceTutorial() {
+tutorial.index++;
+enterStep();
+}
+
+function tutNext() {
+sfx('ui');
+if (!tutorial.active || !tutorial.step) return;
+if (tutorial.step.done) completeTutorial();
+else advanceTutorial();
+}
+
+function notifyTutorial(ev) {
+if (!tutorial.active || tutMute || !tutorial.step) return;
+const s = tutorial.step;
+let ok = false;
+if (s.success === 'merge2' && ev.type === 'merge' && ev.tile && ev.tile.kind === 'chain' && ev.tile.level === 2) ok = true;
+else if (s.success === 'place' && ev.type === 'placed') ok = true;
+else if (s.success === 'trap' && ev.type === 'trap') ok = true;
+else if (s.success === 'shop' && ev.type === 'shop') ok = true;
+else if (s.success === 'jail' && ev.type === 'jail') ok = true;
+else if (s.success === 'jurist' && ev.type === 'jurist') ok = true;
+else if (s.success === 'sack' && ev.type === 'sack') ok = true;
+if (!ok) return;
+tutMute = true;
+advanceTutorial();
+setTimeout(() => { tutMute = false; }, 0);
+}
+
+function skipTutorial() {
+sfx('ui');
+try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {}
+hideTutorial();
 init();
+}
+
+function completeTutorial() {
+try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {}
+hideTutorial();
+nextTile = newRandomTile();
+render();
+document.getElementById('log').textContent = 'Дальше — обычная игра. Удачи!';
+saveGame();
+}
+
+function startTutorial() {
+grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
+score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; undoState = null;
+gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
+nextTile = chainTile(1);
+closeModal('pause-modal');
+closeModal('shop-modal');
+closeModal('gameover-modal');
+closeModal('book-modal');
+closeModal('mail-modal');
+tutorial.index = 0;
+tutMute = false;
+tutorial.active = true;
+enterStep();
+}
+
+function replayTutorial() {
+sfx('ui');
+try { localStorage.removeItem(TUT_KEY); } catch (e) {}
+closeModal('pause-modal');
+startTutorial();
+}
+
+function ensureAudio() {
+if (sfxMuted) return null;
+const AC = window.AudioContext || window.webkitAudioContext;
+if (!AC) return null;
+if (!audioCtx) audioCtx = new AC();
+if (audioCtx.state === 'suspended') audioCtx.resume();
+return audioCtx;
+}
+
+function envTone(ctx, freq, t, dur, type, gain) {
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.type = type;
+o.frequency.setValueAtTime(freq, t);
+g.gain.setValueAtTime(gain, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+o.connect(g); g.connect(ctx.destination);
+o.start(t); o.stop(t + dur + 0.02);
+}
+
+function sfx(name) {
+const ctx = ensureAudio();
+if (!ctx) return;
+const t = ctx.currentTime;
+if (name === 'place') {
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.type = 'sine';
+o.frequency.setValueAtTime(160, t);
+o.frequency.exponentialRampToValueAtTime(55, t + 0.12);
+g.gain.setValueAtTime(0.28, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
+o.connect(g); g.connect(ctx.destination);
+o.start(t); o.stop(t + 0.15);
+} else if (name === 'merge') {
+envTone(ctx, 523, t, 0.12, 'sine', 0.16);
+envTone(ctx, 659, t + 0.07, 0.14, 'sine', 0.14);
+envTone(ctx, 784, t + 0.14, 0.18, 'triangle', 0.12);
+} else if (name === 'step') {
+envTone(ctx, 990, t, 0.035, 'square', 0.03);
+} else if (name === 'ui') {
+envTone(ctx, 740, t, 0.045, 'square', 0.04);
+} else if (name === 'trap') {
+envTone(ctx, 392, t, 0.09, 'triangle', 0.14);
+envTone(ctx, 523, t + 0.08, 0.11, 'triangle', 0.13);
+envTone(ctx, 784, t + 0.16, 0.16, 'sine', 0.12);
+}
+}
+
+function toggleSfx() {
+sfxMuted = !sfxMuted;
+try { localStorage.setItem(SFX_KEY, sfxMuted ? '1' : '0'); } catch (e) {}
+const btn = document.getElementById('sfx-toggle');
+if (btn) btn.textContent = sfxMuted ? 'Звук: выкл' : 'Звук: вкл';
+if (!sfxMuted) sfx('ui');
+}
+
+function maxLevelOf(kind) {
+if (kind === 'chain') return CHAIN.length;
+if (kind === 'care') return CARE.length;
+if (kind === 'income') return INCOME.length;
+return 1;
+}
+
+function hintNode(tile) {
+const src = tile ? getTileImage(tile) : null;
+if (!src) {
+const s = document.createElement('span');
+s.className = 'hint-emoji';
+s.textContent = tile ? tileEmoji(tile) : '?';
+return s;
+}
+const img = document.createElement('img');
+img.className = 'hint-ico';
+img.alt = '';
+img.src = src;
+return img;
+}
+
+function hintMark(text) {
+const s = document.createElement('span');
+s.className = text === '→' ? 'hint-arrow' : 'hint-x';
+s.textContent = text;
+return s;
+}
+
+function sackPreview() {
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c]) continue;
+const counts = {};
+[[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => {
+if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return;
+const t = grid[nr][nc];
+if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool') return;
+const k = t.kind + ':' + t.level;
+if (!counts[k]) counts[k] = { tile: t, n: 0 };
+counts[k].n++;
+});
+for (const k in counts) {
+if (counts[k].n >= 2 && counts[k].tile.level < maxLevelOf(counts[k].tile.kind)) return counts[k].tile;
+}
+}
+return null;
+}
+
+function recipeNodes(tile) {
+if (!tile) return null;
+if (tile.kind === 'chain' || tile.kind === 'care' || tile.kind === 'income') {
+if (tile.level >= maxLevelOf(tile.kind)) return null;
+return [hintNode(tile), hintMark('×3'), hintMark('→'), hintNode({ kind: tile.kind, level: tile.level + 1 })];
+}
+if (tile.kind === 'pioneer') return [hintNode(tile), hintMark('→'), hintNode({ kind: 'care', level: 1 })];
+if (tile.kind === 'tool' && tile.tool === 'saw') {
+const empty = document.createElement('span');
+empty.className = 'hint-empty';
+return [hintNode(tile), hintMark('→'), empty];
+}
+if (tile.kind === 'tool' && tile.tool === 'sack') {
+const pair = sackPreview() || chainTile(1);
+const result = { kind: pair.kind, level: Math.min(maxLevelOf(pair.kind), pair.level + 1) };
+return [hintNode(pair), hintNode(pair), hintNode(tile), hintMark('→'), hintNode(result)];
+}
+if (tile.kind === 'tool' && tile.tool === 'jurist') return [hintNode(tile), hintMark('→'), hintNode(chainTile(2))];
+if (tile.kind === 'tool' && tile.tool === 'nanobox') return [hintNode(tile), hintMark('→'), hintNode(chainTile(1))];
+return null;
+}
+
+function renderHint() {
+const box = document.getElementById('hint-recipe');
+if (!box) return;
+box.innerHTML = '';
+const nodes = recipeNodes(nextTile);
+if (!nodes) { box.classList.remove('has-recipe', 'compact'); return; }
+box.classList.add('has-recipe');
+box.classList.toggle('compact', nodes.length > 4);
+nodes.forEach(n => box.appendChild(n));
+}
+
+function emptyCells() {
+let n = 0;
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (!grid[r][c]) n++;
+return n;
+}
+
+function needsEmptyCell(tile) {
+if (!tile) return false;
+if (tile.kind === 'tool') return tile.tool === 'sack';
+return true;
+}
+
+function checkGameOver() {
+if (tutorial.active || gameOver) return;
+if (emptyCells() === 0 && needsEmptyCell(nextTile)) {
+gameOver = true;
+openModal('gameover-modal');
+}
+}
+
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function newGame() {
+if(!confirm('Начать заново?')) return;
+if (tutorial.active) { try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {} }
+clearSave(); init(); closeModal('pause-modal');
+}
+function clearSave() { localStorage.removeItem(SAVE_KEY); }
+function restartAfterOver() {
+gameOver = false;
+closeModal('gameover-modal');
+clearSave();
+init();
+}
+
+try {
+const tg = window.Telegram && window.Telegram.WebApp;
+if (tg) { tg.ready(); tg.expand(); }
+} catch (e) {}
+window.addEventListener('pointerdown', function () { ensureAudio(); }, { passive: true });
+window.addEventListener('resize', function () { fingerSig = ''; if (tutorial.active) layoutTutorial(); });
+
+const forceTutorial = new URLSearchParams(location.search).has('tutorial');
+if (forceTutorial || !localStorage.getItem(TUT_KEY)) startTutorial();
+else init();
 </script>
 </body>
 </html>
