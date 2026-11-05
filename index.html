@@ -10,13 +10,6 @@ html, body { height: 100%; overflow: hidden; user-select: none; touch-action: no
 body { background: #2b1a0e; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }
 #app { width: 100%; max-width: 440px; height: 100vh; max-height: 900px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 
-/* ПЛАВНОСТЬ */
-.ghost-inner { position: absolute; inset: 0; transform: scale(0.85); opacity: 0.6; transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.12s ease; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.45)); }
-.ghost.lifted .ghost-inner { transform: scale(1.12); opacity: 1; }
-.next-block, .jail-block { transition: transform 0.15s ease; }
-.next-block.picked, .jail-block.picked { transform: scale(0.92); opacity: 0.55; }
-@keyframes tileDrop { 0% { transform: scale(1.18); } 60% { transform: scale(0.94); } 100% { transform: scale(1); } }
-.cell.just-dropped { animation: tileDrop 0.26s cubic-bezier(0.34, 1.56, 0.64, 1); }
 #board { contain: layout paint; transform: translateZ(0); }
 .top-panel, .bottom-panel { transform: translateZ(0); }
 
@@ -61,11 +54,13 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 
 /* ПОЛЕ */
 #board { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
-.cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; transition: background-color 0.15s ease, box-shadow 0.15s ease; }
+.cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; }
 .cell.occupied { background: rgba(0,0,0,0.35); }
-.cell.hover { background: rgba(168, 212, 124, 0.4); box-shadow: 0 0 10px #a8d47c inset; }
-.cell.hover-bad { background: rgba(212, 124, 124, 0.4); box-shadow: 0 0 10px #d47c7c inset; }
-.ghost { position: fixed; left: 0; top: 0; will-change: transform; transition: none; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 6px; pointer-events: none; z-index: 2000; overflow: visible; }
+/* Lifted piece: full size, no scale. Soft ellipse sits slightly below and to the right. */
+.ghost { position: fixed; left: 0; top: 0; display: flex; align-items: center; justify-content: center; background: none; pointer-events: none; z-index: 2000; overflow: visible; will-change: transform; transition: none; }
+.ghost::after { content: ''; position: absolute; left: 52%; top: 82%; width: 34%; height: 16%; background: rgba(0, 0, 0, 0.45); border-radius: 50%; filter: blur(3px); z-index: 0; pointer-events: none; }
+/* Cell target: solid white square. Position is set in JS and must not ease. */
+#cell-hl { position: fixed; display: none; background: rgba(255, 255, 255, 0.4); pointer-events: none; z-index: 1800; transition: none; }
 
 .cell img, .next-block img, .jail-block img, .ghost img { width: 90%; height: 90%; object-fit: contain; pointer-events: none; display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
 .cell span, .next-block span, .jail-block span, .ghost span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
@@ -74,6 +69,8 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .cell.large-tile img, .cell.large-tile span { width: 130%; height: 130%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
 
 /* АНИМАЦИИ */
+@keyframes piece-pop { 0% { transform: translate(-50%, -50%) scale(0); } 60% { transform: translate(-50%, -50%) scale(calc(var(--tile-scale, 1) * 1.15)); } 100% { transform: translate(-50%, -50%) scale(var(--tile-scale, 1)); } }
+.cell img.piece-pop, .cell span.piece-pop, .next-block img.piece-pop, .next-block span.piece-pop, .jail-block img.piece-pop, .jail-block span.piece-pop { animation: piece-pop 0.26s ease-out forwards; }
 @keyframes merge-pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); filter: drop-shadow(0 0 12px #ffd700); } 100% { transform: translate(-50%, -50%) scale(1); } }
 .cell.merge-hint img, .cell.merge-hint span, .ghost.merge-hint { animation: merge-pulse 0.48s infinite ease-in-out; z-index: 10; }
 @keyframes printer-print { 0% { filter: brightness(1); } 50% { filter: brightness(2) drop-shadow(0 0 15px #00ffff); transform: translate(-50%, -50%) scale(1.1); } 100% { filter: brightness(1); } }
@@ -184,15 +181,16 @@ position: relative;
 .disc-title { font-weight: 900; font-size: 14px; text-transform: uppercase; }
 .disc-desc { font-size: 11px; font-weight: bold; line-height: 1.1; }
 
-.float-text { position: fixed; pointer-events: none; font-size: 16px; font-weight: 900; color: #ffe066; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index: 500; animation: floatUp 1s ease-out forwards; display: flex; align-items: center; gap: 4px; }
+.float-text { position: fixed; pointer-events: none; font-size: 16px; font-weight: 900; color: #ffe066; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index: 500; animation: floatUp 0.7s ease-out forwards; display: flex; align-items: center; gap: 4px; }
 .float-text img { height: 16px; width: auto; }
-@keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50px) scale(1.4); } }
+@keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, var(--float-dy, -64px)); } }
 
 /* АНИМАЦИЯ СЛИЯНИЯ */
 .merging { transition: transform 0.2s ease-in, opacity 0.2s; z-index: 100; }
 </style>
 </head>
 <body>
+<div id="cell-hl" aria-hidden="true"></div>
 <div id="app">
 <div class="top-panel">
 <div class="val-box" id="score-box">
@@ -382,14 +380,23 @@ if (tile.kind === 'tool') return '🛠️';
 return '?';
 }
 
+function tileRestScale(tile) {
+if (tile.kind === 'chain' && tile.level === 5) return 1.2;
+if (tile.kind === 'omon' && tile.level === 2) return 1.25;
+if (tile.kind === 'care' && (tile.level === 1 || tile.level === 2)) return 1.25;
+return 1;
+}
+
 function makeTileContent(tile) {
 let imgSrc = getTileImage(tile);
 if (imgSrc) {
 let img = document.createElement('img');
 img.src = imgSrc;
-if (tile.kind === 'chain' && tile.level === 5) img.style.transform = 'translate(-50%, -50%) scale(1.2)';
-if (tile.kind === 'omon' && tile.level === 2) img.style.transform = 'translate(-50%, -50%) scale(1.25)';
-if (tile.kind === 'care' && (tile.level === 1 || tile.level === 2)) img.style.transform = 'translate(-50%, -50%) scale(1.25)';
+let scale = tileRestScale(tile);
+if (scale !== 1) {
+img.style.setProperty('--tile-scale', String(scale));
+img.style.transform = 'translate(-50%, -50%) scale(' + scale + ')';
+}
 img.onerror = function() { this.parentNode.innerHTML = '<span style="font-size:32px;">' + tileEmoji(tile) + '</span>'; };
 return img;
 } else {
@@ -476,19 +483,22 @@ document.getElementById('log').textContent = 'Игра начата!';
 
 function newRandomTile() {
 testSpawnIndex++;
-if (testSpawnIndex <= 5) return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
-if (testSpawnIndex === 6) return { kind: 'omon', level: 1 };
-if (testSpawnIndex === 7) return { kind: 'omon', level: 2 };
-if (testSpawnIndex >= 8 && testSpawnIndex <= 12) return { kind: 'pioneer' };
-
+let tile;
+if (testSpawnIndex <= 5) tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+else if (testSpawnIndex === 6) tile = { kind: 'omon', level: 1 };
+else if (testSpawnIndex === 7) tile = { kind: 'omon', level: 2 };
+else if (testSpawnIndex >= 8 && testSpawnIndex <= 12) tile = { kind: 'pioneer' };
+else {
 let r = Math.random();
-if (r < 0.05) return { kind: 'pioneer' };
-if (r < 0.10) return { kind: 'chain', level: 1 };
-if (r < 0.15) return { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
-return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+if (r < 0.05) tile = { kind: 'pioneer' };
+else if (r < 0.10) tile = { kind: 'chain', level: 1 };
+else if (r < 0.15) tile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+else tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+}
+tile.pop = true;
+return tile;
 }
 
-let lastDrop = 0, lastDropRC = null;
 function render() {
 try {
 const b = document.getElementById('board');
@@ -504,14 +514,18 @@ const d = grid[r][c];
 if (d) {
 cell.classList.add('occupied');
 cell.appendChild(makeTileContent(d));
-if (lastDropRC && lastDropRC[0] === r && lastDropRC[1] === c && Date.now() - lastDrop < 400) cell.classList.add('just-dropped');
 if (d.kind !== 'omon' && d.kind !== 'pioneer' && LARGE_TILES.includes(d.level)) {
 cell.classList.add('large-tile');
+}
+if (d.justSpawned || d.pop) {
+const spawnedVisual = cell.querySelector('img, span');
+if (spawnedVisual) spawnedVisual.classList.add('piece-pop');
 }
 if (d.justSpawned) {
 cell.classList.add('anim-omon');
 delete d.justSpawned;
 }
+if (d.pop) delete d.pop;
 if (d.kind === 'care' && d.level === 1) bearsOnBoard++;
 }
 b.appendChild(cell);
@@ -531,8 +545,14 @@ renderNumber(moves, 'moves-num');
 
 const nextCont = document.getElementById('next-content');
 nextCont.innerHTML = '';
-if (nextTile) nextCont.appendChild(makeTileContent(nextTile));
-else nextCont.textContent = '—';
+if (nextTile) {
+nextCont.appendChild(makeTileContent(nextTile));
+if (nextTile.pop) {
+const nextVisual = nextCont.querySelector('img, span');
+if (nextVisual) nextVisual.classList.add('piece-pop');
+delete nextTile.pop;
+}
+} else nextCont.textContent = '—';
 
 const jailCont = document.getElementById('jail-content');
 jailCont.innerHTML = '';
@@ -621,7 +641,7 @@ document.getElementById('log').textContent = 'Задание "ЧЕСТНЫЕ В�
 }
 }
 
-grid[anchorR][anchorC] = { kind, level: newLevel };
+grid[anchorR][anchorC] = { kind, level: newLevel, pop: true };
 checkDiscovery(grid[anchorR][anchorC]);
 
 score += lvl * 15 * group.length;
@@ -711,7 +731,7 @@ grid[r][c] = { kind: 'care', level: 1 };
 processCascades(r, c);
 });
 
-if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 
 render(); saveGame();
 }, 400);
@@ -754,84 +774,101 @@ grid[r][c] = { kind: 'care', level: 1 };
 processCascades(r, c);
 });
 
-if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 render(); saveGame();
 }
 }
 
-document.getElementById('next-tile').addEventListener('pointerdown', e => {
-if (!nextTile || isSawMode || isNanoboxMode) return;
+function placeGhost(clientX, clientY) {
+if (!drag || !drag.ghost) return;
+const x = clientX - drag.offsetX;
+const y = clientY - drag.offsetY;
+drag.ghost.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
+}
+
+function hideCellHighlight() {
+const hl = document.getElementById('cell-hl');
+if (!hl) return;
+hl.style.display = 'none';
+if (drag) drag.hlCell = null;
+}
+
+function updateCellHighlight(clientX, clientY) {
+const hl = document.getElementById('cell-hl');
+if (!hl) return;
+const hit = document.elementFromPoint(clientX, clientY);
+const cell = hit && hit.closest ? hit.closest('.cell') : null;
+if (!cell) { hideCellHighlight(); return; }
+if (drag && drag.hlCell === cell) return;
+if (drag) drag.hlCell = cell;
+const rect = cell.getBoundingClientRect();
+hl.style.display = 'block';
+hl.style.left = rect.left + 'px';
+hl.style.top = rect.top + 'px';
+hl.style.width = rect.width + 'px';
+hl.style.height = rect.height + 'px';
+}
+
+function detachDragListeners() {
+window.removeEventListener('pointermove', onMove);
+window.removeEventListener('pointerup', onUp);
+window.removeEventListener('pointercancel', onCancel);
+}
+
+function clearDragVisuals() {
+if (drag && drag.ghost) drag.ghost.remove();
+hideCellHighlight();
+}
+
+function startTrayDrag(e, type, tile) {
+if (!tile || isSawMode || isNanoboxMode) return;
 e.preventDefault();
+if (drag) { detachDragListeners(); clearDragVisuals(); drag = null; }
 const rect = document.querySelector('.cell').getBoundingClientRect();
 const ghost = document.createElement('div');
 ghost.className = 'ghost';
-ghost.style.width = rect.width + 'px'; ghost.style.height = rect.height + 'px';
-const inner = document.createElement('div'); inner.className = 'ghost-inner';
-inner.appendChild(makeTileContent(nextTile)); ghost.appendChild(inner);
-if (nextTile.kind !== 'omon' && nextTile.kind !== 'pioneer' && LARGE_TILES.includes(nextTile.level)) ghost.classList.add('large-tile');
+ghost.style.width = rect.width + 'px';
+ghost.style.height = rect.height + 'px';
+ghost.appendChild(makeTileContent(tile));
+if (tile.kind !== 'omon' && tile.kind !== 'pioneer' && LARGE_TILES.includes(tile.level)) ghost.classList.add('large-tile');
 document.body.appendChild(ghost);
-drag = { type: 'fromNext', ghost, offsetX: rect.width/2, offsetY: rect.height/2, x: e.clientX, y: e.clientY, src: e.currentTarget, hoverEl: null, raf: 0 };
-dragPaint();
-requestAnimationFrame(() => ghost.classList.add('lifted'));
-e.currentTarget.classList.add('picked');
+drag = { type: type, ghost: ghost, offsetX: rect.width / 2, offsetY: rect.height / 2, hlCell: null };
+placeGhost(e.clientX, e.clientY);
+updateCellHighlight(e.clientX, e.clientY);
 try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch(_) {}
 window.addEventListener('pointermove', onMove);
 window.addEventListener('pointerup', onUp);
-window.addEventListener('pointercancel', onUp);
+window.addEventListener('pointercancel', onCancel);
+}
+
+document.getElementById('next-tile').addEventListener('pointerdown', e => {
+startTrayDrag(e, 'fromNext', nextTile);
 });
 
 document.getElementById('jail').addEventListener('pointerdown', e => {
-if (!jailTile || isSawMode || isNanoboxMode) return;
-e.preventDefault();
-const rect = document.querySelector('.cell').getBoundingClientRect();
-const ghost = document.createElement('div');
-ghost.className = 'ghost';
-ghost.style.width = rect.width + 'px'; ghost.style.height = rect.height + 'px';
-const inner = document.createElement('div'); inner.className = 'ghost-inner';
-inner.appendChild(makeTileContent(jailTile)); ghost.appendChild(inner);
-if (jailTile.kind !== 'omon' && jailTile.kind !== 'pioneer' && LARGE_TILES.includes(jailTile.level)) ghost.classList.add('large-tile');
-document.body.appendChild(ghost);
-drag = { type: 'fromJail', ghost, offsetX: rect.width/2, offsetY: rect.height/2, x: e.clientX, y: e.clientY, src: e.currentTarget, hoverEl: null, raf: 0 };
-dragPaint();
-requestAnimationFrame(() => ghost.classList.add('lifted'));
-e.currentTarget.classList.add('picked');
-try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch(_) {}
-window.addEventListener('pointermove', onMove);
-window.addEventListener('pointerup', onUp);
-window.addEventListener('pointercancel', onUp);
+startTrayDrag(e, 'fromJail', jailTile);
 });
 
-function dragPaint() {
-if (!drag) return;
-drag.raf = 0;
-drag.ghost.style.transform = `translate3d(${drag.x - drag.offsetX}px, ${drag.y - drag.offsetY}px, 0)`;
-const el = document.elementFromPoint(drag.x, drag.y)?.closest('.cell') || null;
-if (el !== drag.hoverEl) {
-if (drag.hoverEl) drag.hoverEl.classList.remove('hover', 'hover-bad');
-if (el) { const r = +el.dataset.r, c = +el.dataset.c; el.classList.add(!grid[r][c] ? 'hover' : 'hover-bad'); }
-drag.hoverEl = el;
-}
-}
 function onMove(e) {
 if (!drag) return;
-drag.x = e.clientX; drag.y = e.clientY;
-if (!drag.raf) drag.raf = requestAnimationFrame(dragPaint);
+placeGhost(e.clientX, e.clientY);
+updateCellHighlight(e.clientX, e.clientY);
+}
+
+function onCancel() {
+if (!drag) return;
+detachDragListeners();
+clearDragVisuals();
+drag = null;
 }
 
 function onUp(e) {
 if (!drag) return;
-window.removeEventListener('pointermove', onMove);
-window.removeEventListener('pointerup', onUp);
-if (drag.raf) cancelAnimationFrame(drag.raf);
-drag.ghost.remove();
-if (drag.src) drag.src.classList.remove('picked');
-lastDrop = Date.now();
-window.removeEventListener('pointercancel', onUp);
-document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(el => el.classList.remove('hover', 'hover-bad'));
+detachDragListeners();
+clearDragVisuals();
 
 const el = document.elementFromPoint(e.clientX, e.clientY);
 const cell = el?.closest('.cell');
-lastDropRC = cell ? [+cell.dataset.r, +cell.dataset.c] : null;
 
 // ИЗ ТЮРЬМЫ
 if (drag.type === 'fromJail') {
@@ -1177,8 +1214,9 @@ el.className = 'float-text';
 el.innerHTML = '<img decoding="async" src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
 el.style.left = (rect.left + rect.width / 2) + 'px';
 el.style.top = (rect.top + rect.height / 3) + 'px';
+el.style.setProperty('--float-dy', (-rect.height) + 'px');
 document.body.appendChild(el);
-setTimeout(function() { el.remove(); }, 1000);
+setTimeout(function() { el.remove(); }, 700);
 }
 
 function saveGame() {
