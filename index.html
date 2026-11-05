@@ -2,25 +2,26 @@
 <html lang="ru">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<meta name="theme-color" content="#2b1a0e">
 <title>Демократия — Финал</title>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; }
-body { background: #2b1a0e; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }
-#app { width: 100%; max-width: 440px; height: 100vh; max-height: 900px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
+html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; background: #2b1a0e; overscroll-behavior: none; }
+body { background: #2b1a0e; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; }
+#app { width: 100%; max-width: 440px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: env(safe-area-inset-top); padding-right: env(safe-area-inset-right); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); }
 
 #board { contain: layout paint; transform: translateZ(0); }
 .top-panel, .bottom-panel { transform: translateZ(0); }
 
 /* ВЕРХНЯЯ ПАНЕЛЬ */
 .top-panel { position: relative; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; }
-.val-box { position: absolute; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); pointer-events: none; height: 30px; gap: 2px; }
-.val-box img.icon { height: 28px; width: auto; object-fit: contain; filter: drop-shadow(0 2px 2px rgba(0,0,0,0.5)); transform: scale(1.1); }
-.val-box img.icon-coin { height: 34px; }
-#score-box { top: 5%; left: 22%; }
-#coins-box { top: 5%; left: 51%; }
-#moves-box { top: 5%; left: 78%; }
+.val-box { position: absolute; top: 1%; height: 17%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 1px; overflow: hidden; }
+.val-box img.icon { height: 74%; width: auto; max-width: 26%; object-fit: contain; flex: 0 1 auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
+.val-box img.icon-coin { height: 74%; }
+#score-box { left: 0.8%; width: 37.2%; }
+#coins-box { left: 39.4%; width: 23.5%; }
+#moves-box { left: 64.15%; width: 23.6%; }
 
 .hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
 .hitbox:active { background: rgba(255,255,255,0.2); }
@@ -49,13 +50,14 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .mail-badge.show { display: flex; }
 
-.num-container { display: flex; align-items: center; justify-content: center; height: 100%; }
-.num-container img { height: 16px; width: auto; margin: 0; object-fit: contain; }
+.num-container { display: flex; align-items: center; justify-content: center; height: 72%; min-width: 0; max-width: 76%; flex: 0 1 auto; }
+.num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; }
 
 /* ПОЛЕ */
 #board { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; }
 .cell.occupied { background: rgba(0,0,0,0.35); }
+.cell.anim-walk, .cell.anim-hop { background: transparent; }
 /* Lifted piece: full size, no scale. Soft ellipse sits slightly below and to the right. */
 .ghost { position: fixed; left: 0; top: 0; display: flex; align-items: center; justify-content: center; background: none; pointer-events: none; z-index: 2000; overflow: visible; will-change: transform; transition: none; }
 .ghost::after { content: ''; position: absolute; left: 52%; top: 82%; width: 34%; height: 16%; background: rgba(0, 0, 0, 0.45); border-radius: 50%; filter: blur(3px); z-index: 0; pointer-events: none; }
@@ -87,7 +89,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 
 .jail-block .content, .next-block .content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .next-block .content { transform: translate(-15%, 5%); }
-.jail-block .content { transform: translate(-5%, 0); } /* Одинаковый размер с Далее */
+.jail-block .content { transform: translate(-23.7%, 6.5%); }
 
 #log { font-size: 12px; height: 22px; line-height: 22px; text-align: center; color: #ffd700; flex-shrink: 0; background: #1a1208; z-index: 10; position: absolute; bottom: 0; width: 100%; }
 
@@ -123,7 +125,7 @@ overflow: hidden;
 .slot-8 { top: 58.5%; left: 52%; width: 42%; height: 14%; }
 .slot-9 { top: 74%; left: 6%; width: 42%; height: 14%; }
 .slot-10 { top: 74%; left: 52%; width: 42%; height: 14%; }
-.slot-close { top: 2%; right: 3%; width: 12%; height: 6%; }
+.slot-close { left: 71.67%; top: 5.25%; width: 8.22%; height: 4.56%; border-radius: 6px; }
 
 /* ИДЕАЛЬНАЯ ПАУЗА */
 .pause-window {
@@ -158,8 +160,9 @@ position: relative;
 
 /* МЕМЫ */
 .meme-popup { position: fixed; bottom: 0; right: 0; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5000; pointer-events: none; }
-.meme-popup.show { transform: translateX(0); }
-.meme-popup img { max-height: 60vh; max-width: 90vw; display: block; object-fit: contain; object-position: bottom right; }
+.meme-popup.show { transform: translateX(0); pointer-events: auto; }
+.meme-popup.show::before { content: ''; position: fixed; inset: 0; }
+.meme-popup img { position: relative; max-height: 60vh; max-width: 90vw; display: block; object-fit: contain; object-position: bottom right; }
 
 /* КНИГА */
 .book-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
@@ -181,9 +184,10 @@ position: relative;
 .disc-title { font-weight: 900; font-size: 14px; text-transform: uppercase; }
 .disc-desc { font-size: 11px; font-weight: bold; line-height: 1.1; }
 
-.float-text { position: fixed; pointer-events: none; font-size: 16px; font-weight: 900; color: #ffe066; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index: 500; animation: floatUp 0.7s ease-out forwards; display: flex; align-items: center; gap: 4px; }
-.float-text img { height: 16px; width: auto; }
-@keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0); } 100% { opacity: 0; transform: translate(-50%, var(--float-dy, -64px)); } }
+.float-text { position: fixed; pointer-events: none; font-size: 15px; font-weight: 900; color: #ffe98a; text-shadow: 0 2px 0 #5a3b00, 0 0 6px rgba(0,0,0,0.45); z-index: 500; display: flex; align-items: center; gap: 2px; animation: coinPop 0.95s cubic-bezier(.2,.8,.2,1) forwards; }
+.float-text img { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35)); }
+.float-text img.coin-small { width: 14px; height: 14px; margin-left: -8px; }
+@keyframes coinPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(0.25); } 16% { opacity: 1; transform: translate(-50%, -12px) scale(1.18); } 32% { opacity: 1; transform: translate(-50%, -2px) scale(1); } 100% { opacity: 0; transform: translate(calc(-50% + var(--float-dx, 0px)), var(--float-dy, -72px)) scale(0.92); } }
 
 /* АНИМАЦИЯ СЛИЯНИЯ */
 .merging { transition: transform 0.2s ease-in, opacity 0.2s; z-index: 100; }
@@ -224,6 +228,14 @@ animation: pieceWalk 0.28s linear both;
 100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: 1; }
 }
 .cell.anim-hop > img, .cell.anim-hop > span { animation: omonHop 0.22s ease-out; }
+@keyframes pieceShake {
+0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
+18% { transform: translate(-50%, -50%) rotate(-10deg); }
+36% { transform: translate(-50%, -50%) rotate(9deg); }
+54% { transform: translate(-50%, -50%) rotate(-7deg); }
+72% { transform: translate(-50%, -50%) rotate(5deg); }
+}
+.cell.anim-shake > img, .cell.anim-shake > span { animation: pieceShake 0.4s ease-in-out; transform-origin: 50% 80%; }
 @keyframes targetPulse {
 0%, 100% { box-shadow: inset 0 0 0 3px rgba(255, 215, 0, 0.35); }
 50% { box-shadow: inset 0 0 0 4px #ffe566, 0 0 12px rgba(255, 214, 80, 0.85); }
@@ -329,10 +341,25 @@ font-size: 15px;
 cursor: pointer;
 }
 .pause-extra.alt { background: #f4f0d8; }
+#title-screen { position: absolute; inset: 0; z-index: 2400; display: flex; align-items: center; justify-content: center; background: #2b1a0e; container-type: size; }
+#title-screen.hidden { display: none; }
+#title-frame { position: relative; width: min(100cqw, calc(100cqh * 1076 / 1600)); aspect-ratio: 1076 / 1600; }
+#title-frame img { width: 100%; height: 100%; display: block; object-fit: fill; }
+#title-play { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); background: #ffd700; color: #2b1a0e; font-weight: 900; font-size: 22px; border: 3px solid #4a2c14; border-radius: 16px; padding: 10px 36px; cursor: pointer; box-shadow: 0 6px 0 #6b4e12; }
+#start-choice { z-index: 4700; }
+#confirm-modal { z-index: 4800; }
+.confirm-actions { display: flex; gap: 8px; }
+.confirm-actions button, .choice-btn { flex: 1; padding: 12px; border-radius: 8px; font-weight: 900; font-size: 16px; border: none; cursor: pointer; }
+.choice-btn { width: 100%; margin-top: 8px; background: #ffd700; color: #2b1a0e; }
+.choice-btn.alt { background: #f4f0d8; }
+#confirm-yes { background: #ffd700; color: #2b1a0e; }
+#confirm-no { background: #8b3a3a; color: #fff; }
+#confirm-text { text-align: center; font-weight: 800; font-size: 18px; line-height: 1.35; margin-bottom: 14px; }
 @media (prefers-reduced-motion: reduce) {
 .cell.anim-walk > img, .cell.anim-walk > span,
 .cell.anim-hop > img, .cell.anim-hop > span,
-.cell.tut-target, #tut-arrow { animation: none !important; }
+.cell.anim-shake > img, .cell.anim-shake > span,
+.cell.tut-target, #tut-arrow, .float-text { animation: none !important; }
 }
 </style>
 </head>
@@ -373,11 +400,17 @@ cursor: pointer;
 <div class="next-block" id="next-tile">
 <div class="content" id="next-content">—</div>
 </div>
-<div class="hint-block" onclick="openBook()"><div id="hint-recipe"></div></div>
+<div class="hint-block" onclick="openBook()"></div>
 </div>
 </div>
 
 <div id="log">Собери свою империю</div>
+<div id="title-screen">
+<div id="title-frame">
+<img src="img/bg_main.png" alt="Демократия">
+<button type="button" id="title-play" onclick="onPlay()">Играть</button>
+</div>
+</div>
 <div id="tutorial" aria-live="polite">
 <div class="tut-bubble" id="tut-bubble">
 <div id="tut-text"></div>
@@ -424,7 +457,7 @@ cursor: pointer;
 <div class="pause-window">
 <div class="pause-hitbox-top">
 <div onclick="buyUndo()"></div>
-<div onclick="document.getElementById('log').textContent='Список в разработке'"></div>
+<div onclick="exitToMenu()"></div>
 <div onclick="newGame()"></div>
 <div onclick="closeModal('pause-modal')"></div>
 </div>
@@ -464,6 +497,24 @@ cursor: pointer;
 <rect x="28" y="8" width="8" height="7" rx="3" fill="#f0c09a"/>
 <ellipse cx="32" cy="64" rx="20" ry="15" fill="#ffd8b8" stroke="#3a2415" stroke-width="3"/>
 </svg>
+</div>
+
+<div class="modal" id="start-choice">
+<div class="modal-content">
+<h2>Демократия</h2>
+<button type="button" class="choice-btn" onclick="continueGame()">Продолжить</button>
+<button type="button" class="choice-btn alt" onclick="beginNewGame()">Начать заново</button>
+</div>
+</div>
+
+<div class="modal" id="confirm-modal">
+<div class="modal-content">
+<p id="confirm-text"></p>
+<div class="confirm-actions">
+<button type="button" id="confirm-yes">Да</button>
+<button type="button" id="confirm-no">Нет</button>
+</div>
+</div>
 </div>
 
 <div class="modal" id="gameover-modal">
@@ -530,6 +581,7 @@ for (let i = 0; i < str.length; i++) {
 const digit = str[i];
 const img = document.createElement('img');
 img.src = `img/num_${digit}.png`;
+img.onload = fitNumbers;
 img.onerror = function() {
 this.style.display = 'none';
 const span = document.createElement('span');
@@ -538,9 +590,27 @@ span.style.fontSize = '16px';
 span.style.color = '#ffd700';
 span.style.fontWeight = 'bold';
 el.appendChild(span);
+fitNumbers();
 };
 el.appendChild(img);
 }
+}
+function fitNumbers() {
+document.querySelectorAll('.val-box').forEach(box => {
+const nums = box.querySelector('.num-container');
+if (!nums) return;
+const imgs = [...nums.querySelectorAll('img')].filter(img => img.style.display !== 'none');
+if (!imgs.length) return;
+const icon = box.querySelector('img.icon');
+const iconW = icon ? icon.getBoundingClientRect().width : 0;
+const avail = Math.max(12, box.clientWidth - iconW - 4);
+const h = Math.max(10, nums.clientHeight || box.clientHeight * 0.7);
+const each = Math.min(h, avail / imgs.length);
+imgs.forEach(img => {
+img.style.height = each + 'px';
+img.style.width = each + 'px';
+});
+});
 }
 
 function getTileImage(tile) {
@@ -564,10 +634,7 @@ if (tile.kind === 'tool') return '🛠️';
 return '?';
 }
 
-function tileRestScale(tile) {
-if (tile.kind === 'chain' && tile.level === 5) return 1.2;
-if (tile.kind === 'omon' && tile.level === 2) return 1.25;
-if (tile.kind === 'care' && (tile.level === 1 || tile.level === 2)) return 1.25;
+function tileRestScale() {
 return 1;
 }
 
@@ -596,37 +663,30 @@ if (!tile) return;
 let key = tile.kind + '_' + (tile.level || '');
 if (tile.kind === 'tool') key = 'tool_' + tile.tool;
 if (discovered.has(key)) return;
-
 discovered.add(key);
 saveDiscovered();
-if (tutorial.active) return;
-
-let name = "Неизвестно", desc = "";
-if (tile.kind === 'chain') { name = "Паша ур." + tile.level; desc = "Описание уровня " + tile.level; }
-else if (tile.kind === 'care') { name = "Забота ур." + tile.level; desc = "Описание уровня " + tile.level; }
-else if (tile.kind === 'income') { name = "Доход ур." + tile.level; desc = "Описание уровня " + tile.level; }
-else if (tile.kind === 'pioneer') { name = "Пионер"; desc = "Всегда готов!"; }
-else if (tile.kind === 'omon') { name = "ОМОН"; desc = "Стоять! Бояться!"; }
-
-let discImg = document.getElementById('disc-img');
-let imgSrc = getTileImage(tile);
-discImg.innerHTML = imgSrc ? `<img decoding="async" src="${imgSrc}" onerror="this.parentNode.innerHTML='<span>${tileEmoji(tile)}</span>'">` : `<span>${tileEmoji(tile)}</span>`;
-
-document.getElementById('disc-title').textContent = name;
-document.getElementById('disc-desc').textContent = desc;
-
-let popup = document.getElementById('disc-popup');
-popup.classList.add('show');
-setTimeout(() => popup.classList.remove('show'), 3000);
 }
 
+let memeTimer = null;
+function hideMeme() {
+const popup = document.getElementById('meme-popup');
+if (popup) popup.classList.remove('show');
+if (memeTimer) { clearTimeout(memeTimer); memeTimer = null; }
+}
 function showMeme(imgSrc) {
 const popup = document.getElementById('meme-popup');
 const img = document.getElementById('meme-img');
 img.src = imgSrc;
 popup.classList.add('show');
-setTimeout(() => { popup.classList.remove('show'); }, 4000);
+if (memeTimer) clearTimeout(memeTimer);
+memeTimer = setTimeout(hideMeme, 6000);
 }
+document.getElementById('meme-popup').addEventListener('pointerdown', function(e) {
+if (!this.classList.contains('show')) return;
+e.preventDefault();
+e.stopPropagation();
+hideMeme();
+});
 
 function updateMailBadge() {
 let hasCompleted = Object.values(missions).some(m => m.status === 'completed');
@@ -636,6 +696,7 @@ else badge.classList.remove('show');
 }
 
 function init() {
+hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
 isSawMode = false; isNanoboxMode = false;
@@ -667,6 +728,7 @@ else { spawned++; checkDiscovery(grid[r][c]); }
 nextTile = newRandomTile();
 render();
 document.getElementById('log').textContent = 'Игра начата!';
+saveGame();
 }
 
 function newRandomTile() {
@@ -702,9 +764,6 @@ const d = grid[r][c];
 if (d) {
 cell.classList.add('occupied');
 cell.appendChild(makeTileContent(d));
-if (d.kind !== 'omon' && d.kind !== 'pioneer' && LARGE_TILES.includes(d.level)) {
-cell.classList.add('large-tile');
-}
 if (d.justSpawned || d.pop) {
 const spawnedVisual = cell.querySelector('img, span');
 if (spawnedVisual) spawnedVisual.classList.add('piece-pop');
@@ -740,6 +799,7 @@ document.getElementById('log').textContent = 'Задание "В ЛЕСУ" вы�
 renderNumber(score, 'score-num');
 renderNumber(coins, 'coins-num');
 renderNumber(moves, 'moves-num');
+fitNumbers();
 
 const nextCont = document.getElementById('next-content');
 nextCont.innerHTML = '';
@@ -758,8 +818,23 @@ jailCont.innerHTML = '';
 if (jailTile) jailCont.appendChild(makeTileContent(jailTile));
 else jailCont.textContent = '—';
 renderHint();
+unifyTrayPieces();
 if (tutorial.active) layoutTutorial();
 } catch (e) { console.log("Ошибка рендера:", e); }
+}
+function unifyTrayPieces() {
+const cell = document.querySelector('#board .cell');
+if (!cell) return;
+const r = cell.getBoundingClientRect();
+if (!r.width || !r.height) return;
+const w = r.width * 0.9;
+const h = r.height * 0.9;
+['next-content', 'jail-content'].forEach(id => {
+const node = document.querySelector('#' + id + ' img, #' + id + ' span');
+if (!node) return;
+node.style.width = w + 'px';
+node.style.height = h + 'px';
+});
 }
 
 function findGroup(startR, startC, tempGrid = null) {
@@ -819,18 +894,13 @@ if (!has) { newLevel = p; break; }
 }
 }
 
-if (kind === 'chain' && newLevel === 5) {
-if (!discovered.has('meme_urna')) {
-discovered.add('meme_urna');
+if (kind === 'chain' && (newLevel === 5 || newLevel === 9)) {
+const memeKey = 'meme_chain_' + newLevel;
+const memeSrc = newLevel === 5 ? 'img/popup_urna.png' : 'img/popup_president.png';
+if (!discovered.has(memeKey)) {
+discovered.add(memeKey);
 saveDiscovered();
-showMeme('img/popup_urna.png');
-}
-}
-if (kind === 'chain' && newLevel === 9) {
-if (!discovered.has('meme_president')) {
-discovered.add('meme_president');
-saveDiscovered();
-showMeme('img/popup_president.png');
+showMeme(memeSrc);
 }
 }
 
@@ -866,15 +936,15 @@ return (board && board.clientWidth ? board.clientWidth : 240) / SIZE;
 }
 
 function pioneerOptions(r, c) {
-let valid = [];
+let empty = [], money = [];
 [[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(d => {
 let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc]) valid.push({ r: nr, c: nc, type: 'empty' });
-else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({ r: nr, c: nc, type: 'money' });
-}
+if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return;
+const t = grid[nr][nc];
+if (!t) empty.push({ r: nr, c: nc, type: 'empty' });
+else if (t.kind === 'chain' && t.level === 1) money.push({ r: nr, c: nc, type: 'money' });
 });
-return valid;
+return { empty, money, blocked: empty.length + money.length === 0 };
 }
 
 function stepPioneers() {
@@ -884,11 +954,14 @@ if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
 }
 let moved = false;
 const px = cellPx();
+const taken = {};
 pioneers.forEach(([r, c]) => {
 if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
-let valid = pioneerOptions(r, c);
-if (!valid.length) return;
-let move = valid[Math.floor(Math.random() * valid.length)];
+const opt = pioneerOptions(r, c);
+let pool = (opt.money.length ? opt.money : opt.empty).filter(p => !taken[p.r + ',' + p.c]);
+if (!pool.length) return;
+let move = pool[Math.floor(Math.random() * pool.length)];
+taken[move.r + ',' + move.c] = true;
 if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
 grid[move.r][move.c] = { kind: 'pioneer' };
 grid[r][c] = null;
@@ -898,17 +971,24 @@ moved = true;
 if (moved) sfx('step');
 }
 
-function trapPioneers() {
+function trappedPioneers() {
 let trapped = [];
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'pioneer' && !pioneerOptions(r, c).length) trapped.push([r, c]);
+if (grid[r][c] && grid[r][c].kind === 'pioneer' && pioneerOptions(r, c).blocked) trapped.push([r, c]);
 }
-if (trapped.length) sfx('trap');
+return trapped;
+}
+function convertTrapped(trapped) {
 trapped.forEach(([r, c]) => {
-grid[r][c] = { kind: 'care', level: 1 };
+if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
+grid[r][c] = { kind: 'care', level: 1, pop: true };
+checkDiscovery(grid[r][c]);
 processCascades(r, c);
 });
 if (trapped.length) notifyTutorial({ type: 'trap', n: trapped.length });
+render();
+saveGame();
+checkGameOver();
 }
 
 function omonJumpTargets(r, c, level) {
@@ -948,11 +1028,21 @@ moveAnims.push({ r: p.r, c: p.c, hop: true });
 
 function finishUnits() {
 stepPioneers();
-trapPioneers();
 if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
+const trapped = trappedPioneers();
 render();
+if (trapped.length) {
+sfx('trap');
+trapped.forEach(([r, c]) => {
+const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
+if (cell) cell.classList.add('anim-shake');
+});
+markBusy(520);
+setTimeout(() => convertTrapped(trapped), 420);
+} else {
 saveGame();
 checkGameOver();
+}
 }
 
 function endMove() {
@@ -961,7 +1051,9 @@ sawStreak = 0;
 
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
 if (grid[r][c] && grid[r][c].kind === 'income') {
-coins += INCOME_PER_TURN[grid[r][c].level - 1] || 5;
+let gain = INCOME_PER_TURN[grid[r][c].level - 1] || 5;
+coins += gain;
+showFloatText(r, c, gain);
 }
 }
 
@@ -974,10 +1066,6 @@ else omons.push([r, c]);
 }
 
 if (omons.length > 0) {
-omons.forEach(([r, c]) => {
-let cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
-if (cell) { cell.style.transition = 'opacity 0.18s'; cell.style.opacity = '0.2'; }
-});
 markBusy(460);
 setTimeout(() => {
 stepOmons(omons);
@@ -1015,6 +1103,8 @@ function applyMoveAnim(cell, r, c) {
 if (!moveAnims.length) return;
 const anim = moveAnims.find(a => a.r === r && a.c === c);
 if (!anim) return;
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (reduce) return;
 const img = cell.querySelector('img, span');
 if (anim.hop) cell.classList.add('anim-hop');
 else if (img) {
@@ -1025,6 +1115,8 @@ img.style.setProperty('--walk-ox', origin[0]);
 img.style.setProperty('--walk-oy', origin[1]);
 cell.classList.add('anim-walk');
 }
+const ms = anim.hop ? 230 : 300;
+setTimeout(() => { cell.classList.remove('anim-walk', 'anim-hop'); }, ms);
 }
 
 function placeGhost(clientX, clientY) {
@@ -1078,7 +1170,6 @@ ghost.className = 'ghost';
 ghost.style.width = rect.width + 'px';
 ghost.style.height = rect.height + 'px';
 ghost.appendChild(makeTileContent(tile));
-if (tile.kind !== 'omon' && tile.kind !== 'pioneer' && LARGE_TILES.includes(tile.level)) ghost.classList.add('large-tile');
 document.body.appendChild(ghost);
 drag = { type: type, ghost: ghost, offsetX: rect.width / 2, offsetY: rect.height / 2, hlCell: null };
 placeGhost(e.clientX, e.clientY);
@@ -1135,11 +1226,13 @@ if (tool.tool === 'jurist') {
 if (grid[r][c] && grid[r][c].kind !== 'omon') {
 let taken = grid[r][c]; grid[r][c] = null;
 nextTile = taken;
+sfx('pop');
 endMove();
 } else { render(); }
 }
 else if (tool.tool === 'saw') {
 if (grid[r][c]) {
+sfx('saw');
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
 } else {
@@ -1231,19 +1324,18 @@ undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coi
 
 if (nextTile.tool === 'jurist') {
 nextTile = grid[r][c]; grid[r][c] = null;
-sfx('ui');
+sfx('pop');
 render(); saveGame();
 notifyTutorial({ type: 'jurist' });
 drag = null;
 return;
 }
 else if (nextTile.tool === 'saw') {
+sfx('saw');
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
-sfx('trap');
 } else {
 grid[r][c] = null;
-sfx('place');
 }
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
@@ -1393,9 +1485,7 @@ if (missions.saw.status === 'active') {
 html += `<div class="mission-img-card"><img decoding="async" src="${missions.saw.img}"></div>`;
 }
 
-c.innerHTML = '<button type="button" class="pause-extra" onclick="replayTutorial()">Обучение</button>'
-+ '<button type="button" class="pause-extra alt" id="sfx-toggle" onclick="toggleSfx()">' + (sfxMuted ? 'Звук: выкл' : 'Звук: вкл') + '</button>'
-+ html;
+c.innerHTML = html;
 }
 
 function buyUndo() {
@@ -1415,10 +1505,10 @@ document.getElementById('log').textContent = 'Бонус получен: +' + am
 }
 
 function useJurist() {
-sfx('ui');
 if (tutorial.active) { document.getElementById('log').textContent = 'Сначала дойди по подсказке'; return; }
 if (gameOver) return;
 if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
+sfx('pop');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
 render(); saveGame();
@@ -1486,12 +1576,14 @@ if (!cell) return;
 var rect = cell.getBoundingClientRect();
 var el = document.createElement('div');
 el.className = 'float-text';
-el.innerHTML = '<img decoding="async" src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
+var dx = (Math.random() * 18 - 9).toFixed(1) + 'px';
+el.innerHTML = '<img alt="" src="img/Coin_1.png"><img class="coin-small" alt="" src="img/Coin_1.png"><span>+' + amount + '</span>';
 el.style.left = (rect.left + rect.width / 2) + 'px';
-el.style.top = (rect.top + rect.height / 3) + 'px';
-el.style.setProperty('--float-dy', (-rect.height) + 'px');
+el.style.top = (rect.top + 4) + 'px';
+el.style.setProperty('--float-dy', (-Math.max(48, rect.height * 0.95)) + 'px');
+el.style.setProperty('--float-dx', dx);
 document.body.appendChild(el);
-setTimeout(function() { el.remove(); }, 700);
+setTimeout(function() { el.remove(); }, 1000);
 }
 
 function saveGame() {
@@ -1735,6 +1827,7 @@ saveGame();
 }
 
 function startTutorial() {
+hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; undoState = null;
 gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
@@ -1800,10 +1893,58 @@ envTone(ctx, 990, t, 0.035, 'square', 0.03);
 } else if (name === 'ui') {
 envTone(ctx, 740, t, 0.045, 'square', 0.04);
 } else if (name === 'trap') {
-envTone(ctx, 392, t, 0.09, 'triangle', 0.14);
-envTone(ctx, 523, t + 0.08, 0.11, 'triangle', 0.13);
-envTone(ctx, 784, t + 0.16, 0.16, 'sine', 0.12);
+envTone(ctx, 523, t, 0.07, 'square', 0.07);
+envTone(ctx, 659, t + 0.07, 0.08, 'square', 0.065);
+envTone(ctx, 784, t + 0.14, 0.1, 'triangle', 0.09);
+envTone(ctx, 1046, t + 0.22, 0.2, 'sine', 0.11);
+} else if (name === 'pop') {
+corkPop(ctx, t);
+} else if (name === 'saw') {
+sawStroke(ctx, t);
+sawStroke(ctx, t + 0.5);
 }
+}
+
+function corkPop(ctx, t) {
+noiseBurst(ctx, t, 0.07, 1400, 280, 0.42, 0.8);
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.type = 'sine';
+o.frequency.setValueAtTime(480, t);
+o.frequency.exponentialRampToValueAtTime(120, t + 0.08);
+g.gain.setValueAtTime(0.2, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
+o.connect(g); g.connect(ctx.destination);
+o.start(t); o.stop(t + 0.1);
+}
+
+function noiseBurst(ctx, t, dur, fromFreq, toFreq, gainVal, q) {
+const frames = Math.max(1, Math.floor(ctx.sampleRate * dur));
+const buf = ctx.createBuffer(1, frames, ctx.sampleRate);
+const data = buf.getChannelData(0);
+for (let i = 0; i < frames; i++) {
+const p = i / frames;
+data[i] = (Math.random() * 2 - 1) * Math.sin(Math.PI * p);
+}
+const src = ctx.createBufferSource();
+src.buffer = buf;
+const f = ctx.createBiquadFilter();
+f.type = 'bandpass';
+f.Q.value = q || 3;
+f.frequency.setValueAtTime(fromFreq, t);
+f.frequency.exponentialRampToValueAtTime(Math.max(40, toFreq), t + dur);
+const g = ctx.createGain();
+g.gain.setValueAtTime(0.0001, t);
+g.gain.linearRampToValueAtTime(gainVal, t + Math.min(0.025, dur * 0.15));
+g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+src.connect(f); f.connect(g); g.connect(ctx.destination);
+src.start(t);
+src.stop(t + dur + 0.02);
+}
+
+function sawStroke(ctx, t) {
+const dur = 0.42;
+noiseBurst(ctx, t, dur, 2100, 460, 0.32, 5.5);
 }
 
 function toggleSfx() {
@@ -1888,11 +2029,7 @@ function renderHint() {
 const box = document.getElementById('hint-recipe');
 if (!box) return;
 box.innerHTML = '';
-const nodes = recipeNodes(nextTile);
-if (!nodes) { box.classList.remove('has-recipe', 'compact'); return; }
-box.classList.add('has-recipe');
-box.classList.toggle('compact', nodes.length > 4);
-nodes.forEach(n => box.appendChild(n));
+box.classList.remove('has-recipe', 'compact');
 }
 
 function emptyCells() {
@@ -1916,12 +2053,102 @@ openModal('gameover-modal');
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function askConfirm(text, onYes) {
+document.getElementById('confirm-text').textContent = text;
+document.getElementById('confirm-yes').onclick = function() {
+closeModal('confirm-modal');
+onYes();
+};
+document.getElementById('confirm-no').onclick = function() { closeModal('confirm-modal'); };
+document.getElementById('confirm-modal').classList.add('open');
+sfx('ui');
+}
 function newGame() {
-if(!confirm('Начать заново?')) return;
+askConfirm('Вы уверены? Весь прогресс сбросится…', function() {
 if (tutorial.active) { try { localStorage.setItem(TUT_KEY, '1'); } catch (e) {} }
-clearSave(); init(); closeModal('pause-modal');
+clearSave();
+init();
+closeModal('pause-modal');
+});
+}
+function exitToMenu() {
+askConfirm('Вы уверены?', function() {
+saveGame();
+closeModal('pause-modal');
+closeModal('shop-modal');
+closeModal('book-modal');
+closeModal('mail-modal');
+closeModal('gameover-modal');
+showTitle();
+});
 }
 function clearSave() { localStorage.removeItem(SAVE_KEY); }
+function hasSave() {
+try { return !!localStorage.getItem(SAVE_KEY); } catch (e) { return false; }
+}
+function showTitle() {
+const el = document.getElementById('title-screen');
+if (el) el.classList.remove('hidden');
+closeModal('start-choice');
+}
+function hideTitle() {
+const el = document.getElementById('title-screen');
+if (el) el.classList.add('hidden');
+}
+function loadGame() {
+try {
+const raw = localStorage.getItem(SAVE_KEY);
+if (!raw) return false;
+const data = JSON.parse(raw);
+if (!data || !Array.isArray(data.grid) || data.grid.length !== SIZE) return false;
+grid = data.grid.map(row => Array.isArray(row) ? row.map(t => t ? { ...t } : null) : []);
+if (grid.some(row => row.length !== SIZE)) return false;
+score = data.score || 0;
+coins = typeof data.coins === 'number' ? data.coins : 0;
+moves = data.moves || 0;
+nextTile = data.nextTile || { kind: 'chain', level: 1 };
+jailTile = data.jailTile || null;
+bufferedNext = data.bufferedNext || null;
+testSpawnIndex = data.testSpawnIndex || 0;
+if (data.missions) missions = data.missions;
+undoState = null;
+gameOver = false;
+isSawMode = false;
+isNanoboxMode = false;
+sawStreak = 0;
+hideTutorial();
+hideTitle();
+closeModal('gameover-modal');
+updateMailBadge();
+render();
+document.getElementById('log').textContent = 'Игра продолжена';
+return true;
+} catch (e) { return false; }
+}
+function tutorialDone() {
+try { return localStorage.getItem(TUT_KEY) === '1'; } catch (e) { return false; }
+}
+function startFresh() {
+hideTitle();
+if (!tutorialDone()) startTutorial();
+else init();
+}
+function onPlay() {
+sfx('ui');
+if (forceTutorial) { hideTitle(); startTutorial(); return; }
+if (hasSave()) document.getElementById('start-choice').classList.add('open');
+else startFresh();
+}
+function continueGame() {
+closeModal('start-choice');
+if (!loadGame()) startFresh();
+else hideTitle();
+}
+function beginNewGame() {
+closeModal('start-choice');
+clearSave();
+startFresh();
+}
 function restartAfterOver() {
 gameOver = false;
 closeModal('gameover-modal');
@@ -1929,16 +2156,27 @@ clearSave();
 init();
 }
 
+function bootTelegram() {
 try {
 const tg = window.Telegram && window.Telegram.WebApp;
-if (tg) { tg.ready(); tg.expand(); }
+if (!tg) return;
+tg.ready();
+if (tg.expand) tg.expand();
+const bg = '#2b1a0e';
+try { if (tg.setHeaderColor) tg.setHeaderColor(bg); } catch (e) {}
+try { if (tg.setBackgroundColor) tg.setBackgroundColor(bg); } catch (e) {}
+try { if (tg.setBottomBarColor) tg.setBottomBarColor(bg); } catch (e) {}
+try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) {}
+try { if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); } catch (e) {}
 } catch (e) {}
-window.addEventListener('pointerdown', function () { ensureAudio(); }, { passive: true });
-window.addEventListener('resize', function () { fingerSig = ''; if (tutorial.active) layoutTutorial(); });
+}
+bootTelegram();
+window.addEventListener('pointerdown', function () { ensureAudio(); bootTelegram(); }, { passive: true });
+window.addEventListener('resize', function () { fingerSig = ''; unifyTrayPieces(); fitNumbers(); if (tutorial.active) layoutTutorial(); });
 
 const forceTutorial = new URLSearchParams(location.search).has('tutorial');
-if (forceTutorial || !localStorage.getItem(TUT_KEY)) startTutorial();
-else init();
+if (forceTutorial) startTutorial();
+else showTitle();
 </script>
 </body>
 </html>
