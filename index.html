@@ -10,6 +10,16 @@ html, body { height: 100%; overflow: hidden; user-select: none; touch-action: no
 body { background: #2b1a0e; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }
 #app { width: 100%; max-width: 440px; height: 100vh; max-height: 900px; display: flex; flex-direction: column; position: relative; overflow: hidden; }
 
+/* ПЛАВНОСТЬ */
+.ghost-inner { position: absolute; inset: 0; transform: scale(0.85); opacity: 0.6; transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), opacity 0.12s ease; filter: drop-shadow(0 8px 10px rgba(0,0,0,0.45)); }
+.ghost.lifted .ghost-inner { transform: scale(1.12); opacity: 1; }
+.next-block, .jail-block { transition: transform 0.15s ease; }
+.next-block.picked, .jail-block.picked { transform: scale(0.92); opacity: 0.55; }
+@keyframes tileDrop { 0% { transform: scale(1.18); } 60% { transform: scale(0.94); } 100% { transform: scale(1); } }
+.cell.just-dropped { animation: tileDrop 0.26s cubic-bezier(0.34, 1.56, 0.64, 1); }
+#board { contain: layout paint; transform: translateZ(0); }
+.top-panel, .bottom-panel { transform: translateZ(0); }
+
 /* ВЕРХНЯЯ ПАНЕЛЬ */
 .top-panel { position: relative; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; }
 .val-box { position: absolute; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); pointer-events: none; height: 30px; gap: 2px; }
@@ -51,11 +61,11 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 
 /* ПОЛЕ */
 #board { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
-.cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; transition: 0.2s; }
+.cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; transition: background-color 0.15s ease, box-shadow 0.15s ease; }
 .cell.occupied { background: rgba(0,0,0,0.35); }
 .cell.hover { background: rgba(168, 212, 124, 0.4); box-shadow: 0 0 10px #a8d47c inset; }
 .cell.hover-bad { background: rgba(212, 124, 124, 0.4); box-shadow: 0 0 10px #d47c7c inset; }
-.ghost { position: fixed; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 6px; pointer-events: none; z-index: 2000; overflow: visible; }
+.ghost { position: fixed; left: 0; top: 0; will-change: transform; transition: none; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); border-radius: 6px; pointer-events: none; z-index: 2000; overflow: visible; }
 
 .cell img, .next-block img, .jail-block img, .ghost img { width: 90%; height: 90%; object-fit: contain; pointer-events: none; display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
 .cell span, .next-block span, .jail-block span, .ghost span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
@@ -186,13 +196,13 @@ position: relative;
 <div id="app">
 <div class="top-panel">
 <div class="val-box" id="score-box">
-<img src="img/Cup_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="score-num"></div>
+<img decoding="async" src="img/Cup_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="score-num"></div>
 </div>
 <div class="val-box" id="coins-box">
-<img src="img/Coin_1.png" class="icon icon-coin" onerror="this.style.display='none'"><div class="num-container" id="coins-num"></div>
+<img decoding="async" src="img/Coin_1.png" class="icon icon-coin" onerror="this.style.display='none'"><div class="num-container" id="coins-num"></div>
 </div>
 <div class="val-box" id="moves-box">
-<img src="img/Clock_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="moves-num"></div>
+<img decoding="async" src="img/Clock_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="moves-num"></div>
 </div>
 
 <!-- Кнопка Почты (Конверт) -->
@@ -204,7 +214,7 @@ position: relative;
 <div class="hitbox hit-pause" onclick="openPause()"></div>
 
 <div class="hitbox hit-jurist" onclick="useJurist()">
-<img src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
+<img decoding="async" src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
 </div>
 </div>
 
@@ -226,7 +236,7 @@ position: relative;
 </div>
 
 <div class="meme-popup" id="meme-popup">
-<img src="" id="meme-img">
+<img decoding="async" src="" id="meme-img">
 </div>
 
 <!-- МАГАЗИН -->
@@ -408,7 +418,7 @@ else if (tile.kind === 'omon') { name = "ОМОН"; desc = "Стоять! Боя
 
 let discImg = document.getElementById('disc-img');
 let imgSrc = getTileImage(tile);
-discImg.innerHTML = imgSrc ? `<img src="${imgSrc}" onerror="this.parentNode.innerHTML='<span>${tileEmoji(tile)}</span>'">` : `<span>${tileEmoji(tile)}</span>`;
+discImg.innerHTML = imgSrc ? `<img decoding="async" src="${imgSrc}" onerror="this.parentNode.innerHTML='<span>${tileEmoji(tile)}</span>'">` : `<span>${tileEmoji(tile)}</span>`;
 
 document.getElementById('disc-title').textContent = name;
 document.getElementById('disc-desc').textContent = desc;
@@ -478,6 +488,7 @@ if (r < 0.15) return { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
 return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
 }
 
+let lastDrop = 0, lastDropRC = null;
 function render() {
 try {
 const b = document.getElementById('board');
@@ -493,6 +504,7 @@ const d = grid[r][c];
 if (d) {
 cell.classList.add('occupied');
 cell.appendChild(makeTileContent(d));
+if (lastDropRC && lastDropRC[0] === r && lastDropRC[1] === c && Date.now() - lastDrop < 400) cell.classList.add('just-dropped');
 if (d.kind !== 'omon' && d.kind !== 'pioneer' && LARGE_TILES.includes(d.level)) {
 cell.classList.add('large-tile');
 }
@@ -754,13 +766,18 @@ const rect = document.querySelector('.cell').getBoundingClientRect();
 const ghost = document.createElement('div');
 ghost.className = 'ghost';
 ghost.style.width = rect.width + 'px'; ghost.style.height = rect.height + 'px';
-ghost.style.left = (e.clientX - rect.width/2) + 'px'; ghost.style.top = (e.clientY - rect.height/2) + 'px';
-ghost.appendChild(makeTileContent(nextTile));
+const inner = document.createElement('div'); inner.className = 'ghost-inner';
+inner.appendChild(makeTileContent(nextTile)); ghost.appendChild(inner);
 if (nextTile.kind !== 'omon' && nextTile.kind !== 'pioneer' && LARGE_TILES.includes(nextTile.level)) ghost.classList.add('large-tile');
 document.body.appendChild(ghost);
-drag = { type: 'fromNext', ghost, offsetX: rect.width/2, offsetY: rect.height/2 };
+drag = { type: 'fromNext', ghost, offsetX: rect.width/2, offsetY: rect.height/2, x: e.clientX, y: e.clientY, src: e.currentTarget, hoverEl: null, raf: 0 };
+dragPaint();
+requestAnimationFrame(() => ghost.classList.add('lifted'));
+e.currentTarget.classList.add('picked');
+try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch(_) {}
 window.addEventListener('pointermove', onMove);
 window.addEventListener('pointerup', onUp);
+window.addEventListener('pointercancel', onUp);
 });
 
 document.getElementById('jail').addEventListener('pointerdown', e => {
@@ -770,36 +787,51 @@ const rect = document.querySelector('.cell').getBoundingClientRect();
 const ghost = document.createElement('div');
 ghost.className = 'ghost';
 ghost.style.width = rect.width + 'px'; ghost.style.height = rect.height + 'px';
-ghost.style.left = (e.clientX - rect.width/2) + 'px'; ghost.style.top = (e.clientY - rect.height/2) + 'px';
-ghost.appendChild(makeTileContent(jailTile));
+const inner = document.createElement('div'); inner.className = 'ghost-inner';
+inner.appendChild(makeTileContent(jailTile)); ghost.appendChild(inner);
 if (jailTile.kind !== 'omon' && jailTile.kind !== 'pioneer' && LARGE_TILES.includes(jailTile.level)) ghost.classList.add('large-tile');
 document.body.appendChild(ghost);
-drag = { type: 'fromJail', ghost, offsetX: rect.width/2, offsetY: rect.height/2 };
+drag = { type: 'fromJail', ghost, offsetX: rect.width/2, offsetY: rect.height/2, x: e.clientX, y: e.clientY, src: e.currentTarget, hoverEl: null, raf: 0 };
+dragPaint();
+requestAnimationFrame(() => ghost.classList.add('lifted'));
+e.currentTarget.classList.add('picked');
+try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch(_) {}
 window.addEventListener('pointermove', onMove);
 window.addEventListener('pointerup', onUp);
+window.addEventListener('pointercancel', onUp);
 });
 
+function dragPaint() {
+if (!drag) return;
+drag.raf = 0;
+drag.ghost.style.transform = `translate3d(${drag.x - drag.offsetX}px, ${drag.y - drag.offsetY}px, 0)`;
+const el = document.elementFromPoint(drag.x, drag.y)?.closest('.cell') || null;
+if (el !== drag.hoverEl) {
+if (drag.hoverEl) drag.hoverEl.classList.remove('hover', 'hover-bad');
+if (el) { const r = +el.dataset.r, c = +el.dataset.c; el.classList.add(!grid[r][c] ? 'hover' : 'hover-bad'); }
+drag.hoverEl = el;
+}
+}
 function onMove(e) {
 if (!drag) return;
-drag.ghost.style.left = (e.clientX - drag.offsetX) + 'px';
-drag.ghost.style.top = (e.clientY - drag.offsetY) + 'px';
-document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(el => el.classList.remove('hover', 'hover-bad'));
-const el = document.elementFromPoint(e.clientX, e.clientY)?.closest('.cell');
-if (el) {
-const r = +el.dataset.r, c = +el.dataset.c;
-el.classList.add(!grid[r][c] ? 'hover' : 'hover-bad');
-}
+drag.x = e.clientX; drag.y = e.clientY;
+if (!drag.raf) drag.raf = requestAnimationFrame(dragPaint);
 }
 
 function onUp(e) {
 if (!drag) return;
 window.removeEventListener('pointermove', onMove);
 window.removeEventListener('pointerup', onUp);
+if (drag.raf) cancelAnimationFrame(drag.raf);
 drag.ghost.remove();
+if (drag.src) drag.src.classList.remove('picked');
+lastDrop = Date.now();
+window.removeEventListener('pointercancel', onUp);
 document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(el => el.classList.remove('hover', 'hover-bad'));
 
 const el = document.elementFromPoint(e.clientX, e.clientY);
 const cell = el?.closest('.cell');
+lastDropRC = cell ? [+cell.dataset.r, +cell.dataset.c] : null;
 
 // ИЗ ТЮРЬМЫ
 if (drag.type === 'fromJail') {
@@ -1010,15 +1042,15 @@ c.innerHTML = '';
 let hasMail = false;
 
 if (missions.forest.status === 'completed') {
-c.innerHTML += `<div class="mail-card"><img src="${missions.forest.img}"><div class="mail-claim-btn" onclick="claimReward('forest')"></div></div>`;
+c.innerHTML += `<div class="mail-card"><img decoding="async" src="${missions.forest.img}"><div class="mail-claim-btn" onclick="claimReward('forest')"></div></div>`;
 hasMail = true;
 }
 if (missions.elections.status === 'completed') {
-c.innerHTML += `<div class="mail-card"><img src="${missions.elections.img}"><div class="mail-claim-btn" onclick="claimReward('elections')"></div></div>`;
+c.innerHTML += `<div class="mail-card"><img decoding="async" src="${missions.elections.img}"><div class="mail-claim-btn" onclick="claimReward('elections')"></div></div>`;
 hasMail = true;
 }
 if (missions.saw.status === 'completed') {
-c.innerHTML += `<div class="mail-card"><img src="${missions.saw.img}"><div class="mail-claim-btn" onclick="claimReward('saw')"></div></div>`;
+c.innerHTML += `<div class="mail-card"><img decoding="async" src="${missions.saw.img}"><div class="mail-claim-btn" onclick="claimReward('saw')"></div></div>`;
 hasMail = true;
 }
 
@@ -1049,13 +1081,13 @@ let html = '';
 
 // В паузе показываем ТОЛЬКО активные задания
 if (missions.forest.status === 'active') {
-html += `<div class="mission-img-card"><img src="${missions.forest.img}"></div>`;
+html += `<div class="mission-img-card"><img decoding="async" src="${missions.forest.img}"></div>`;
 }
 if (missions.elections.status === 'active') {
-html += `<div class="mission-img-card"><img src="${missions.elections.img}"></div>`;
+html += `<div class="mission-img-card"><img decoding="async" src="${missions.elections.img}"></div>`;
 }
 if (missions.saw.status === 'active') {
-html += `<div class="mission-img-card"><img src="${missions.saw.img}"></div>`;
+html += `<div class="mission-img-card"><img decoding="async" src="${missions.saw.img}"></div>`;
 }
 
 c.innerHTML = html;
@@ -1130,7 +1162,7 @@ let card = document.createElement('div');
 card.className = 'book-card' + (isDiscovered ? '' : ' locked');
 let testTile = { kind: currentBranch, level: i + 1 };
 let imgSrc = getTileImage(testTile);
-let iconHTML = isDiscovered ? (imgSrc ? `<img src="${imgSrc}">` : names[i]) : '<span>❓</span>';
+let iconHTML = isDiscovered ? (imgSrc ? `<img decoding="async" src="${imgSrc}">` : names[i]) : '<span>❓</span>';
 card.innerHTML = `<div class="book-icon">${iconHTML}</div><div class="book-desc">${isDiscovered ? 'Уровень ' + (i + 1) : 'Соберите в игре'}</div>`;
 scroll.appendChild(card);
 }
@@ -1142,7 +1174,7 @@ if (!cell) return;
 var rect = cell.getBoundingClientRect();
 var el = document.createElement('div');
 el.className = 'float-text';
-el.innerHTML = '<img src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
+el.innerHTML = '<img decoding="async" src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
 el.style.left = (rect.left + rect.width / 2) + 'px';
 el.style.top = (rect.top + rect.height / 3) + 'px';
 document.body.appendChild(el);
