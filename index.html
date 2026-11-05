@@ -3,33 +3,36 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-<meta name="theme-color" content="#2b1a0e">
+<meta name="theme-color" content="#7e6829">
 <title>Демократия — Финал</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
-html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; background: #2b1a0e; overscroll-behavior: none; }
-body { background: #2b1a0e; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; }
-#app { width: 100%; max-width: 440px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; padding-top: env(safe-area-inset-top); padding-right: env(safe-area-inset-right); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); }
+html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; background: #7e6829; overscroll-behavior: none; }
+body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; height: 100dvh; }
+#app { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #7e6829; padding-top: env(safe-area-inset-top); padding-right: env(safe-area-inset-right); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); }
 
 #board { contain: layout paint; transform: translateZ(0); }
 .top-panel, .bottom-panel { transform: translateZ(0); }
 
 /* ВЕРХНЯЯ ПАНЕЛЬ */
-.top-panel { position: relative; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; }
-.val-box { position: absolute; top: 1%; height: 17%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 1px; overflow: hidden; }
-.val-box img.icon { height: 74%; width: auto; max-width: 26%; object-fit: contain; flex: 0 1 auto; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
-.val-box img.icon-coin { height: 74%; }
+.top-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; margin-bottom: -1cm; }
+.val-box { position: absolute; top: 1.2%; height: 16.4%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 3px; overflow: visible; }
+.val-box img.icon { width: auto; object-fit: contain; flex: 0 0 auto; align-self: center; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
 #score-box { left: 0.8%; width: 37.2%; }
+#score-box img.icon { height: 82%; }
 #coins-box { left: 39.4%; width: 23.5%; }
+#coins-box img.icon { height: 114%; }
 #moves-box { left: 64.15%; width: 23.6%; }
+#moves-box img.icon { height: 74%; }
 
 .hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
 .hitbox:active { background: rgba(255,255,255,0.2); }
 .hit-rating { left: 3%; top: 20%; width: 17%; height: 35%; }
 .hit-shop { left: 36%; top: 20%; width: 17%; height: 35%; }
 .hit-pause { left: 68%; top: 20%; width: 15%; height: 35%; }
-.hit-jurist { right: 0%; top: 2%; width: 15%; height: 45%; display: flex; justify-content: center; align-items: flex-start; }
-.hit-jurist img { width: 100%; height: auto; object-fit: contain; pointer-events: none; transform: scale(1.1); filter: drop-shadow(0 2px 4px rgba(0,0,0,0.5)); }
+.hit-jurist { left: 83.4%; top: 0; width: 22%; height: 20%; display: flex; justify-content: center; align-items: center; z-index: 6; }
+.hit-jurist img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
 
 /* БЕЙДЖ НА КОНВЕРТЕ (ПОЧТА) */
 .mail-badge {
@@ -50,25 +53,26 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .mail-badge.show { display: flex; }
 
-.num-container { display: flex; align-items: center; justify-content: center; height: 72%; min-width: 0; max-width: 76%; flex: 0 1 auto; }
-.num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; }
+.num-container { display: flex; align-items: center; justify-content: center; height: 70%; min-width: 0; max-width: 78%; flex: 0 1 auto; align-self: center; }
+.num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; align-self: center; }
 
 /* ПОЛЕ */
-#board { flex: 1; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
+#board { flex: 1 1 auto; min-height: 0; width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; z-index: 3; }
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; }
 .cell.occupied { background: rgba(0,0,0,0.35); }
-.cell.anim-walk, .cell.anim-hop { background: transparent; }
+.cell.anim-walk, .cell.anim-hop,
+.cell.anim-walk.occupied, .cell.anim-hop.occupied { background: none !important; box-shadow: none !important; }
 /* Lifted piece: full size, no scale. Soft ellipse sits slightly below and to the right. */
 .ghost { position: fixed; left: 0; top: 0; display: flex; align-items: center; justify-content: center; background: none; pointer-events: none; z-index: 2000; overflow: visible; will-change: transform; transition: none; }
 .ghost::after { content: ''; position: absolute; left: 52%; top: 82%; width: 34%; height: 16%; background: rgba(0, 0, 0, 0.45); border-radius: 50%; filter: blur(3px); z-index: 0; pointer-events: none; }
 /* Cell target: solid white square. Position is set in JS and must not ease. */
 #cell-hl { position: fixed; display: none; background: rgba(255, 255, 255, 0.4); pointer-events: none; z-index: 1800; transition: none; }
 
-.cell img, .next-block img, .jail-block img, .ghost img { width: 90%; height: 90%; object-fit: contain; pointer-events: none; display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
+.cell img, .next-block img, .jail-block img, .ghost img { width: 108%; height: 108%; object-fit: contain; pointer-events: none; display: block; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
 .cell span, .next-block span, .jail-block span, .ghost span { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 1; }
 
 .cell.large-tile { z-index: 10; }
-.cell.large-tile img, .cell.large-tile span { width: 130%; height: 130%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
+.cell.large-tile img, .cell.large-tile span { width: 156%; height: 156%; filter: drop-shadow(0 4px 6px rgba(0,0,0,0.6)); }
 
 /* АНИМАЦИИ */
 @keyframes piece-pop { 0% { transform: translate(-50%, -50%) scale(0); } 60% { transform: translate(-50%, -50%) scale(calc(var(--tile-scale, 1) * 1.15)); } 100% { transform: translate(-50%, -50%) scale(var(--tile-scale, 1)); } }
@@ -81,7 +85,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
 /* НИЖНЯЯ ПАНЕЛЬ */
-.bottom-panel { position: relative; width: 100%; aspect-ratio: 1320 / 733; background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat; flex-shrink: 0; }
+.bottom-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 1320 / 733; background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat; flex-shrink: 0; margin-top: calc(-15.5% - 0.35cm); }
 .bottom-slots { position: absolute; inset: 0; display: flex; }
 .jail-block { width: 32%; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 8% 10% 10%; }
 .next-block { flex: 1; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 6% 10% 4%; }
@@ -91,7 +95,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .next-block .content { transform: translate(-15%, 5%); }
 .jail-block .content { transform: translate(-23.7%, 6.5%); }
 
-#log { font-size: 12px; height: 22px; line-height: 22px; text-align: center; color: #ffd700; flex-shrink: 0; background: #1a1208; z-index: 10; position: absolute; bottom: 0; width: 100%; }
+#log { font-size: 13px; line-height: 1.25; text-align: center; color: #ffe98a; font-weight: 900; text-shadow: 0 1px 0 #2b1a0e, 0 0 6px #2b1a0e; pointer-events: none; position: absolute; left: 4%; right: 4%; top: 50%; height: auto; background: transparent; z-index: 4; }
 
 /* МОДАЛКИ ОБЩИЕ */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
@@ -163,6 +167,8 @@ position: relative;
 .meme-popup.show { transform: translateX(0); pointer-events: auto; }
 .meme-popup.show::before { content: ''; position: fixed; inset: 0; }
 .meme-popup img { position: relative; max-height: 60vh; max-width: 90vw; display: block; object-fit: contain; object-position: bottom right; }
+.meme-popup.discovery { left: 0; right: 0; width: 100%; display: flex; justify-content: center; }
+.meme-popup.discovery img { width: min(100vw, 520px); max-width: 100vw; max-height: 78vh; object-position: center bottom; }
 
 /* КНИГА */
 .book-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
@@ -184,7 +190,7 @@ position: relative;
 .disc-title { font-weight: 900; font-size: 14px; text-transform: uppercase; }
 .disc-desc { font-size: 11px; font-weight: bold; line-height: 1.1; }
 
-.float-text { position: fixed; pointer-events: none; font-size: 15px; font-weight: 900; color: #ffe98a; text-shadow: 0 2px 0 #5a3b00, 0 0 6px rgba(0,0,0,0.45); z-index: 500; display: flex; align-items: center; gap: 2px; animation: coinPop 0.95s cubic-bezier(.2,.8,.2,1) forwards; }
+.float-text { position: fixed; pointer-events: none; font-size: 15px; font-weight: 900; color: #ffe98a; text-shadow: 0 2px 0 #5a3b00, 0 0 6px rgba(0,0,0,0.45); z-index: 500; display: flex; align-items: center; gap: 2px; animation: coinPop 1.9s cubic-bezier(.2,.8,.2,1) forwards; }
 .float-text img { width: 22px; height: 22px; object-fit: contain; filter: drop-shadow(0 2px 0 rgba(0,0,0,0.35)); }
 .float-text img.coin-small { width: 14px; height: 14px; margin-left: -8px; }
 @keyframes coinPop { 0% { opacity: 0; transform: translate(-50%, 8px) scale(0.25); } 16% { opacity: 1; transform: translate(-50%, -12px) scale(1.18); } 32% { opacity: 1; transform: translate(-50%, -2px) scale(1); } 100% { opacity: 0; transform: translate(calc(-50% + var(--float-dx, 0px)), var(--float-dy, -72px)) scale(0.92); } }
@@ -220,14 +226,15 @@ position: relative;
 .cell.anim-walk { z-index: 8; }
 .cell.anim-walk > img, .cell.anim-walk > span {
 transform-origin: var(--walk-ox, 50%) var(--walk-oy, 80%);
-animation: pieceWalk 0.28s linear both;
+animation: pieceWalk 0.56s linear both;
+will-change: transform;
 }
 @keyframes omonHop {
 0% { transform: translate(-50%, -50%) translateY(8px) scale(0.72); opacity: 0.15; }
 45% { transform: translate(-50%, -50%) translateY(-14px) scale(1.08); opacity: 1; }
 100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: 1; }
 }
-.cell.anim-hop > img, .cell.anim-hop > span { animation: omonHop 0.22s ease-out; }
+.cell.anim-hop > img, .cell.anim-hop > span { animation: omonHop 0.44s ease-out; will-change: transform; }
 @keyframes pieceShake {
 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
 18% { transform: translate(-50%, -50%) rotate(-10deg); }
@@ -345,7 +352,30 @@ cursor: pointer;
 #title-screen.hidden { display: none; }
 #title-frame { position: relative; width: min(100cqw, calc(100cqh * 1076 / 1600)); aspect-ratio: 1076 / 1600; }
 #title-frame img { width: 100%; height: 100%; display: block; object-fit: fill; }
-#title-play { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); background: #ffd700; color: #2b1a0e; font-weight: 900; font-size: 22px; border: 3px solid #4a2c14; border-radius: 16px; padding: 10px 36px; cursor: pointer; box-shadow: 0 6px 0 #6b4e12; }
+#title-play { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); background: #ffd700; color: #2b1a0e; font-weight: 900; font-size: 22px; border: 3px solid #4a2c14; border-radius: 16px; padding: 10px 36px; cursor: pointer; box-shadow: 0 6px 0 #6b4e12; z-index: 2; }
+#sfx-toggle { position: absolute; left: 82.8%; top: 91.7%; width: 12.4%; height: 7.4%; border: none; border-radius: 22%; background: #f2c94c; box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 3px 0 #c4922a; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; padding: 0; }
+#sfx-toggle svg { width: 68%; height: 68%; display: none; }
+#sfx-toggle:not(.off) .sfx-on { display: block; }
+#sfx-toggle.off { background: #b9a27a; box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 3px 0 #7d6540; }
+#sfx-toggle.off .sfx-off { display: block; }
+#sfx-toggle:active { transform: translateY(1px); }
+.saw-swipe { position: fixed; z-index: 2200; pointer-events: none; object-fit: contain; animation: sawSwipe 1s linear forwards; filter: drop-shadow(0 3px 2px rgba(0,0,0,.45)); }
+@keyframes sawSwipe {
+0% { transform: translate(18%, -8%) rotate(-48deg); }
+24% { transform: translate(46%, 34%) rotate(-24deg); }
+50% { transform: translate(12%, -12%) rotate(-50deg); }
+74% { transform: translate(48%, 36%) rotate(-22deg); }
+100% { transform: translate(20%, 8%) rotate(-36deg); opacity: 0; }
+}
+#hint-gallery { position: fixed; inset: 0; z-index: 5200; display: none; background: #0d1408; touch-action: none; }
+#hint-gallery.open { display: block; }
+#hint-track { height: 100%; display: flex; width: 300%; transition: transform 0.28s ease; will-change: transform; }
+#hint-track.dragging { transition: none; }
+#hint-track img { width: 33.333%; height: 100%; object-fit: contain; object-position: center; flex: 0 0 33.333%; background: #10160c; pointer-events: none; user-select: none; }
+#hint-close { position: absolute; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); width: 46px; height: 46px; border-radius: 12px; border: 3px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 30px; font-weight: 900; line-height: 1; cursor: pointer; z-index: 2; }
+.hint-dots { position: absolute; left: 0; right: 0; bottom: max(14px, env(safe-area-inset-bottom)); display: flex; justify-content: center; gap: 8px; z-index: 2; pointer-events: auto; }
+.hint-dot { width: 10px; height: 10px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,.45); cursor: pointer; }
+.hint-dot.on { background: #ffd24a; }
 #start-choice { z-index: 4700; }
 #confirm-modal { z-index: 4800; }
 .confirm-actions { display: flex; gap: 8px; }
@@ -359,7 +389,7 @@ cursor: pointer;
 .cell.anim-walk > img, .cell.anim-walk > span,
 .cell.anim-hop > img, .cell.anim-hop > span,
 .cell.anim-shake > img, .cell.anim-shake > span,
-.cell.tut-target, #tut-arrow, .float-text { animation: none !important; }
+.cell.tut-target, #tut-arrow, .float-text, .saw-swipe { animation: none !important; }
 }
 </style>
 </head>
@@ -388,6 +418,7 @@ cursor: pointer;
 <div class="hitbox hit-jurist" onclick="useJurist()">
 <img decoding="async" src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
 </div>
+<div id="log">Собери свою империю</div>
 </div>
 
 <div id="board"></div>
@@ -400,15 +431,18 @@ cursor: pointer;
 <div class="next-block" id="next-tile">
 <div class="content" id="next-content">—</div>
 </div>
-<div class="hint-block" onclick="openBook()"></div>
+<div class="hint-block" onclick="openHintGallery()"></div>
 </div>
 </div>
 
-<div id="log">Собери свою империю</div>
 <div id="title-screen">
 <div id="title-frame">
 <img src="img/bg_main.png" alt="Демократия">
 <button type="button" id="title-play" onclick="onPlay()">Играть</button>
+<button type="button" id="sfx-toggle" onclick="toggleSfx(event)" aria-label="Звук включен" aria-pressed="true">
+<svg class="sfx-on" viewBox="0 0 64 64" aria-hidden="true"><path fill="#3a2410" d="M8 26h10l14-12v36L18 38H8z"/><path fill="none" stroke="#3a2410" stroke-width="5" stroke-linecap="round" d="M42 24c6 4 6 12 0 16M48 18c10 8 10 20 0 28"/></svg>
+<svg class="sfx-off" viewBox="0 0 64 64" aria-hidden="true"><path fill="#3a2410" d="M8 26h10l14-12v36L18 38H8z"/><path fill="none" stroke="#3a2410" stroke-width="5" stroke-linecap="round" d="M40 26l16 16M56 26L40 42"/></svg>
+</button>
 </div>
 </div>
 <div id="tutorial" aria-live="polite">
@@ -525,6 +559,20 @@ cursor: pointer;
 </div>
 </div>
 
+<div id="hint-gallery" aria-hidden="true">
+<div id="hint-track">
+<img src="img/hint-1.jpg" alt="Подсказка 1">
+<img src="img/hint-2.jpg" alt="Подсказка 2">
+<img src="img/hint-3.jpg" alt="Подсказка 3">
+</div>
+<button type="button" id="hint-close" onclick="closeHintGallery()" aria-label="Закрыть">×</button>
+<div class="hint-dots">
+<button type="button" class="hint-dot on" onclick="setHintPage(0)" aria-label="Страница 1"></button>
+<button type="button" class="hint-dot" onclick="setHintPage(1)" aria-label="Страница 2"></button>
+<button type="button" class="hint-dot" onclick="setHintPage(2)" aria-label="Страница 3"></button>
+</div>
+</div>
+
 <div class="discovery-popup" id="disc-popup">
 <div class="disc-img" id="disc-img">?</div>
 <div class="disc-text">
@@ -561,6 +609,7 @@ const SFX_KEY = 'pasha_sfx_muted';
 let sfxMuted = false;
 try { sfxMuted = localStorage.getItem(SFX_KEY) === '1'; } catch (e) {}
 let audioCtx = null;
+let moneyBags = 0;
 
 // Статусы заданий: 'active' - висит в паузе, 'completed' - висит в почте, 'claimed' - исчезло
 let missions = {
@@ -596,19 +645,27 @@ el.appendChild(img);
 }
 }
 function fitNumbers() {
-document.querySelectorAll('.val-box').forEach(box => {
+const boxes = [...document.querySelectorAll('.val-box')];
+let size = Infinity;
+boxes.forEach(box => {
 const nums = box.querySelector('.num-container');
 if (!nums) return;
 const imgs = [...nums.querySelectorAll('img')].filter(img => img.style.display !== 'none');
 if (!imgs.length) return;
 const icon = box.querySelector('img.icon');
 const iconW = icon ? icon.getBoundingClientRect().width : 0;
-const avail = Math.max(12, box.clientWidth - iconW - 4);
-const h = Math.max(10, nums.clientHeight || box.clientHeight * 0.7);
-const each = Math.min(h, avail / imgs.length);
-imgs.forEach(img => {
-img.style.height = each + 'px';
-img.style.width = each + 'px';
+const avail = Math.max(12, box.clientWidth - iconW - 6);
+const h = Math.max(10, box.clientHeight * 0.62);
+size = Math.min(size, h, avail / imgs.length);
+});
+if (!isFinite(size)) return;
+boxes.forEach(box => {
+const nums = box.querySelector('.num-container');
+if (!nums) return;
+nums.querySelectorAll('img').forEach(img => {
+if (img.style.display === 'none') return;
+img.style.height = size + 'px';
+img.style.width = size + 'px';
 });
 });
 }
@@ -665,18 +722,36 @@ if (tile.kind === 'tool') key = 'tool_' + tile.tool;
 if (discovered.has(key)) return;
 discovered.add(key);
 saveDiscovered();
+if (tutorial.active) return;
+if (tile.kind === 'care' && tile.level === 2) showMeme('img/discovery-deputy.jpg', true);
+else if (tile.kind === 'care' && tile.level === 3) showMeme('img/discovery-gold-coin.jpg', true);
+}
+
+function showDiscoveryOnce(key, src) {
+if (tutorial.active || discovered.has(key)) return;
+discovered.add(key);
+saveDiscovered();
+showMeme(src, true);
+}
+
+function noteBoardMoney(tile) {
+if (tutorial.active || !tile || tile.kind !== 'chain' || tile.level !== 1) return;
+if (discovered.has('disc_moneybag')) return;
+moneyBags++;
+if (moneyBags >= 4) showDiscoveryOnce('disc_moneybag', 'img/discovery-moneybag.jpg');
 }
 
 let memeTimer = null;
 function hideMeme() {
 const popup = document.getElementById('meme-popup');
-if (popup) popup.classList.remove('show');
+if (popup) popup.classList.remove('show', 'discovery');
 if (memeTimer) { clearTimeout(memeTimer); memeTimer = null; }
 }
-function showMeme(imgSrc) {
+function showMeme(imgSrc, discovery) {
 const popup = document.getElementById('meme-popup');
 const img = document.getElementById('meme-img');
 img.src = imgSrc;
+popup.classList.toggle('discovery', !!discovery);
 popup.classList.add('show');
 if (memeTimer) clearTimeout(memeTimer);
 memeTimer = setTimeout(hideMeme, 6000);
@@ -702,6 +777,7 @@ score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; tes
 isSawMode = false; isNanoboxMode = false;
 sawStreak = 0;
 gameOver = false;
+moneyBags = 0;
 hideTutorial();
 closeModal('gameover-modal');
 localStorage.removeItem(SEEN_KEY);
@@ -827,8 +903,8 @@ const cell = document.querySelector('#board .cell');
 if (!cell) return;
 const r = cell.getBoundingClientRect();
 if (!r.width || !r.height) return;
-const w = r.width * 0.9;
-const h = r.height * 0.9;
+const w = r.width * 1.08;
+const h = r.height * 1.08;
 ['next-content', 'jail-content'].forEach(id => {
 const node = document.querySelector('#' + id + ' img, #' + id + ' span');
 if (!node) return;
@@ -903,6 +979,8 @@ saveDiscovered();
 showMeme(memeSrc);
 }
 }
+
+if (kind === 'care' && lvl === 3 && newLevel === 4) showDiscoveryOnce('disc_building', 'img/discovery-building.jpg');
 
 if (kind === 'chain' && lvl === 8 && newLevel === 9) {
 if (!isSackMerge && missions.elections.status === 'active') {
@@ -1031,13 +1109,14 @@ stepPioneers();
 if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 const trapped = trappedPioneers();
 render();
+if (document.querySelector('.cell.anim-walk, .cell.anim-hop')) markBusy(660);
 if (trapped.length) {
 sfx('trap');
 trapped.forEach(([r, c]) => {
 const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
 if (cell) cell.classList.add('anim-shake');
 });
-markBusy(520);
+markBusy(1100);
 setTimeout(() => convertTrapped(trapped), 420);
 } else {
 saveGame();
@@ -1066,7 +1145,7 @@ else omons.push([r, c]);
 }
 
 if (omons.length > 0) {
-markBusy(460);
+markBusy(900);
 setTimeout(() => {
 stepOmons(omons);
 finishUnits();
@@ -1087,8 +1166,8 @@ const bh = board ? board.clientHeight : 0;
 const nw = el.naturalWidth || PIONEER_FEET.w;
 const nh = el.naturalHeight || PIONEER_FEET.h;
 if (!bw || !bh || !nw || !nh) return ['50%', '80%'];
-const ew = bw / SIZE * 0.9;
-const eh = bh / SIZE * 0.9;
+const ew = bw / SIZE * 1.08;
+const eh = bh / SIZE * 1.08;
 const scale = Math.min(ew / nw, eh / nh);
 const rw = nw * scale;
 const rh = nh * scale;
@@ -1106,6 +1185,7 @@ if (!anim) return;
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (reduce) return;
 const img = cell.querySelector('img, span');
+cell.classList.remove('occupied');
 if (anim.hop) cell.classList.add('anim-hop');
 else if (img) {
 const origin = pioneerFeetOrigin(img);
@@ -1115,8 +1195,13 @@ img.style.setProperty('--walk-ox', origin[0]);
 img.style.setProperty('--walk-oy', origin[1]);
 cell.classList.add('anim-walk');
 }
-const ms = anim.hop ? 230 : 300;
-setTimeout(() => { cell.classList.remove('anim-walk', 'anim-hop'); }, ms);
+const ms = anim.hop ? 480 : 620;
+const done = () => {
+cell.classList.remove('anim-walk', 'anim-hop');
+if (cell.isConnected && cell.querySelector('img, span')) cell.classList.add('occupied');
+};
+if (img) img.addEventListener('animationend', done, { once: true });
+setTimeout(done, ms);
 }
 
 function placeGhost(clientX, clientY) {
@@ -1232,14 +1317,14 @@ endMove();
 }
 else if (tool.tool === 'saw') {
 if (grid[r][c]) {
-sfx('saw');
+playSawFx(r, c);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
 } else {
 grid[r][c] = null;
 }
 endMove();
-} else { render(); }
+} else { sfx('weed'); render(); }
 }
 else if (tool.tool === 'nanobox') {
 if (grid[r][c]) {
@@ -1283,6 +1368,7 @@ if (!grid[r][c]) {
 undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: {...jailTile}, bufferedNext: bufferedNext ? {...bufferedNext} : null };
 grid[r][c] = jailTile;
 jailTile = null;
+noteBoardMoney(grid[r][c]);
 checkDiscovery(grid[r][c]);
 if (grid[r][c].kind === 'omon') grid[r][c].skipMove = true;
 processCascades(r, c);
@@ -1316,6 +1402,7 @@ const r = +cell.dataset.r, c = +cell.dataset.c;
 if (nextTile && nextTile.kind === 'tool') {
 if (nextTile.tool !== 'sack' && !grid[r][c]) {
 document.getElementById('log').textContent = 'Инструмент нужно кидать на фишку!';
+if (nextTile.tool === 'saw') sfx('weed');
 drag = null;
 return;
 }
@@ -1331,7 +1418,7 @@ drag = null;
 return;
 }
 else if (nextTile.tool === 'saw') {
-sfx('saw');
+playSawFx(r, c);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]); processCascades(r, c);
 } else {
@@ -1394,7 +1481,7 @@ if (findGroup(r, c) && findGroup(r, c).length >= 3) processCascades(r, c);
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 endMove();
-sfx('trap');
+sfx('place');
 markBusy(480);
 notifyTutorial({ type: 'sack' });
 drag = null;
@@ -1407,6 +1494,7 @@ return;
 if (!grid[r][c]) {
 undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: jailTile ? {...jailTile} : null, bufferedNext: bufferedNext ? {...bufferedNext} : null };
 grid[r][c] = nextTile;
+noteBoardMoney(nextTile);
 checkDiscovery(nextTile);
 if (nextTile.kind === 'omon') grid[r][c].skipMove = true;
 
@@ -1583,12 +1671,12 @@ el.style.top = (rect.top + 4) + 'px';
 el.style.setProperty('--float-dy', (-Math.max(48, rect.height * 0.95)) + 'px');
 el.style.setProperty('--float-dx', dx);
 document.body.appendChild(el);
-setTimeout(function() { el.remove(); }, 1000);
+setTimeout(function() { el.remove(); }, 2000);
 }
 
 function saveGame() {
 try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions }));
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags }));
 } catch(e){}
 }
 
@@ -1831,6 +1919,7 @@ hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; undoState = null;
 gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
+moneyBags = 0;
 nextTile = chainTile(1);
 closeModal('pause-modal');
 closeModal('shop-modal');
@@ -1893,15 +1982,17 @@ envTone(ctx, 990, t, 0.035, 'square', 0.03);
 } else if (name === 'ui') {
 envTone(ctx, 740, t, 0.045, 'square', 0.04);
 } else if (name === 'trap') {
-envTone(ctx, 523, t, 0.07, 'square', 0.07);
-envTone(ctx, 659, t + 0.07, 0.08, 'square', 0.065);
-envTone(ctx, 784, t + 0.14, 0.1, 'triangle', 0.09);
-envTone(ctx, 1046, t + 0.22, 0.2, 'sine', 0.11);
+marimbaNote(ctx, t, 698, 0.2, 0.2);
+marimbaNote(ctx, t + 0.13, 466, 0.22, 0.18);
 } else if (name === 'pop') {
 corkPop(ctx, t);
 } else if (name === 'saw') {
 sawStroke(ctx, t);
 sawStroke(ctx, t + 0.5);
+sawDing(ctx, t + 1.02);
+} else if (name === 'weed') {
+weedStab(ctx, t);
+weedStab(ctx, t + 0.09);
 }
 }
 
@@ -1943,17 +2034,147 @@ src.stop(t + dur + 0.02);
 }
 
 function sawStroke(ctx, t) {
-const dur = 0.42;
-noiseBurst(ctx, t, dur, 2100, 460, 0.32, 5.5);
+const dur = 0.47;
+noiseBurst(ctx, t, dur, 720, 240, 0.3, 1.6);
+noiseBurst(ctx, t, dur * 0.92, 1280, 480, 0.11, 5);
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.type = 'triangle';
+o.frequency.setValueAtTime(168, t);
+o.frequency.exponentialRampToValueAtTime(86, t + dur);
+g.gain.setValueAtTime(0.11, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + dur);
+o.connect(g); g.connect(ctx.destination);
+o.start(t); o.stop(t + dur + 0.02);
 }
 
-function toggleSfx() {
-sfxMuted = !sfxMuted;
-try { localStorage.setItem(SFX_KEY, sfxMuted ? '1' : '0'); } catch (e) {}
+function sawDing(ctx, t) {
+envTone(ctx, 1568, t, 0.18, 'sine', 0.16);
+envTone(ctx, 2093, t + 0.02, 0.14, 'triangle', 0.05);
+}
+
+function marimbaNote(ctx, t, freq, dur, gain) {
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.type = 'sine';
+o.frequency.setValueAtTime(freq, t);
+o.frequency.exponentialRampToValueAtTime(freq * 0.985, t + dur);
+g.gain.setValueAtTime(0.0001, t);
+g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
+g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+o.connect(g); g.connect(ctx.destination);
+o.start(t); o.stop(t + dur + 0.02);
+const o2 = ctx.createOscillator();
+const g2 = ctx.createGain();
+o2.type = 'triangle';
+o2.frequency.setValueAtTime(freq * 2.65, t);
+g2.gain.setValueAtTime(gain * 0.28, t);
+g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
+o2.connect(g2); g2.connect(ctx.destination);
+o2.start(t); o2.stop(t + 0.09);
+noiseBurst(ctx, t, 0.04, Math.min(2400, freq * 4), freq * 1.4, gain * 0.22, 3.5);
+}
+
+function weedStab(ctx, t) {
+noiseBurst(ctx, t, 0.055, 2600, 1700, 0.2, 7);
+const o = ctx.createOscillator();
+const g = ctx.createGain();
+o.type = 'square';
+o.frequency.setValueAtTime(1480, t);
+o.frequency.exponentialRampToValueAtTime(980, t + 0.05);
+g.gain.setValueAtTime(0.05, t);
+g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
+o.connect(g); g.connect(ctx.destination);
+o.start(t); o.stop(t + 0.07);
+}
+
+function playSawFx(r, c) {
+sfx('saw');
+const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
+if (!cell) return;
+const rect = cell.getBoundingClientRect();
+const img = document.createElement('img');
+img.src = 'img/tool_saw.png';
+img.alt = '';
+img.className = 'saw-swipe';
+img.style.left = rect.left + 'px';
+img.style.top = rect.top + 'px';
+img.style.width = rect.width + 'px';
+img.style.height = rect.height + 'px';
+document.body.appendChild(img);
+setTimeout(() => img.remove(), 1100);
+}
+
+function updateSfxButton() {
 const btn = document.getElementById('sfx-toggle');
-if (btn) btn.textContent = sfxMuted ? 'Звук: выкл' : 'Звук: вкл';
+if (!btn) return;
+btn.classList.toggle('off', sfxMuted);
+btn.setAttribute('aria-pressed', sfxMuted ? 'false' : 'true');
+btn.setAttribute('aria-label', sfxMuted ? 'Звук выключен' : 'Звук включен');
+}
+
+function toggleSfx(e) {
+if (e) { e.preventDefault(); e.stopPropagation(); }
+sfxMuted = !sfxMuted;
+try { localStorage.setItem(SFX_KEY, sfxMuted ? '1' : '0'); } catch (err) {}
+if (sfxMuted && audioCtx && audioCtx.state === 'running') audioCtx.suspend();
+updateSfxButton();
 if (!sfxMuted) sfx('ui');
 }
+
+let hintPage = 0;
+let hintPointer = null;
+function hintTrackShift(page, dx) {
+const g = document.getElementById('hint-gallery');
+const width = (g && g.clientWidth) || 1;
+const drag = dx ? (dx / width) * (100 / 3) : 0;
+return (-page * (100 / 3)) + drag;
+}
+function setHintPage(n) {
+hintPage = Math.max(0, Math.min(2, n));
+const track = document.getElementById('hint-track');
+if (!track) return;
+track.style.transform = 'translateX(' + hintTrackShift(hintPage, 0) + '%)';
+document.querySelectorAll('.hint-dot').forEach((dot, i) => dot.classList.toggle('on', i === hintPage));
+}
+function openHintGallery() {
+sfx('ui');
+setHintPage(0);
+const g = document.getElementById('hint-gallery');
+g.classList.add('open');
+g.setAttribute('aria-hidden', 'false');
+}
+function closeHintGallery() {
+const g = document.getElementById('hint-gallery');
+g.classList.remove('open');
+g.setAttribute('aria-hidden', 'true');
+}
+(function bindHintSwipe() {
+const g = document.getElementById('hint-gallery');
+const track = document.getElementById('hint-track');
+if (!g || !track) return;
+g.addEventListener('pointerdown', (e) => {
+if (e.target.closest('#hint-close, .hint-dot')) return;
+hintPointer = { id: e.pointerId, x: e.clientX, y: e.clientY, page: hintPage };
+track.classList.add('dragging');
+});
+g.addEventListener('pointermove', (e) => {
+if (!hintPointer || e.pointerId !== hintPointer.id) return;
+const dx = e.clientX - hintPointer.x;
+track.style.transform = 'translateX(' + hintTrackShift(hintPointer.page, dx) + '%)';
+});
+function endHint(e) {
+if (!hintPointer || (e && e.pointerId !== hintPointer.id)) return;
+const dx = (e ? e.clientX : hintPointer.x) - hintPointer.x;
+track.classList.remove('dragging');
+if (dx < -40) setHintPage(hintPointer.page + 1);
+else if (dx > 40) setHintPage(hintPointer.page - 1);
+else setHintPage(hintPointer.page);
+hintPointer = null;
+}
+g.addEventListener('pointerup', endHint);
+g.addEventListener('pointercancel', endHint);
+})();
 
 function maxLevelOf(kind) {
 if (kind === 'chain') return CHAIN.length;
@@ -2110,6 +2331,7 @@ nextTile = data.nextTile || { kind: 'chain', level: 1 };
 jailTile = data.jailTile || null;
 bufferedNext = data.bufferedNext || null;
 testSpawnIndex = data.testSpawnIndex || 0;
+moneyBags = data.moneyBags || 0;
 if (data.missions) missions = data.missions;
 undoState = null;
 gameOver = false;
@@ -2162,15 +2384,18 @@ const tg = window.Telegram && window.Telegram.WebApp;
 if (!tg) return;
 tg.ready();
 if (tg.expand) tg.expand();
-const bg = '#2b1a0e';
+const bg = '#7e6829';
 try { if (tg.setHeaderColor) tg.setHeaderColor(bg); } catch (e) {}
 try { if (tg.setBackgroundColor) tg.setBackgroundColor(bg); } catch (e) {}
 try { if (tg.setBottomBarColor) tg.setBottomBarColor(bg); } catch (e) {}
 try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) {}
 try { if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); } catch (e) {}
+document.documentElement.style.background = bg;
+document.body.style.background = bg;
 } catch (e) {}
 }
 bootTelegram();
+updateSfxButton();
 window.addEventListener('pointerdown', function () { ensureAudio(); bootTelegram(); }, { passive: true });
 window.addEventListener('resize', function () { fingerSig = ''; unifyTrayPieces(); fitNumbers(); if (tutorial.active) layoutTutorial(); });
 
