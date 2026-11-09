@@ -30,10 +30,10 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .top-panel, .bottom-panel { transform: translateZ(0); }
 
 /* ВЕРХНЯЯ ПАНЕЛЬ */
-.top-panel { position: relative; z-index: 4; width: 100%; aspect-ratio: 877 / 188; flex-shrink: 0; margin: 0; overflow: visible; background: none; }
+.top-panel { position: relative; z-index: 4; width: 100%; aspect-ratio: 877 / 216; flex-shrink: 0; margin: 0; overflow: visible; background: none; }
 .top-panel::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: url('img/ui_top.png') top center / 100% auto no-repeat; }
 .val-box, .top-panel .hitbox { z-index: 1; }
-.val-box { position: absolute; top: 2.7%; height: 38%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 3px; overflow: visible; }
+.val-box { position: absolute; top: 2.3%; height: 32%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 3px; overflow: visible; }
 .val-box img.icon { width: auto; object-fit: contain; flex: 0 0 auto; align-self: center; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
 #score-box { left: 0.8%; width: 37.2%; }
 #score-box img.icon { height: 82%; }
@@ -44,11 +44,11 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 
 .hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
 .hitbox:active { background: rgba(255,255,255,0.2); }
-.hit-rating { left: 1.5%; top: 43%; width: 19%; height: 55%; }
-.hit-shop { left: 34.5%; top: 43%; width: 19%; height: 55%; }
-.hit-pause { left: 65%; top: 43%; width: 16.5%; height: 55%; }
-.hit-jurist { left: 81.5%; top: 0; width: 18%; height: 42%; display: flex; justify-content: center; align-items: center; z-index: 6; }
-.hit-jurist img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.hit-rating { left: 1.5%; top: 36%; width: 19%; height: 46%; }
+.hit-shop { left: 34.5%; top: 36%; width: 19%; height: 46%; }
+.hit-pause { left: 65%; top: 36%; width: 16.5%; height: 46%; }
+.hit-jurist { left: 81.5%; top: 0; width: 18%; height: 52%; display: flex; justify-content: center; align-items: flex-start; z-index: 6; }
+.hit-jurist img { width: 86%; height: 72%; object-fit: contain; object-position: center top; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); margin-top: 2px; }
 
 /* БЕЙДЖ НА КОНВЕРТЕ (ПОЧТА) */
 .mail-badge {
@@ -115,7 +115,7 @@ box-shadow: 0 0 0 1px rgba(90, 0, 0, 0.45);
 .next-block .content { transform: translate(-15%, 5%); }
 .jail-block .content { transform: translate(-23.7%, 6.5%); }
 
-#log { font-size: 13px; line-height: 1.2; text-align: center; color: #ffe98a; font-weight: 900; text-shadow: 0 1px 0 #2b1a0e, 0 0 6px #2b1a0e; pointer-events: none; position: absolute; left: 4%; right: 4%; top: 100%; margin-top: 2px; height: auto; background: transparent; z-index: 6; }
+#log { font-size: 12px; line-height: 1.15; text-align: center; color: #ffe98a; font-weight: 900; text-shadow: 0 1px 0 #2b1a0e, 0 0 6px #2b1a0e; pointer-events: none; position: absolute; left: 4%; right: 4%; top: auto; bottom: 1px; height: auto; background: transparent; z-index: 6; }
 
 /* МОДАЛКИ ОБЩИЕ */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: calc(10px + var(--inset-top)) calc(10px + var(--inset-right)) calc(10px + var(--inset-bottom)) calc(10px + var(--inset-left)); }
@@ -2202,26 +2202,6 @@ woodyRasp(ctx, t0 + 0.24, 0.22, 600, 1560);
 woodyRasp(ctx, t0 + 0.48, 0.22, 1740, 680);
 woodyRasp(ctx, t0 + 0.72, 0.24, 640, 1480);
 }
-function sawStroke(ctx, t) {
-const dur = 0.47;
-noiseBurst(ctx, t, dur, 720, 240, 0.3, 1.6);
-noiseBurst(ctx, t, dur * 0.92, 1280, 480, 0.11, 5);
-const o = ctx.createOscillator();
-const g = ctx.createGain();
-o.type = 'triangle';
-o.frequency.setValueAtTime(168, t);
-o.frequency.exponentialRampToValueAtTime(86, t + dur);
-g.gain.setValueAtTime(0.11, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-o.connect(g); g.connect(ctx.destination);
-o.start(t); o.stop(t + dur + 0.02);
-}
-
-function sawDing(ctx, t) {
-envTone(ctx, 1568, t, 0.18, 'sine', 0.16);
-envTone(ctx, 2093, t + 0.02, 0.14, 'triangle', 0.05);
-}
-
 function marimbaNote(ctx, t, freq, dur, gain) {
 const o = ctx.createOscillator();
 const g = ctx.createGain();
@@ -2490,10 +2470,10 @@ const sw = window.innerWidth, sh = window.innerHeight;
 const scale = Math.max(sw / 1076, sh / 1600);
 const dw = 1076 * scale, dh = 1600 * scale;
 const left = (sw - dw) / 2, top = (sh - dh) / 2;
-const cs = getComputedStyle(document.documentElement);
-const insetTop = parseFloat(cs.getPropertyValue('--inset-top')) || 0;
-const insetBottom = parseFloat(cs.getPropertyValue('--inset-bottom')) || 0;
-const insetRight = parseFloat(cs.getPropertyValue('--inset-right')) || 0;
+const appCs = getComputedStyle(document.getElementById('app'));
+const insetTop = parseFloat(appCs.paddingTop) || 0;
+const insetBottom = parseFloat(appCs.paddingBottom) || 0;
+const insetRight = parseFloat(appCs.paddingRight) || 0;
 let py = top + dh * 0.155;
 py = Math.max(insetTop + 8, Math.min(py, sh - insetBottom - 62));
 play.style.left = (left + dw * 0.5) + 'px';
