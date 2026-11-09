@@ -8,16 +8,32 @@
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+:root {
+  --safe-top: max(var(--tg-safe-area-inset-top, 0px), env(safe-area-inset-top, 0px));
+  --safe-right: max(var(--tg-safe-area-inset-right, 0px), env(safe-area-inset-right, 0px));
+  --safe-bottom: max(var(--tg-safe-area-inset-bottom, 0px), env(safe-area-inset-bottom, 0px));
+  --safe-left: max(var(--tg-safe-area-inset-left, 0px), env(safe-area-inset-left, 0px));
+  --content-top: var(--tg-content-safe-area-inset-top, 0px);
+  --content-right: var(--tg-content-safe-area-inset-right, 0px);
+  --content-bottom: var(--tg-content-safe-area-inset-bottom, 0px);
+  --content-left: var(--tg-content-safe-area-inset-left, 0px);
+  --inset-top: calc(var(--safe-top) + var(--content-top));
+  --inset-right: calc(var(--safe-right) + var(--content-right));
+  --inset-bottom: calc(var(--safe-bottom) + var(--content-bottom));
+  --inset-left: calc(var(--safe-left) + var(--content-left));
+}
 html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; background: #7e6829; overscroll-behavior: none; }
 body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; height: 100dvh; }
-#app { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #7e6829; padding-top: env(safe-area-inset-top); padding-right: env(safe-area-inset-right); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); }
+#app { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #7e6829; padding-top: var(--inset-top); padding-right: var(--inset-right); padding-bottom: var(--inset-bottom); padding-left: var(--inset-left); }
 
 #board { contain: layout paint; transform: translateZ(0); }
 .top-panel, .bottom-panel { transform: translateZ(0); }
 
 /* ВЕРХНЯЯ ПАНЕЛЬ */
-.top-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; margin-bottom: -1cm; }
-.val-box { position: absolute; top: 1.2%; height: 16.4%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 3px; overflow: visible; }
+.top-panel { position: relative; z-index: 4; width: 100%; aspect-ratio: 877 / 216; flex-shrink: 0; margin: 0; overflow: visible; background: none; }
+.top-panel::before { content: ''; position: absolute; inset: 0; z-index: 0; pointer-events: none; background: url('img/ui_top.png') top center / 100% auto no-repeat; }
+.val-box, .top-panel .hitbox { z-index: 1; }
+.val-box { position: absolute; top: 2.3%; height: 32%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 3px; overflow: visible; }
 .val-box img.icon { width: auto; object-fit: contain; flex: 0 0 auto; align-self: center; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
 #score-box { left: 0.8%; width: 37.2%; }
 #score-box img.icon { height: 82%; }
@@ -28,30 +44,32 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 
 .hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
 .hitbox:active { background: rgba(255,255,255,0.2); }
-.hit-rating { left: 3%; top: 20%; width: 17%; height: 35%; }
-.hit-shop { left: 36%; top: 20%; width: 17%; height: 35%; }
-.hit-pause { left: 68%; top: 20%; width: 15%; height: 35%; }
-.hit-jurist { left: 83.4%; top: 0; width: 22%; height: 20%; display: flex; justify-content: center; align-items: center; z-index: 6; }
-.hit-jurist img { width: 100%; height: 100%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.hit-rating { left: 1.5%; top: 36%; width: 19%; height: 46%; }
+.hit-shop { left: 34.5%; top: 36%; width: 19%; height: 46%; }
+.hit-pause { left: 65%; top: 36%; width: 16.5%; height: 46%; }
+.hit-jurist { left: 81.5%; top: 0; width: 18%; height: 52%; display: flex; justify-content: center; align-items: flex-start; z-index: 6; }
+.hit-jurist img { width: 86%; height: 72%; object-fit: contain; object-position: center top; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); margin-top: 2px; }
 
 /* БЕЙДЖ НА КОНВЕРТЕ (ПОЧТА) */
 .mail-badge {
 position: absolute;
-top: -5px; right: -5px;
-background: #ff3333;
-color: #fff;
-font-size: 14px;
-font-weight: bold;
-width: 22px; height: 22px;
+top: 2px; right: 2px;
+background: #ff2a2a;
+color: transparent;
+font-size: 0;
+width: 13px; height: 13px;
 border-radius: 50%;
 display: none;
-justify-content: center;
-align-items: center;
 border: 2px solid #fff;
 z-index: 30;
-box-shadow: 0 2px 5px rgba(0,0,0,0.5);
+box-shadow: 0 0 0 1px rgba(90, 0, 0, 0.45);
 }
-.mail-badge.show { display: flex; }
+.mail-badge.show { display: block; }
+.hit-rating.mail-alert { animation: mailPulse 0.9s ease-in-out infinite; border-radius: 12px; }
+@keyframes mailPulse {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(255, 40, 40, 0); }
+  50% { box-shadow: 0 0 0 3px rgba(255, 220, 80, 0.5), 0 0 16px 5px rgba(255, 50, 40, 0.95); }
+}
 
 .num-container { display: flex; align-items: center; justify-content: center; height: 70%; min-width: 0; max-width: 78%; flex: 0 1 auto; align-self: center; }
 .num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; align-self: center; }
@@ -59,9 +77,10 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 /* ПОЛЕ */
 #board { flex: 1 1 auto; min-height: 0; width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; z-index: 3; }
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; }
-.cell.occupied { background: rgba(0,0,0,0.35); }
-.cell.anim-walk, .cell.anim-hop,
-.cell.anim-walk.occupied, .cell.anim-hop.occupied { background: none !important; box-shadow: none !important; }
+.cell.occupied { background: transparent; }
+.cell.settled { background: rgba(0,0,0,0.35); }
+.cell.anim-walk, .cell.anim-hop, .cell.anim-shake, .cell.anim-omon,
+.cell:has(.piece-pop), .cell:has(.merging) { background: transparent !important; box-shadow: none !important; }
 /* Lifted piece: full size, no scale. Soft ellipse sits slightly below and to the right. */
 .ghost { position: fixed; left: 0; top: 0; display: flex; align-items: center; justify-content: center; background: none; pointer-events: none; z-index: 2000; overflow: visible; will-change: transform; transition: none; }
 .ghost::after { content: ''; position: absolute; left: 52%; top: 82%; width: 34%; height: 16%; background: rgba(0, 0, 0, 0.45); border-radius: 50%; filter: blur(3px); z-index: 0; pointer-events: none; }
@@ -85,8 +104,9 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
 /* НИЖНЯЯ ПАНЕЛЬ */
-.bottom-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 1320 / 733; background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat; flex-shrink: 0; margin-top: calc(-15.5% - 0.35cm); }
-.bottom-slots { position: absolute; inset: 0; display: flex; }
+.bottom-panel { position: relative; z-index: 4; width: 100%; aspect-ratio: 1320 / 430; flex-shrink: 0; margin: 0; overflow: hidden; background: #5c8a38; }
+.bottom-panel::before { content: ''; position: absolute; left: 0; width: 100%; z-index: 0; pointer-events: none; height: calc(100% * 733 / 430); top: calc(100% * -200 / 430); background: url('img/ui_bottom.png') top center / 100% 100% no-repeat; }
+.bottom-slots { position: absolute; inset: 0; display: flex; z-index: 1; }
 .jail-block { width: 32%; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 8% 10% 10%; }
 .next-block { flex: 1; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 6% 10% 4%; }
 .hint-block { width: 32%; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10% 10% 10% 8%; }
@@ -95,17 +115,20 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .next-block .content { transform: translate(-15%, 5%); }
 .jail-block .content { transform: translate(-23.7%, 6.5%); }
 
-#log { font-size: 13px; line-height: 1.25; text-align: center; color: #ffe98a; font-weight: 900; text-shadow: 0 1px 0 #2b1a0e, 0 0 6px #2b1a0e; pointer-events: none; position: absolute; left: 4%; right: 4%; top: 50%; height: auto; background: transparent; z-index: 4; }
+#log { font-size: 12px; line-height: 1.15; text-align: center; color: #ffe98a; font-weight: 900; text-shadow: 0 1px 0 #2b1a0e, 0 0 6px #2b1a0e; pointer-events: none; position: absolute; left: 4%; right: 4%; top: auto; bottom: 1px; height: auto; background: transparent; z-index: 6; }
 
 /* МОДАЛКИ ОБЩИЕ */
-.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
+.modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: calc(10px + var(--inset-top)) calc(10px + var(--inset-right)) calc(10px + var(--inset-bottom)) calc(10px + var(--inset-left)); }
+#mail-modal { background: rgba(0, 0, 0, 0.46); }
+#mail-modal .modal-content { background: rgba(16, 14, 10, 0.4); border-color: rgba(255, 236, 190, 0.38); box-shadow: 0 12px 36px rgba(0,0,0,0.28); }
+#mail-modal h2 { color: #fff8e4; }
 .modal.open { display: flex; }
 .modal-content { background: #2b1a0e; border: 3px solid #ffd700; border-radius: 12px; padding: 20px; width: 100%; max-width: 380px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
 .modal h2 { text-align: center; color: #ffd700; margin-bottom: 15px; }
 .close-btn { width: 100%; padding: 12px; margin-top: 10px; background: #8b3a3a; color: #fff; border: none; border-radius: 8px; font-weight: bold; font-size: 16px; cursor: pointer; }
 
 /* ИДЕАЛЬНЫЙ МАГАЗИН (КАРТИНКА + ХИТБОКСЫ) */
-.shop-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2600; padding: 10px; }
+.shop-modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2600; padding: calc(10px + var(--inset-top)) calc(10px + var(--inset-right)) calc(10px + var(--inset-bottom)) calc(10px + var(--inset-left)); }
 .shop-modal.open { display: flex; }
 .shop-window {
 position: relative;
@@ -348,32 +371,24 @@ font-size: 15px;
 cursor: pointer;
 }
 .pause-extra.alt { background: #f4f0d8; }
-#title-screen { position: absolute; inset: 0; z-index: 2400; display: flex; align-items: center; justify-content: center; background: #2b1a0e; container-type: size; }
+#title-screen { position: fixed; inset: 0; z-index: 2400; display: block; background: #1a120c; overflow: hidden; }
 #title-screen.hidden { display: none; }
-#title-frame { position: relative; width: min(100cqw, calc(100cqh * 1076 / 1600)); aspect-ratio: 1076 / 1600; }
-#title-frame img { width: 100%; height: 100%; display: block; object-fit: fill; }
-#title-play { position: absolute; left: 50%; top: 18%; transform: translateX(-50%); background: #ffd700; color: #2b1a0e; font-weight: 900; font-size: 22px; border: 3px solid #4a2c14; border-radius: 16px; padding: 10px 36px; cursor: pointer; box-shadow: 0 6px 0 #6b4e12; z-index: 2; }
-#sfx-toggle { position: absolute; left: 82.8%; top: 91.7%; width: 12.4%; height: 7.4%; border: none; border-radius: 22%; background: #f2c94c; box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 3px 0 #c4922a; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; padding: 0; }
+#title-frame { position: absolute; inset: 0; }
+#title-frame img { position: absolute; inset: 0; width: 100%; height: 100%; display: block; object-fit: cover; object-position: center center; }
+#title-play { position: absolute; left: 50%; top: 16%; transform: translateX(-50%); background: #ffd700; color: #2b1a0e; font-weight: 900; font-size: 22px; border: 3px solid #4a2c14; border-radius: 16px; padding: 10px 36px; cursor: pointer; box-shadow: 0 6px 0 #6b4e12; z-index: 2; }
+#sfx-toggle { position: absolute; right: 16px; bottom: 16px; left: auto; top: auto; width: 54px; height: 54px; border: none; border-radius: 22%; background: #f2c94c; box-shadow: inset 0 2px 0 rgba(255,255,255,.55), 0 3px 0 #c4922a; display: flex; align-items: center; justify-content: center; cursor: pointer; z-index: 3; padding: 0; }
 #sfx-toggle svg { width: 68%; height: 68%; display: none; }
 #sfx-toggle:not(.off) .sfx-on { display: block; }
 #sfx-toggle.off { background: #b9a27a; box-shadow: inset 0 2px 0 rgba(255,255,255,.3), 0 3px 0 #7d6540; }
 #sfx-toggle.off .sfx-off { display: block; }
 #sfx-toggle:active { transform: translateY(1px); }
-.saw-swipe { position: fixed; z-index: 2200; pointer-events: none; object-fit: contain; animation: sawSwipe 1s linear forwards; filter: drop-shadow(0 3px 2px rgba(0,0,0,.45)); }
-@keyframes sawSwipe {
-0% { transform: translate(18%, -8%) rotate(-48deg); }
-24% { transform: translate(46%, 34%) rotate(-24deg); }
-50% { transform: translate(12%, -12%) rotate(-50deg); }
-74% { transform: translate(48%, 36%) rotate(-22deg); }
-100% { transform: translate(20%, 8%) rotate(-36deg); opacity: 0; }
-}
 #hint-gallery { position: fixed; inset: 0; z-index: 5200; display: none; background: #0d1408; touch-action: none; }
 #hint-gallery.open { display: block; }
 #hint-track { height: 100%; display: flex; width: 300%; transition: transform 0.28s ease; will-change: transform; }
 #hint-track.dragging { transition: none; }
 #hint-track img { width: 33.333%; height: 100%; object-fit: contain; object-position: center; flex: 0 0 33.333%; background: #10160c; pointer-events: none; user-select: none; }
-#hint-close { position: absolute; top: max(10px, env(safe-area-inset-top)); right: max(10px, env(safe-area-inset-right)); width: 46px; height: 46px; border-radius: 12px; border: 3px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 30px; font-weight: 900; line-height: 1; cursor: pointer; z-index: 2; }
-.hint-dots { position: absolute; left: 0; right: 0; bottom: max(14px, env(safe-area-inset-bottom)); display: flex; justify-content: center; gap: 8px; z-index: 2; pointer-events: auto; }
+#hint-close { position: absolute; top: calc(10px + var(--inset-top)); right: calc(10px + var(--inset-right)); width: 46px; height: 46px; border-radius: 12px; border: 3px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 30px; font-weight: 900; line-height: 1; cursor: pointer; z-index: 2; }
+.hint-dots { position: absolute; left: 0; right: 0; bottom: calc(14px + var(--inset-bottom)); display: flex; justify-content: center; gap: 8px; z-index: 2; pointer-events: auto; }
 .hint-dot { width: 10px; height: 10px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,.45); cursor: pointer; }
 .hint-dot.on { background: #ffd24a; }
 #start-choice { z-index: 4700; }
@@ -389,7 +404,8 @@ cursor: pointer;
 .cell.anim-walk > img, .cell.anim-walk > span,
 .cell.anim-hop > img, .cell.anim-hop > span,
 .cell.anim-shake > img, .cell.anim-shake > span,
-.cell.tut-target, #tut-arrow, .float-text, .saw-swipe { animation: none !important; }
+.cell.tut-target, #tut-arrow, .float-text, .hit-rating.mail-alert { animation: none !important; }
+.hit-rating.mail-alert { box-shadow: 0 0 0 3px rgba(255, 220, 80, 0.55), 0 0 14px 4px rgba(255, 50, 40, 0.9); }
 }
 </style>
 </head>
@@ -431,7 +447,7 @@ cursor: pointer;
 <div class="next-block" id="next-tile">
 <div class="content" id="next-content">—</div>
 </div>
-<div class="hint-block" onclick="openHintGallery()"></div>
+<div class="hint-block" onclick="openHintGallery()"><div id="hint-recipe"></div></div>
 </div>
 </div>
 
@@ -506,7 +522,7 @@ cursor: pointer;
 
 <!-- ПОЧТА -->
 <div class="modal" id="mail-modal">
-<div class="modal-content" style="background:#93a576; border-color:#4a5c31;">
+<div class="modal-content">
 <h2 style="color:#fff; text-shadow:1px 1px 0 #000;">ПОЧТА (Награды)</h2>
 <div id="mail-area" style="flex:1; overflow-y:auto; padding:4px;"></div>
 <button class="close-btn" onclick="closeModal('mail-modal')">Закрыть</button>
@@ -588,6 +604,40 @@ const SEEN_KEY = 'pasha_match_seen_v46';
 
 const CHAIN = ['💵','🐑','🗳️','🏫','📜','🧑‍💼','🏛️','👔','🤴','👑','👴','🧔','✍️','👨‍🚀','🍕','🏠','🛠️','🚀','🌌','🎩','💼','🏦','🎖️','🗽','🏰','💎','🚁','🛸'];
 const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
+const GAGARIN_LEVEL = 14;
+const ROCKET_NOSE = 15;
+const ROCKET_BODY = 16;
+const ROCKET_TAIL = 17;
+const ROCKET_LEVEL = 18;
+const CHAIN_RECIPE = {
+14: '3 Гагарина → нос. Если нос уже на поле — корпус, затем хвост.',
+15: 'Нос ракеты. Вместе с корпусом и хвостом сразу собирается в ракету.',
+16: 'Корпус ракеты. Вместе с носом и хвостом сразу собирается в ракету.',
+17: 'Хвост ракеты. Вместе с носом и корпусом сразу собирается в ракету.',
+18: 'Ракета. Собирается из носа, корпуса и хвоста.'
+};
+function isRocketPartLevel(level) {
+return level === ROCKET_NOSE || level === ROCKET_BODY || level === ROCKET_TAIL;
+}
+function findChainLevel(level) {
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+const t = grid[r][c];
+if (t && t.kind === 'chain' && t.level === level) return [r, c];
+}
+return null;
+}
+function nextGagarinLevel() {
+if (!findChainLevel(ROCKET_NOSE)) return ROCKET_NOSE;
+if (!findChainLevel(ROCKET_BODY)) return ROCKET_BODY;
+return ROCKET_TAIL;
+}
+function rocketTrio() {
+const nose = findChainLevel(ROCKET_NOSE);
+const body = findChainLevel(ROCKET_BODY);
+const tail = findChainLevel(ROCKET_TAIL);
+if (!nose || !body || !tail) return null;
+return { nose: nose, body: body, tail: tail };
+}
 const CARE = ['🐻','🪙','🥇','🏛️','📜','💰','🏦','👑','🌍','🚀','🦁','🐯','🐘','🐳','🦅','🦉','🦄','🐉','👽','🛸'];
 const INCOME = ['💻','📺','🏦','🏢','🥚'];
 const INCOME_PER_TURN = [5, 15, 50, 150, 500];
@@ -610,6 +660,8 @@ let sfxMuted = false;
 try { sfxMuted = localStorage.getItem(SFX_KEY) === '1'; } catch (e) {}
 let audioCtx = null;
 let moneyBags = 0;
+let mailAlert = false;
+let rocketBusy = false;
 
 // Статусы заданий: 'active' - висит в паузе, 'completed' - висит в почте, 'claimed' - исчезло
 let missions = {
@@ -742,10 +794,14 @@ if (moneyBags >= 4) showDiscoveryOnce('disc_moneybag', 'img/discovery-moneybag.j
 }
 
 let memeTimer = null;
+let noticeArm = null;
 function hideMeme() {
 const popup = document.getElementById('meme-popup');
 if (popup) popup.classList.remove('show', 'discovery');
+const disc = document.getElementById('disc-popup');
+if (disc) disc.classList.remove('show');
 if (memeTimer) { clearTimeout(memeTimer); memeTimer = null; }
+if (noticeArm) { document.removeEventListener('pointerdown', noticeArm, true); noticeArm = null; }
 }
 function showMeme(imgSrc, discovery) {
 const popup = document.getElementById('meme-popup');
@@ -754,7 +810,10 @@ img.src = imgSrc;
 popup.classList.toggle('discovery', !!discovery);
 popup.classList.add('show');
 if (memeTimer) clearTimeout(memeTimer);
-memeTimer = setTimeout(hideMeme, 6000);
+memeTimer = setTimeout(hideMeme, 10000);
+if (noticeArm) document.removeEventListener('pointerdown', noticeArm, true);
+noticeArm = function () { hideMeme(); };
+setTimeout(() => { if (noticeArm) document.addEventListener('pointerdown', noticeArm, true); }, 0);
 }
 document.getElementById('meme-popup').addEventListener('pointerdown', function(e) {
 if (!this.classList.contains('show')) return;
@@ -763,11 +822,23 @@ e.stopPropagation();
 hideMeme();
 });
 
+function completeMission(id) {
+const mission = missions[id];
+if (!mission || mission.status !== 'active') return;
+mission.status = 'completed';
+mailAlert = true;
+updateMailBadge();
+sfx('mail');
+saveGame();
+}
 function updateMailBadge() {
-let hasCompleted = Object.values(missions).some(m => m.status === 'completed');
+const hasCompleted = Object.values(missions).some(m => m.status === 'completed');
+if (!hasCompleted) mailAlert = false;
+const on = !!(mailAlert && hasCompleted);
 const badge = document.getElementById('mail-badge');
-if (hasCompleted) badge.classList.add('show');
-else badge.classList.remove('show');
+const btn = document.querySelector('.hit-rating');
+if (badge) badge.classList.toggle('show', on);
+if (btn) btn.classList.toggle('mail-alert', on);
 }
 
 function init() {
@@ -788,6 +859,7 @@ forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
 elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
 saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
 };
+mailAlert = false;
 updateMailBadge();
 
 let spawned = 0;
@@ -839,6 +911,8 @@ cell.dataset.r = r; cell.dataset.c = c;
 const d = grid[r][c];
 if (d) {
 cell.classList.add('occupied');
+const movingNow = moveAnims.some(a => a.r === r && a.c === c);
+const spawningNow = !!(d.justSpawned || d.pop);
 cell.appendChild(makeTileContent(d));
 if (d.justSpawned || d.pop) {
 const spawnedVisual = cell.querySelector('img, span');
@@ -853,6 +927,11 @@ const popped = d;
 setTimeout(() => { if (popped.pop) delete popped.pop; }, 0);
 }
 if (d.kind === 'care' && d.level === 1) bearsOnBoard++;
+if (!movingNow && !spawningNow) cell.classList.add('settled');
+if (spawningNow) {
+const spawnedCell = cell;
+setTimeout(() => showShade(spawnedCell), 460);
+}
 applyMoveAnim(cell, r, c);
 }
 if (tutorial.active && tutorial.step) {
@@ -866,11 +945,7 @@ b.appendChild(cell);
 moveAnims = [];
 
 // Проверка задания "В лесу"
-if (missions.forest.status === 'active' && bearsOnBoard >= 10) {
-missions.forest.status = 'completed';
-updateMailBadge();
-document.getElementById('log').textContent = 'Задание "В ЛЕСУ" выполнено! Проверь почту.';
-}
+if (missions.forest.status === 'active' && bearsOnBoard >= 10) completeMission('forest');
 
 renderNumber(score, 'score-num');
 renderNumber(coins, 'coins-num');
@@ -917,6 +992,7 @@ function findGroup(startR, startC, tempGrid = null) {
 let g = tempGrid || grid;
 const start = g[startR][startC];
 if (!start || start.kind === 'omon' || start.kind === 'pioneer' || start.kind === 'tool') return null;
+if (start.kind === 'chain' && isRocketPartLevel(start.level)) return null;
 let visited = {}, stack = [[startR, startC]], group = [];
 while (stack.length) {
 const [r, c] = stack.pop();
@@ -946,6 +1022,7 @@ if (lvl >= maxL) break;
 group.forEach(([r, c]) => {
 let cell = document.querySelector(`.cell[data-r="${r}"][data-c="${c}"]`);
 if (cell) {
+clearShade(cell);
 let img = cell.querySelector('img') || cell.querySelector('span');
 if (img) {
 let dx = (anchorC - c) * 100;
@@ -961,14 +1038,7 @@ setTimeout(() => {
 group.forEach(([r, c]) => grid[r][c] = null);
 let newLevel = lvl + 1;
 
-if (kind === 'chain' && lvl === 14) {
-const parts = [15, 16, 17];
-for (let p of parts) {
-let has = false;
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].level === p) has = true;
-if (!has) { newLevel = p; break; }
-}
-}
+if (kind === 'chain' && lvl === GAGARIN_LEVEL) newLevel = nextGagarinLevel();
 
 if (kind === 'chain' && (newLevel === 5 || newLevel === 9)) {
 const memeKey = 'meme_chain_' + newLevel;
@@ -982,13 +1052,7 @@ showMeme(memeSrc);
 
 if (kind === 'care' && lvl === 3 && newLevel === 4) showDiscoveryOnce('disc_building', 'img/discovery-building.jpg');
 
-if (kind === 'chain' && lvl === 8 && newLevel === 9) {
-if (!isSackMerge && missions.elections.status === 'active') {
-missions.elections.status = 'completed';
-updateMailBadge();
-document.getElementById('log').textContent = 'Задание "ЧЕСТНЫЕ ВЫБОРЫ" выполнено!';
-}
-}
+if (kind === 'chain' && lvl === 8 && newLevel === 9 && !isSackMerge) completeMission('elections');
 
 grid[anchorR][anchorC] = { kind, level: newLevel, pop: true };
 checkDiscovery(grid[anchorR][anchorC]);
@@ -1000,7 +1064,8 @@ coins += lvl * 2 * group.length;
 
 render();
 
-setTimeout(() => { processCascades(anchorR, anchorC); }, 100);
+if (kind === 'chain' && isRocketPartLevel(newLevel) && rocketTrio()) queueRocketAssembly(anchorR, anchorC);
+else setTimeout(() => { processCascades(anchorR, anchorC); }, 100);
 }, 200);
 
 cas++;
@@ -1114,7 +1179,13 @@ if (trapped.length) {
 sfx('trap');
 trapped.forEach(([r, c]) => {
 const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
-if (cell) cell.classList.add('anim-shake');
+if (!cell) return;
+clearShade(cell);
+cell.classList.add('anim-shake');
+setTimeout(() => {
+cell.classList.remove('anim-shake');
+showShade(cell);
+}, 420);
 });
 markBusy(1100);
 setTimeout(() => convertTrapped(trapped), 420);
@@ -1178,14 +1249,26 @@ const y = (padY + PIONEER_FEET.y * rh) / eh * 100;
 return [x.toFixed(2) + '%', y.toFixed(2) + '%'];
 }
 
+function clearShade(cell) {
+if (!cell) return;
+cell.classList.remove('settled');
+cell.style.setProperty('background-color', 'transparent', 'important');
+}
+function showShade(cell) {
+if (!cell || !cell.isConnected || !cell.querySelector('img, span')) return;
+if (cell.classList.contains('anim-walk') || cell.classList.contains('anim-hop') || cell.classList.contains('anim-shake') || cell.classList.contains('anim-omon')) return;
+if (cell.querySelector('.piece-pop, .merging')) return;
+cell.style.removeProperty('background-color');
+cell.classList.add('settled');
+}
 function applyMoveAnim(cell, r, c) {
 if (!moveAnims.length) return;
 const anim = moveAnims.find(a => a.r === r && a.c === c);
 if (!anim) return;
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-if (reduce) return;
+if (reduce) { showShade(cell); return; }
 const img = cell.querySelector('img, span');
-cell.classList.remove('occupied');
+clearShade(cell);
 if (anim.hop) cell.classList.add('anim-hop');
 else if (img) {
 const origin = pioneerFeetOrigin(img);
@@ -1196,12 +1279,52 @@ img.style.setProperty('--walk-oy', origin[1]);
 cell.classList.add('anim-walk');
 }
 const ms = anim.hop ? 480 : 620;
-const done = () => {
+setTimeout(() => {
 cell.classList.remove('anim-walk', 'anim-hop');
-if (cell.isConnected && cell.querySelector('img, span')) cell.classList.add('occupied');
-};
-if (img) img.addEventListener('animationend', done, { once: true });
-setTimeout(done, ms);
+showShade(cell);
+}, ms);
+}
+function queueRocketAssembly(preferR, preferC) {
+if (rocketBusy || !rocketTrio()) return;
+rocketBusy = true;
+markBusy(1100);
+setTimeout(() => {
+if (!rocketTrio()) { rocketBusy = false; return; }
+assembleRocket(preferR, preferC);
+}, 180);
+}
+function assembleRocket(preferR, preferC) {
+const trio = rocketTrio();
+if (!trio) { rocketBusy = false; return; }
+const parts = [trio.nose, trio.body, trio.tail];
+const target = parts.find(([r, c]) => r === preferR && c === preferC) || trio.tail;
+parts.forEach(([r, c]) => {
+const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
+if (!cell) return;
+clearShade(cell);
+const img = cell.querySelector('img, span');
+if (!img) return;
+const dx = (target[1] - c) * 100;
+const dy = (target[0] - r) * 100;
+img.classList.add('merging');
+img.style.transform = 'translate(-50%, -50%) translate(' + dx + '%, ' + dy + '%) scale(0.5)';
+img.style.opacity = '0';
+});
+setTimeout(() => {
+parts.forEach(([r, c]) => { grid[r][c] = null; });
+grid[target[0]][target[1]] = { kind: 'chain', level: ROCKET_LEVEL, pop: true };
+checkDiscovery(grid[target[0]][target[1]]);
+sfx('merge');
+score += 17 * 15 * 3;
+coins += 17 * 2 * 3;
+rocketBusy = false;
+render();
+saveGame();
+setTimeout(() => {
+processCascades(target[0], target[1]);
+queueRocketAssembly(target[0], target[1]);
+}, 120);
+}, 220);
 }
 
 function placeGhost(clientX, clientY) {
@@ -1339,7 +1462,7 @@ for (let i = 0; i < neighbors.length; i++) {
 let nr = neighbors[i][0], nc = neighbors[i][1];
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
 let nt = grid[nr][nc];
-if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool' || (nt.kind === 'chain' && isRocketPartLevel(nt.level))) continue;
 let found = false;
 for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
 if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
@@ -1373,6 +1496,8 @@ checkDiscovery(grid[r][c]);
 if (grid[r][c].kind === 'omon') grid[r][c].skipMove = true;
 processCascades(r, c);
 endMove();
+sfx('place');
+queueRocketAssembly(r, c);
 }
 }
 }
@@ -1428,11 +1553,7 @@ nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 
 sawStreak++;
-if (sawStreak >= 2 && missions.saw.status === 'active') {
-missions.saw.status = 'completed';
-updateMailBadge();
-document.getElementById('log').textContent = 'Задание "ПИЛА-РАМА" выполнено!';
-}
+if (sawStreak >= 2) completeMission('saw');
 }
 else if (nextTile.tool === 'nanobox') {
 nextTile = { ...grid[r][c] };
@@ -1449,7 +1570,7 @@ for (let i = 0; i < neighbors.length; i++) {
 let nr = neighbors[i][0], nc = neighbors[i][1];
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
 let nt = grid[nr][nc];
-if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool' || (nt.kind === 'chain' && isRocketPartLevel(nt.level))) continue;
 let found = false;
 for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
 if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
@@ -1507,6 +1628,7 @@ bufferedNext = null;
 endMove();
 sfx('place');
 markBusy(480);
+queueRocketAssembly(r, c);
 notifyTutorial({ type: 'placed' });
 }
 }
@@ -1515,8 +1637,11 @@ drag = null;
 
 // --- ПОЧТА ---
 function openMail() {
+mailAlert = false;
+updateMailBadge();
 renderMail();
 openModal('mail-modal');
+saveGame();
 }
 
 function renderMail() {
@@ -1538,7 +1663,7 @@ hasMail = true;
 }
 
 if (!hasMail) {
-c.innerHTML = '<div style="text-align:center; padding:20px; font-size:18px; font-weight:bold; color:#3e2a16;">Пока пусто!</div>';
+c.innerHTML = '<div style="text-align:center; padding:20px; font-size:18px; font-weight:bold; color:#fff6df;">Пока пусто!</div>';
 }
 }
 
@@ -1653,7 +1778,8 @@ card.className = 'book-card' + (isDiscovered ? '' : ' locked');
 let testTile = { kind: currentBranch, level: i + 1 };
 let imgSrc = getTileImage(testTile);
 let iconHTML = isDiscovered ? (imgSrc ? `<img decoding="async" src="${imgSrc}">` : names[i]) : '<span>❓</span>';
-card.innerHTML = `<div class="book-icon">${iconHTML}</div><div class="book-desc">${isDiscovered ? 'Уровень ' + (i + 1) : 'Соберите в игре'}</div>`;
+const recipeText = (isDiscovered && currentBranch === 'chain' && CHAIN_RECIPE[i + 1]) ? CHAIN_RECIPE[i + 1] : (isDiscovered ? 'Уровень ' + (i + 1) : 'Соберите в игре');
+card.innerHTML = `<div class="book-icon">${iconHTML}</div><div class="book-desc">${recipeText}</div>`;
 scroll.appendChild(card);
 }
 }
@@ -1676,7 +1802,7 @@ setTimeout(function() { el.remove(); }, 2000);
 
 function saveGame() {
 try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags }));
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, mailAlert }));
 } catch(e){}
 }
 
@@ -1981,15 +2107,16 @@ envTone(ctx, 784, t + 0.14, 0.18, 'triangle', 0.12);
 envTone(ctx, 990, t, 0.035, 'square', 0.03);
 } else if (name === 'ui') {
 envTone(ctx, 740, t, 0.045, 'square', 0.04);
+} else if (name === 'mail') {
+envTone(ctx, 880, t, 0.07, 'sine', 0.14);
+envTone(ctx, 1320, t + 0.08, 0.16, 'sine', 0.11);
 } else if (name === 'trap') {
 marimbaNote(ctx, t, 698, 0.2, 0.2);
 marimbaNote(ctx, t + 0.13, 466, 0.22, 0.18);
 } else if (name === 'pop') {
 corkPop(ctx, t);
 } else if (name === 'saw') {
-sawStroke(ctx, t);
-sawStroke(ctx, t + 0.5);
-sawDing(ctx, t + 1.02);
+handSaw(ctx, t);
 } else if (name === 'weed') {
 weedStab(ctx, t);
 weedStab(ctx, t + 0.09);
@@ -2033,26 +2160,48 @@ src.start(t);
 src.stop(t + dur + 0.02);
 }
 
-function sawStroke(ctx, t) {
-const dur = 0.47;
-noiseBurst(ctx, t, dur, 720, 240, 0.3, 1.6);
-noiseBurst(ctx, t, dur * 0.92, 1280, 480, 0.11, 5);
-const o = ctx.createOscillator();
+function woodyRasp(ctx, t, dur, f0, f1) {
+const rate = ctx.sampleRate;
+const frames = Math.max(1, Math.floor(rate * dur));
+const buf = ctx.createBuffer(1, frames, rate);
+const data = buf.getChannelData(0);
+for (let i = 0; i < frames; i++) {
+const p = i / frames;
+const phase = ((i / rate) * 52) % 1;
+const tooth = Math.pow(1 - phase, 2.15);
+const stroke = Math.sin(Math.PI * p);
+data[i] = (Math.random() * 2 - 1) * tooth * stroke;
+}
+const src = ctx.createBufferSource();
+src.buffer = buf;
+const bp = ctx.createBiquadFilter();
+bp.type = 'bandpass';
+bp.Q.value = 0.65;
+bp.frequency.setValueAtTime(Math.max(90, f0), t);
+bp.frequency.exponentialRampToValueAtTime(Math.max(90, f1), t + dur);
 const g = ctx.createGain();
+g.gain.setValueAtTime(0.58, t);
+src.connect(bp); bp.connect(g); g.connect(ctx.destination);
+src.start(t); src.stop(t + dur + 0.02);
+const o = ctx.createOscillator();
+const og = ctx.createGain();
 o.type = 'triangle';
-o.frequency.setValueAtTime(168, t);
-o.frequency.exponentialRampToValueAtTime(86, t + dur);
-g.gain.setValueAtTime(0.11, t);
-g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-o.connect(g); g.connect(ctx.destination);
+const w0 = f0 > f1 ? 148 : 92;
+const w1 = f0 > f1 ? 84 : 142;
+o.frequency.setValueAtTime(w0, t);
+o.frequency.exponentialRampToValueAtTime(w1, t + dur);
+og.gain.setValueAtTime(0.0001, t);
+og.gain.linearRampToValueAtTime(0.085, t + 0.03);
+og.gain.exponentialRampToValueAtTime(0.0001, t + dur);
+o.connect(og); og.connect(ctx.destination);
 o.start(t); o.stop(t + dur + 0.02);
 }
-
-function sawDing(ctx, t) {
-envTone(ctx, 1568, t, 0.18, 'sine', 0.16);
-envTone(ctx, 2093, t + 0.02, 0.14, 'triangle', 0.05);
+function handSaw(ctx, t0) {
+woodyRasp(ctx, t0 + 0.00, 0.22, 1680, 620);
+woodyRasp(ctx, t0 + 0.24, 0.22, 600, 1560);
+woodyRasp(ctx, t0 + 0.48, 0.22, 1740, 680);
+woodyRasp(ctx, t0 + 0.72, 0.24, 640, 1480);
 }
-
 function marimbaNote(ctx, t, freq, dur, gain) {
 const o = ctx.createOscillator();
 const g = ctx.createGain();
@@ -2088,21 +2237,8 @@ o.connect(g); g.connect(ctx.destination);
 o.start(t); o.stop(t + 0.07);
 }
 
-function playSawFx(r, c) {
+function playSawFx() {
 sfx('saw');
-const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
-if (!cell) return;
-const rect = cell.getBoundingClientRect();
-const img = document.createElement('img');
-img.src = 'img/tool_saw.png';
-img.alt = '';
-img.className = 'saw-swipe';
-img.style.left = rect.left + 'px';
-img.style.top = rect.top + 'px';
-img.style.width = rect.width + 'px';
-img.style.height = rect.height + 'px';
-document.body.appendChild(img);
-setTimeout(() => img.remove(), 1100);
 }
 
 function updateSfxButton() {
@@ -2212,7 +2348,7 @@ const counts = {};
 [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => {
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return;
 const t = grid[nr][nc];
-if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool') return;
+if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool' || (t.kind === 'chain' && isRocketPartLevel(t.level))) return;
 const k = t.kind + ':' + t.level;
 if (!counts[k]) counts[k] = { tile: t, n: 0 };
 counts[k].n++;
@@ -2226,6 +2362,12 @@ return null;
 
 function recipeNodes(tile) {
 if (!tile) return null;
+if (tile.kind === 'chain' && tile.level === GAGARIN_LEVEL) {
+return [hintNode(tile), hintMark('×3'), hintMark('→'), hintNode({ kind: 'chain', level: nextGagarinLevel() })];
+}
+if (tile.kind === 'chain' && isRocketPartLevel(tile.level)) {
+return [hintNode({ kind: 'chain', level: ROCKET_NOSE }), hintMark('+'), hintNode({ kind: 'chain', level: ROCKET_BODY }), hintMark('+'), hintNode({ kind: 'chain', level: ROCKET_TAIL }), hintMark('→'), hintNode({ kind: 'chain', level: ROCKET_LEVEL })];
+}
 if (tile.kind === 'chain' || tile.kind === 'care' || tile.kind === 'income') {
 if (tile.level >= maxLevelOf(tile.kind)) return null;
 return [hintNode(tile), hintMark('×3'), hintMark('→'), hintNode({ kind: tile.kind, level: tile.level + 1 })];
@@ -2250,7 +2392,13 @@ function renderHint() {
 const box = document.getElementById('hint-recipe');
 if (!box) return;
 box.innerHTML = '';
-box.classList.remove('has-recipe', 'compact');
+const tile = nextTile;
+const rocketish = tile && tile.kind === 'chain' && (tile.level === GAGARIN_LEVEL || isRocketPartLevel(tile.level) || tile.level === ROCKET_LEVEL);
+const nodes = rocketish ? recipeNodes(tile) : null;
+if (!nodes) { box.classList.remove('has-recipe', 'compact'); return; }
+box.classList.add('has-recipe');
+box.classList.toggle('compact', nodes.length > 4);
+nodes.forEach(n => box.appendChild(n));
 }
 
 function emptyCells() {
@@ -2311,6 +2459,38 @@ function showTitle() {
 const el = document.getElementById('title-screen');
 if (el) el.classList.remove('hidden');
 closeModal('start-choice');
+layoutTitle();
+}
+function layoutTitle() {
+const screen = document.getElementById('title-screen');
+const play = document.getElementById('title-play');
+const sfxBtn = document.getElementById('sfx-toggle');
+if (!screen || screen.classList.contains('hidden') || !play) return;
+const sw = window.innerWidth, sh = window.innerHeight;
+const scale = Math.max(sw / 1076, sh / 1600);
+const dw = 1076 * scale, dh = 1600 * scale;
+const left = (sw - dw) / 2, top = (sh - dh) / 2;
+const appCs = getComputedStyle(document.getElementById('app'));
+const insetTop = parseFloat(appCs.paddingTop) || 0;
+const insetBottom = parseFloat(appCs.paddingBottom) || 0;
+const insetRight = parseFloat(appCs.paddingRight) || 0;
+let py = top + dh * 0.155;
+py = Math.max(insetTop + 8, Math.min(py, sh - insetBottom - 62));
+play.style.left = (left + dw * 0.5) + 'px';
+play.style.top = py + 'px';
+play.style.transform = 'translateX(-50%)';
+if (!sfxBtn) return;
+const bw = Math.max(48, Math.min(72, dw * 0.11));
+let x = left + dw * 0.842;
+let y = top + dh * 0.905;
+x = Math.min(Math.max(10, x), sw - bw - Math.max(10, insetRight));
+y = Math.min(Math.max(insetTop + 8, y), sh - bw - Math.max(10, insetBottom));
+sfxBtn.style.left = x + 'px';
+sfxBtn.style.top = y + 'px';
+sfxBtn.style.width = bw + 'px';
+sfxBtn.style.height = bw + 'px';
+sfxBtn.style.right = 'auto';
+sfxBtn.style.bottom = 'auto';
 }
 function hideTitle() {
 const el = document.getElementById('title-screen');
@@ -2333,6 +2513,7 @@ bufferedNext = data.bufferedNext || null;
 testSpawnIndex = data.testSpawnIndex || 0;
 moneyBags = data.moneyBags || 0;
 if (data.missions) missions = data.missions;
+mailAlert = typeof data.mailAlert === 'boolean' ? data.mailAlert : Object.values(missions).some(m => m.status === 'completed');
 undoState = null;
 gameOver = false;
 isSawMode = false;
@@ -2343,6 +2524,7 @@ hideTitle();
 closeModal('gameover-modal');
 updateMailBadge();
 render();
+queueRocketAssembly(0, 0);
 document.getElementById('log').textContent = 'Игра продолжена';
 return true;
 } catch (e) { return false; }
@@ -2378,6 +2560,22 @@ clearSave();
 init();
 }
 
+let tgInsetsBound = false;
+function applyTgInsets() {
+const tg = window.Telegram && window.Telegram.WebApp;
+if (!tg) return;
+const root = document.documentElement;
+const s = tg.safeAreaInset || {};
+const c = tg.contentSafeAreaInset || {};
+['top', 'right', 'bottom', 'left'].forEach(side => {
+if (typeof s[side] === 'number') root.style.setProperty('--tg-safe-area-inset-' + side, s[side] + 'px');
+if (typeof c[side] === 'number') root.style.setProperty('--tg-content-safe-area-inset-' + side, c[side] + 'px');
+});
+layoutTitle();
+fingerSig = '';
+unifyTrayPieces();
+fitNumbers();
+}
 function bootTelegram() {
 try {
 const tg = window.Telegram && window.Telegram.WebApp;
@@ -2392,12 +2590,18 @@ try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) {}
 try { if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); } catch (e) {}
 document.documentElement.style.background = bg;
 document.body.style.background = bg;
+applyTgInsets();
+if (!tgInsetsBound && tg.onEvent) {
+tgInsetsBound = true;
+try { tg.onEvent('safeAreaChanged', applyTgInsets); } catch (e) {}
+try { tg.onEvent('contentSafeAreaChanged', applyTgInsets); } catch (e) {}
+}
 } catch (e) {}
 }
 bootTelegram();
 updateSfxButton();
 window.addEventListener('pointerdown', function () { ensureAudio(); bootTelegram(); }, { passive: true });
-window.addEventListener('resize', function () { fingerSig = ''; unifyTrayPieces(); fitNumbers(); if (tutorial.active) layoutTutorial(); });
+window.addEventListener('resize', function () { fingerSig = ''; unifyTrayPieces(); fitNumbers(); layoutTitle(); if (tutorial.active) layoutTutorial(); });
 
 const forceTutorial = new URLSearchParams(location.search).has('tutorial');
 if (forceTutorial) startTutorial();
