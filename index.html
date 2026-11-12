@@ -9,111 +9,19 @@
 html, body { height: 100dvh; overflow: hidden; user-select: none; touch-action: none; background: #2b1a0e; }
 body { color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; }
 
-/* ==========================================
-ЭКРАН ЗАГРУЗКИ (ГЛАВНОЕ МЕНЮ)
-========================================== */
-#start-screen {
-position: fixed;
-inset: 0;
-background: url('img/bg_start.png') center bottom / cover no-repeat;
-display: flex;
-flex-direction: column;
-align-items: center;
-z-index: 9999;
-transition: opacity 0.5s ease, visibility 0.5s;
+/* Главный контейнер */
+#app { 
+    width: 100%; 
+    max-width: 440px; 
+    height: 100dvh; 
+    display: flex; 
+    flex-direction: column; 
+    position: relative; 
+    overflow: hidden; 
 }
 
-#start-screen.hidden {
-opacity: 0;
-visibility: hidden;
-pointer-events: none;
-}
-
-#title-img {
-position: absolute;
-top: 12%;
-width: 85%;
-max-width: 380px;
-height: auto;
-object-fit: contain;
-animation: floatTitle 3s ease-in-out infinite;
-filter: drop-shadow(0 10px 15px rgba(0,0,0,0.5));
-}
-
-#btn-play {
-position: absolute;
-top: 45%;
-left: 50%;
-transform: translate(-50%, -50%);
-width: 45%;
-max-width: 200px;
-height: auto;
-cursor: pointer;
-transition: transform 0.15s;
-filter: drop-shadow(0 5px 15px rgba(0,0,0,0.4));
-}
-
-#btn-play:active {
-transform: translate(-50%, -50%) scale(0.9);
-}
-
-@keyframes floatTitle {
-0%, 100% { transform: translateY(0); }
-50% { transform: translateY(-10px); }
-}
-
-/* ==========================================
-ОСНОВНОЕ ПРИЛОЖЕНИЕ (ИГРА)
-========================================== */
-#app {
-width: 100%;
-max-width: 440px;
-height: 100dvh;
-display: flex;
-flex-direction: column;
-align-items: center;
-position: relative;
-overflow: hidden;
-opacity: 0;
-transition: opacity 0.5s ease;
-background: #2b1a0e;
-}
-
-#app.visible {
-opacity: 1;
-}
-
-/* 1. ЛЕС С ДОРОГОЙ (САМЫЙ ВЕРХ) */
-.forest-top {
-width: 100%;
-aspect-ratio: 880 / 400;
-background: url('img/bg_road.png') center center / 100% 100% no-repeat;
-flex-shrink: 0;
-pointer-events: none;
-z-index: 1;
-}
-
-/* 2. ВЕРХНЯЯ ПАНЕЛЬ (КНОПКИ) */
-.top-panel {
-position: relative;
-width: 100%;
-aspect-ratio: 880 / 432;
-background: url('img/ui_top.png') center top / 100% 100% no-repeat;
-flex-shrink: 0;
-z-index: 10;
-}
-
-/* Хитбоксы для кнопок на панели */
-.hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
-.hitbox:active { background: rgba(255,255,255,0.2); }
-.hit-rating { left: 3%; top: 20%; width: 17%; height: 35%; }
-.hit-shop { left: 36%; top: 20%; width: 17%; height: 35%; }
-.hit-pause { left: 68%; top: 20%; width: 15%; height: 35%; }
-
-.mail-badge { position: absolute; top: -5px; right: -5px; background: #ff3333; color: #fff; font-size: 14px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; z-index: 30; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
-.mail-badge.show { display: flex; }
-.num-container { display: flex; align-items: center; justify-content: center; height: 100%; }
-.num-container img { height: 16px; width: auto; margin: 0; object-fit: contain; }
+/* ВЕРХНЯЯ ПАНЕЛЬ */
+.top-panel { position: relative; width: 100%; aspect-ratio: 877 / 431; background: url('img/ui_top.png') center top / 100% 100% no-repeat; flex-shrink: 0; }
 .val-box { position: absolute; display: flex; align-items: center; justify-content: center; transform: translateX(-50%); pointer-events: none; height: 30px; gap: 2px; }
 .val-box img.icon { height: 28px; width: auto; object-fit: contain; transform: scale(1.1); }
 .val-box img.icon-coin { height: 34px; }
@@ -121,40 +29,31 @@ z-index: 10;
 #coins-box { top: 5%; left: 51%; }
 #moves-box { top: 5%; left: 78%; }
 
-/* Юрист (прибит к правому верхнему углу) */
-.hit-jurist {
-position: absolute;
-top: 4%;
-right: 2%;
-width: 60px;
-height: 60px;
-display: flex;
-justify-content: center;
-align-items: center;
-cursor: pointer;
-z-index: 50;
-}
-.hit-jurist img {
-width: 160%;
-height: auto;
-object-fit: contain;
-pointer-events: none;
-transform: translateY(5%);
-filter: drop-shadow(0 2px 4px rgba(0,0,0,0.6));
-}
+.hitbox { position: absolute; cursor: pointer; border-radius: 10px; transition: background 0.1s; }
+.hitbox:active { background: rgba(255,255,255,0.2); }
+.hit-rating { left: 3%; top: 20%; width: 17%; height: 35%; }
+.hit-shop { left: 36%; top: 20%; width: 17%; height: 35%; }
+.hit-pause { left: 68%; top: 20%; width: 15%; height: 35%; }
+.hit-jurist { right: 0%; top: 2%; width: 15%; height: 45%; display: flex; justify-content: center; align-items: flex-start; }
+.hit-jurist img { width: 100%; height: auto; object-fit: contain; pointer-events: none; transform: scale(1.1); }
 
-/* 3. ИГРОВОЕ ПОЛЕ */
-#board {
-flex-shrink: 0;
-display: grid;
-grid-template-columns: repeat(6, 1fr);
-grid-template-rows: repeat(6, 1fr);
-gap: 0;
-background: url('img/board_bg.png') center / 100% 100% no-repeat;
-border: none;
-touch-action: none;
-position: relative;
-margin: 0 auto;
+.mail-badge { position: absolute; top: -5px; right: -5px; background: #ff3333; color: #fff; font-size: 14px; font-weight: bold; width: 22px; height: 22px; border-radius: 50%; display: none; justify-content: center; align-items: center; border: 2px solid #fff; z-index: 30; box-shadow: 0 2px 5px rgba(0,0,0,0.5); }
+.mail-badge.show { display: flex; }
+.num-container { display: flex; align-items: center; justify-content: center; height: 100%; }
+.num-container img { height: 16px; width: auto; margin: 0; object-fit: contain; }
+
+/* ПОЛЕ: Размеры задаются через JS, чтобы подстраиваться под экран */
+#board { 
+    flex-shrink: 0; 
+    display: grid; 
+    grid-template-columns: repeat(6, 1fr); 
+    grid-template-rows: repeat(6, 1fr); 
+    gap: 0; 
+    background: url('img/board_bg.png') center / 100% 100% no-repeat; 
+    border: none; 
+    touch-action: none; 
+    position: relative;
+    margin: 0 auto; /* Центрируем, если на планшете */
 }
 
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; transition: background-color 0.15s ease; }
@@ -169,14 +68,24 @@ margin: 0 auto;
 .cell.large-tile { z-index: 10; }
 .cell.large-tile img, .cell.large-tile span { width: 130%; height: 130%; }
 
-/* 4. НИЖНЯЯ ПАНЕЛЬ (ТЮРЬМА) */
-.bottom-panel {
-width: 100%;
-aspect-ratio: 880 / 488;
-background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat;
-flex-shrink: 0;
-position: relative;
-margin-top: auto; /* Прижимает к низу, если есть свободное место */
+/* НИЖНЯЯ ПАНЕЛЬ */
+.bottom-panel { 
+    flex: 1; /* Забирает всё оставшееся пространство */
+    width: 100%; 
+    background-color: #5d6b41; /* Цвет травы */
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end; /* Прижимаем кнопки к низу */
+    position: relative;
+    overflow: hidden;
+}
+
+.bottom-ui-container {
+    width: 100%;
+    aspect-ratio: 1320 / 733; 
+    background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat;
+    position: relative;
+    flex-shrink: 0;
 }
 
 .bottom-slots { position: absolute; inset: 0; display: flex; }
@@ -188,17 +97,15 @@ margin-top: auto; /* Прижимает к низу, если есть своб�
 .next-block .content { transform: translate(-15%, 5%); }
 .jail-block .content { transform: translate(-5%, 0); }
 
+#log { font-size: 12px; height: 22px; line-height: 22px; text-align: center; color: #ffd700; flex-shrink: 0; background: rgba(26, 18, 8, 0.8); z-index: 10; position: absolute; bottom: 0; width: 100%; }
+
 /* АНИМАЦИИ */
 @keyframes merge-pulse { 0% { transform: translate(-50%, -50%) scale(1); } 50% { transform: translate(-50%, -50%) scale(1.2); } 100% { transform: translate(-50%, -50%) scale(1); } }
 .cell.merge-hint img, .cell.merge-hint span, .ghost.merge-hint { animation: merge-pulse 0.48s infinite ease-in-out; z-index: 10; }
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-.float-text { position: fixed; pointer-events: none; font-size: 16px; font-weight: 900; color: #ffe066; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index: 500; animation: floatUp 1s ease-out forwards; display: flex; align-items: center; gap: 4px; }
-.float-text img { height: 16px; width: auto; }
-@keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50px) scale(1.4); } }
-
-/* МОДАЛКИ */
+/* МОДАЛКИ И ОСТАЛЬНОЕ (без изменений) */
 .modal { position: fixed; inset: 0; background: rgba(0,0,0,0.85); display: none; justify-content: center; align-items: center; z-index: 2000; padding: 10px; }
 .modal.open { display: flex; }
 .modal-content { background: #2b1a0e; border: 3px solid #ffd700; border-radius: 12px; padding: 20px; width: 100%; max-width: 380px; max-height: 85vh; display: flex; flex-direction: column; overflow: hidden; }
@@ -239,6 +146,10 @@ margin-top: auto; /* Прижимает к низу, если есть своб�
 .mail-claim-btn { position: absolute; right: 1%; top: 2%; width: 20%; height: 96%; cursor: pointer; border-radius: 8px; }
 .mail-claim-btn:active { background: rgba(255,255,255,0.3); }
 
+.meme-popup { position: fixed; bottom: 0; right: 0; transform: translateX(100%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 5000; pointer-events: none; }
+.meme-popup.show { transform: translateX(0); }
+.meme-popup img { max-height: 60vh; max-width: 90vw; display: block; object-fit: contain; object-position: bottom right; }
+
 .book-tabs { display: flex; gap: 5px; margin-bottom: 10px; }
 .book-tab { flex: 1; padding: 8px; background: #4a2c14; border: 1px solid #8b6f2e; border-radius: 6px; text-align: center; cursor: pointer; font-size: 12px; font-weight: bold; color: #fff; }
 .book-tab.active { background: #ffd700; color: #000; border-color: #fff; }
@@ -250,125 +161,148 @@ margin-top: auto; /* Прижимает к низу, если есть своб�
 .book-icon span { font-size: 20px; }
 .book-desc { font-size: 9px; line-height: 1.1; color: #ccc; margin-bottom: 6px; }
 
+.discovery-popup { position: fixed; bottom: 120px; left: 50%; transform: translateX(-50%) translateY(100px); background: #ffd700; border: 3px solid #8b6f2e; border-radius: 12px; padding: 10px 15px; display: flex; align-items: center; gap: 10px; z-index: 3000; opacity: 0; transition: all 0.4s ease; box-shadow: 0 5px 20px rgba(0,0,0,0.6); max-width: 90%; pointer-events: none; }
+.discovery-popup.show { transform: translateX(-50%) translateY(0); opacity: 1; }
+.disc-img { width: 40px; height: 40px; background: #fff; border-radius: 8px; border: 2px solid #8b6f2e; display: flex; justify-content: center; align-items: center; flex-shrink: 0; }
+.disc-img img { max-width: 90%; max-height: 90%; object-fit: contain; }
+.disc-text { display: flex; flex-direction: column; color: #2b1a0e; }
+.disc-title { font-weight: 900; font-size: 14px; text-transform: uppercase; }
+.disc-desc { font-size: 11px; font-weight: bold; line-height: 1.1; }
+
+.float-text { position: fixed; pointer-events: none; font-size: 16px; font-weight: 900; color: #ffe066; text-shadow: 2px 2px 0 #000, -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000; z-index: 500; animation: floatUp 1s ease-out forwards; display: flex; align-items: center; gap: 4px; }
+.float-text img { height: 16px; width: auto; }
+@keyframes floatUp { 0% { opacity: 1; transform: translate(-50%, 0) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50px) scale(1.4); } }
+
 .merging { transition: transform 0.2s ease-in, opacity 0.2s; z-index: 100; }
 </style>
 </head>
 <body>
 
+<!-- Telegram WebApp Инициализация -->
 <script>
-if (window.Telegram && window.Telegram.WebApp) {
-const tg = window.Telegram.WebApp;
-tg.ready();
-tg.expand();
-tg.setHeaderColor('#2b1a0e');
-tg.setBackgroundColor('#2b1a0e');
-}
+    if (window.Telegram && window.Telegram.WebApp) {
+        const tg = window.Telegram.WebApp;
+        tg.ready();
+        tg.expand();
+        tg.setHeaderColor('#5c4a24'); 
+        tg.setBackgroundColor('#5d6b41'); 
+    }
 </script>
 
-<!-- ЭКРАН ЗАГРУЗКИ -->
-<div id="start-screen">
-<img src="img/title.png" id="title-img" alt="Демократия" draggable="false" onerror="this.src='img/logo.png'">
-<img src="img/play.png" id="btn-play" alt="Играть" onclick="startTheGame()" draggable="false" onerror="this.src='img/btn.png'">
-</div>
-
-<!-- ОСНОВНОЕ ПРИЛОЖЕНИЕ -->
 <div id="app">
+  <div class="top-panel">
+    <div class="val-box" id="score-box">
+      <img src="img/Cup_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="score-num"></div>
+    </div>
+    <div class="val-box" id="coins-box">
+      <img src="img/Coin_1.png" class="icon icon-coin" onerror="this.style.display='none'"><div class="num-container" id="coins-num"></div>
+    </div>
+    <div class="val-box" id="moves-box">
+      <img src="img/Clock_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="moves-num"></div>
+    </div>
 
-<!-- 1. ЛЕС СВЕРХУ -->
-<div class="forest-top"></div>
+    <div class="hitbox hit-rating" onclick="openMail()">
+        <div class="mail-badge" id="mail-badge">!</div>
+    </div>
+    <div class="hitbox hit-shop" onclick="openModal('shop-modal')"></div>
+    <div class="hitbox hit-pause" onclick="openPause()"></div>
 
-<!-- 2. ВЕРХНЯЯ ПАНЕЛЬ -->
-<div class="top-panel">
-<div class="val-box" id="score-box">
-<img src="img/Cup_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="score-num"></div>
-</div>
-<div class="val-box" id="coins-box">
-<img src="img/Coin_1.png" class="icon icon-coin" onerror="this.style.display='none'"><div class="num-container" id="coins-num"></div>
-</div>
-<div class="val-box" id="moves-box">
-<img src="img/Clock_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="moves-num"></div>
-</div>
+    <div class="hitbox hit-jurist" onclick="useJurist()">
+      <img src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
+    </div>
+  </div>
 
-<div class="hitbox hit-rating" onclick="openMail()">
-<div class="mail-badge" id="mail-badge">!</div>
-</div>
-<div class="hitbox hit-shop" onclick="openModal('shop-modal')"></div>
-<div class="hitbox hit-pause" onclick="openPause()"></div>
+  <!-- Игровое поле (размер будет задан JS) -->
+  <div id="board"></div>
 
-<div class="hit-jurist" onclick="useJurist()">
-<img src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
-</div>
-</div>
+  <div class="bottom-panel">
+    <div class="bottom-ui-container">
+        <div class="bottom-slots">
+          <div class="jail-block" id="jail" onclick="takeFromJail()">
+            <div class="content" id="jail-content">—</div>
+          </div>
+          <div class="next-block" id="next-tile">
+            <div class="content" id="next-content">—</div>
+          </div>
+          <div class="hint-block" onclick="openBook()"></div>
+        </div>
+    </div>
+  </div>
 
-<!-- 3. ИГРОВОЕ ПОЛЕ -->
-<div id="board"></div>
-
-<!-- 4. НИЖНЯЯ ПАНЕЛЬ (ТЮРЬМА) -->
-<div class="bottom-panel">
-<div class="bottom-slots">
-<div class="jail-block" id="jail" onclick="takeFromJail()">
-<div class="content" id="jail-content">—</div>
-</div>
-<div class="next-block" id="next-tile">
-<div class="content" id="next-content">—</div>
-</div>
-<div class="hint-block" onclick="openBook()"></div>
-</div>
+  <div id="log">Собери свою империю</div>
 </div>
 
+<div class="meme-popup" id="meme-popup">
+  <img src="" id="meme-img">
 </div>
 
 <div class="shop-modal" id="shop-modal">
-<div class="shop-window">
-<div class="shop-hitbox slot-close" onclick="closeModal('shop-modal')"></div>
-<div class="shop-hitbox slot-1" onclick="buyItem({ name: 'Деньги', price: 150, tile: { kind: 'chain', level: 1 } })"></div>
-<div class="shop-hitbox slot-2" onclick="buyItem({ name: 'Баран', price: 450, tile: { kind: 'chain', level: 2 } })"></div>
-<div class="shop-hitbox slot-3" onclick="buyItem({ name: 'Избиратель', price: 1200, tile: { kind: 'chain', level: 3 } })"></div>
-<div class="shop-hitbox slot-4" onclick="buyItem({ name: 'Школа', price: 2500, tile: { kind: 'chain', level: 4 } })"></div>
-<div class="shop-hitbox slot-5" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })"></div>
-<div class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })"></div>
-<div class="shop-hitbox slot-7" onclick="alert('В разработке')"></div>
-<div class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })"></div>
-<div class="shop-hitbox slot-9" onclick="alert('В разработке')"></div>
-<div class="shop-hitbox slot-10" onclick="alert('В разработке')"></div>
+  <div class="shop-window">
+    <div class="shop-hitbox slot-close" onclick="closeModal('shop-modal')"></div>
+    <div class="shop-hitbox slot-1" onclick="buyItem({ name: 'Деньги', price: 150, tile: { kind: 'chain', level: 1 } })"></div>
+    <div class="shop-hitbox slot-2" onclick="buyItem({ name: 'Баран', price: 450, tile: { kind: 'chain', level: 2 } })"></div>
+    <div class="shop-hitbox slot-3" onclick="buyItem({ name: 'Избиратель', price: 1200, tile: { kind: 'chain', level: 3 } })"></div>
+    <div class="shop-hitbox slot-4" onclick="buyItem({ name: 'Школа', price: 2500, tile: { kind: 'chain', level: 4 } })"></div>
+    <div class="shop-hitbox slot-5" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })"></div>
+    <div class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })"></div>
+    <div class="shop-hitbox slot-7" onclick="document.getElementById('log').textContent='В разработке'"></div>
+    <div class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })"></div>
+    <div class="shop-hitbox slot-9" onclick="document.getElementById('log').textContent='В разработке'"></div>
+    <div class="shop-hitbox slot-10" onclick="document.getElementById('log').textContent='В разработке'"></div>
+  </div>
 </div>
+
+<div class="modal" id="rating-modal">
+  <div class="modal-content">
+    <h2>РЕЙТИНГ</h2>
+    <div style="text-align:center; padding: 20px;">Топ игроков скоро появится!</div>
+    <button class="close-btn" onclick="closeModal('rating-modal')">Закрыть</button>
+  </div>
 </div>
 
 <div class="modal" id="pause-modal">
-<div class="pause-window">
-<div class="pause-hitbox-top">
-<div onclick="buyUndo()"></div>
-<div onclick="alert('Список в разработке')"></div>
-<div onclick="newGame()"></div>
-<div onclick="closeModal('pause-modal')"></div>
-</div>
-<div class="pause-missions-area" id="missions-area"></div>
-<div class="pause-hitbox-bottom">
-<div onclick="claimSocialBonus(5000)"></div>
-<div onclick="claimSocialBonus(5000)"></div>
-<div onclick="claimSocialBonus(5000)"></div>
-</div>
-</div>
+  <div class="pause-window">
+    <div class="pause-hitbox-top">
+        <div onclick="buyUndo()"></div>
+        <div onclick="document.getElementById('log').textContent='Список в разработке'"></div>
+        <div onclick="newGame()"></div>
+        <div onclick="closeModal('pause-modal')"></div>
+    </div>
+    <div class="pause-missions-area" id="missions-area"></div>
+    <div class="pause-hitbox-bottom">
+        <div onclick="claimSocialBonus(5000)"></div>
+        <div onclick="claimSocialBonus(5000)"></div>
+        <div onclick="claimSocialBonus(5000)"></div>
+    </div>
+  </div>
 </div>
 
 <div class="modal" id="mail-modal">
-<div class="modal-content" style="background:#93a576; border-color:#4a5c31;">
-<h2 style="color:#fff; text-shadow:1px 1px 0 #000;">ПОЧТА (Награды)</h2>
-<div id="mail-area" style="flex:1; overflow-y:auto; padding:4px;"></div>
-<button class="close-btn" onclick="closeModal('mail-modal')">Закрыть</button>
-</div>
+  <div class="modal-content" style="background:#93a576; border-color:#4a5c31;">
+    <h2 style="color:#fff; text-shadow:1px 1px 0 #000;">ПОЧТА (Награды)</h2>
+    <div id="mail-area" style="flex:1; overflow-y:auto; padding:4px;"></div>
+    <button class="close-btn" onclick="closeModal('mail-modal')">Закрыть</button>
+  </div>
 </div>
 
 <div class="modal" id="book-modal">
-<div class="modal-content">
-<div class="book-tabs">
-<div class="book-tab active" data-branch="chain" onclick="switchTab('chain', this)">Паша</div>
-<div class="book-tab" data-branch="care" onclick="switchTab('care', this)">Забота</div>
-<div class="book-tab" data-branch="income" onclick="switchTab('income', this)">Доход</div>
+  <div class="modal-content">
+    <div class="book-tabs">
+      <div class="book-tab active" data-branch="chain" onclick="switchTab('chain', this)">Паша</div>
+      <div class="book-tab" data-branch="care" onclick="switchTab('care', this)">Забота</div>
+      <div class="book-tab" data-branch="income" onclick="switchTab('income', this)">Доход</div>
+    </div>
+    <div class="book-scroll" id="book-scroll"></div>
+    <button class="close-btn" onclick="closeModal('book-modal')">Закрыть</button>
+  </div>
 </div>
-<div class="book-scroll" id="book-scroll"></div>
-<button class="close-btn" onclick="closeModal('book-modal')">Закрыть</button>
-</div>
+
+<div class="discovery-popup" id="disc-popup">
+  <div class="disc-img" id="disc-img">?</div>
+  <div class="disc-text">
+    <div class="disc-title" id="disc-title">Название</div>
+    <div class="disc-desc" id="disc-desc">Описание</div>
+  </div>
 </div>
 
 <script>
@@ -390,11 +324,12 @@ let discovered = new Set();
 let sawStreak = 0;
 
 let missions = {
-forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
-elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
-saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
+  forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
+  elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
+  saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
 };
 
+// === КЭШИ И ИНКРЕМЕНТАЛЬНЫЙ РЕНДЕР ===
 let boardEl = null;
 let boardRect = null, cellW = 0, cellH = 0, jailRect = null;
 const cellEls = [];
@@ -404,869 +339,871 @@ let saveTimer = null;
 let rafId = null, lastPointerX = 0, lastPointerY = 0;
 
 function loadDiscovered() {
-try { const r = localStorage.getItem(SEEN_KEY); if (r) discovered = new Set(JSON.parse(r)); } catch(e){}
+  try { const r = localStorage.getItem(SEEN_KEY); if (r) discovered = new Set(JSON.parse(r)); } catch(e){}
 }
 function saveDiscovered() {
-try { localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(discovered))); } catch(e){}
+  try { localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(discovered))); } catch(e){}
 }
 loadDiscovered();
 
 function renderNumber(num, containerId) {
-if (lastNumVals[containerId] === num) return;
-lastNumVals[containerId] = num;
-const el = document.getElementById(containerId);
-el.innerHTML = '';
-const str = num.toString();
-for (let i = 0; i < str.length; i++) {
-const digit = str[i];
-const img = document.createElement('img');
-img.src = 'img/num_' + digit + '.png';
-img.onerror = function() {
-this.style.display = 'none';
-const span = document.createElement('span');
-span.textContent = digit;
-span.style.fontSize = '16px';
-span.style.color = '#ffd700';
-span.style.fontWeight = 'bold';
-el.appendChild(span);
-};
-el.appendChild(img);
-}
+  if (lastNumVals[containerId] === num) return;
+  lastNumVals[containerId] = num;
+  const el = document.getElementById(containerId);
+  el.innerHTML = '';
+  const str = num.toString();
+  for (let i = 0; i < str.length; i++) {
+    const digit = str[i];
+    const img = document.createElement('img');
+    img.src = 'img/num_' + digit + '.png';
+    img.onerror = function() {
+      this.style.display = 'none';
+      const span = document.createElement('span');
+      span.textContent = digit;
+      span.style.fontSize = '16px';
+      span.style.color = '#ffd700';
+      span.style.fontWeight = 'bold';
+      el.appendChild(span);
+    };
+    el.appendChild(img);
+  }
 }
 
 function getTileImage(tile) {
-if (!tile) return null;
-if (tile.kind === 'chain') return 'img/pasha_' + (tile.level < 10 ? '0'+tile.level : tile.level) + '.png';
-if (tile.kind === 'care') return 'img/bear_' + tile.level + '.png';
-if (tile.kind === 'income') return 'img/income_' + tile.level + '.png';
-if (tile.kind === 'omon') return tile.level === 1 ? 'img/omon_1.png' : 'img/omon_2.png';
-if (tile.kind === 'pioneer') return 'img/Pioner_1.png';
-if (tile.kind === 'tool') return 'img/tool_' + tile.tool + '.png';
-return null;
+  if (!tile) return null;
+  if (tile.kind === 'chain') return 'img/pasha_' + (tile.level < 10 ? '0'+tile.level : tile.level) + '.png';
+  if (tile.kind === 'care') return 'img/bear_' + tile.level + '.png';
+  if (tile.kind === 'income') return 'img/income_' + tile.level + '.png';
+  if (tile.kind === 'omon') return tile.level === 1 ? 'img/omon_1.png' : 'img/omon_2.png';
+  if (tile.kind === 'pioneer') return 'img/Pioner_1.png';
+  if (tile.kind === 'tool') return 'img/tool_' + tile.tool + '.png';
+  return null;
 }
 
 function tileEmoji(tile) {
-if (tile.kind === 'chain') return CHAIN[tile.level - 1] || '?';
-if (tile.kind === 'care') return CARE[tile.level - 1] || '?';
-if (tile.kind === 'income') return INCOME[tile.level - 1] || '?';
-if (tile.kind === 'omon') return '🚔';
-if (tile.kind === 'pioneer') return '🧑‍🎓';
-if (tile.kind === 'tool') return '🛠️';
-return '?';
+  if (tile.kind === 'chain') return CHAIN[tile.level - 1] || '?';
+  if (tile.kind === 'care') return CARE[tile.level - 1] || '?';
+  if (tile.kind === 'income') return INCOME[tile.level - 1] || '?';
+  if (tile.kind === 'omon') return '🚔';
+  if (tile.kind === 'pioneer') return '🧑‍🎓';
+  if (tile.kind === 'tool') return '🛠️';
+  return '?';
 }
 
 function makeTileContent(tile) {
-let imgSrc = getTileImage(tile);
-if (imgSrc) {
-let img = document.createElement('img');
-img.src = imgSrc;
-
-if (tile.kind === 'chain' && tile.level === 5) img.style.transform = 'translate(-50%, -50%) scale(1.2)';
-
-if (tile.kind === 'omon') {
-if (tile.level === 2) img.style.transform = 'translate(-50%, -50%) scale(1.45)';
-if (tile.level === 1) img.style.transform = 'translate(-50%, -50%) scale(1.0)';
-}
-
-if (tile.kind === 'pioneer') img.style.transform = 'translate(-50%, -50%) scale(1.45)';
-
-if (tile.kind === 'care' && (tile.level === 1 || tile.level === 2 || tile.level === 3)) img.style.transform = 'translate(-50%, -50%) scale(1.45)';
-
-if (tile.kind === 'care' && tile.level === 4) img.style.transform = 'translate(-50%, -30%) scale(1.1)';
-
-img.onerror = function() { this.parentNode.innerHTML = '<span style="font-size:32px;">' + tileEmoji(tile) + '</span>'; };
-return img;
-} else {
-let span = document.createElement('span');
-span.style.fontSize = '32px';
-span.textContent = tileEmoji(tile);
-return span;
-}
+  let imgSrc = getTileImage(tile);
+  if (imgSrc) {
+    let img = document.createElement('img');
+    img.src = imgSrc;
+    if (tile.kind === 'chain' && tile.level === 5) img.style.transform = 'translate(-50%, -50%) scale(1.2)';
+    if (tile.kind === 'omon' && tile.level === 2) img.style.transform = 'translate(-50%, -50%) scale(1.25)';
+    if (tile.kind === 'care' && (tile.level === 1 || tile.level === 2)) img.style.transform = 'translate(-50%, -50%) scale(1.25)';
+    img.onerror = function() { this.parentNode.innerHTML = '<span style="font-size:32px;">' + tileEmoji(tile) + '</span>'; };
+    return img;
+  } else {
+    let span = document.createElement('span');
+    span.style.fontSize = '32px';
+    span.textContent = tileEmoji(tile);
+    return span;
+  }
 }
 
 function preloadImages() {
-const urls = [];
-for (let i = 1; i <= CHAIN.length; i++) urls.push('img/pasha_' + (i < 10 ? '0'+i : i) + '.png');
-for (let i = 1; i <= CARE.length; i++) urls.push('img/bear_' + i + '.png');
-for (let i = 1; i <= INCOME.length; i++) urls.push('img/income_' + i + '.png');
-urls.push('img/omon_1.png','img/omon_2.png','img/Pioner_1.png');
-urls.push('img/tool_saw.png','img/tool_sack.png','img/tool_nanobox.png','img/tool_jurist.png');
-for (let i = 0; i <= 9; i++) urls.push('img/num_' + i + '.png');
-urls.forEach(function(u) { const im = new Image(); im.src = u; });
+  const urls = [];
+  for (let i = 1; i <= CHAIN.length; i++) urls.push('img/pasha_' + (i < 10 ? '0'+i : i) + '.png');
+  for (let i = 1; i <= CARE.length; i++) urls.push('img/bear_' + i + '.png');
+  for (let i = 1; i <= INCOME.length; i++) urls.push('img/income_' + i + '.png');
+  urls.push('img/omon_1.png','img/omon_2.png','img/Pioner_1.png');
+  urls.push('img/tool_saw.png','img/tool_sack.png','img/tool_nanobox.png','img/tool_jurist.png');
+  for (let i = 0; i <= 9; i++) urls.push('img/num_' + i + '.png');
+  urls.forEach(function(u) { const im = new Image(); im.src = u; });
 }
 
 function buildBoard() {
-boardEl = document.getElementById('board');
-boardEl.innerHTML = '';
-cellEls.length = 0;
-for (let r = 0; r < SIZE; r++) {
-cellEls[r] = [];
-for (let c = 0; c < SIZE; c++) {
-const cell = document.createElement('div');
-cell.className = 'cell';
-cell.dataset.r = r; cell.dataset.c = c;
-boardEl.appendChild(cell);
-cellEls[r][c] = cell;
-cellCache[r * SIZE + c] = undefined;
-}
-}
-updateBoardMetrics();
+  boardEl = document.getElementById('board');
+  boardEl.innerHTML = '';
+  cellEls.length = 0;
+  for (let r = 0; r < SIZE; r++) {
+    cellEls[r] = [];
+    for (let c = 0; c < SIZE; c++) {
+      const cell = document.createElement('div');
+      cell.className = 'cell';
+      cell.dataset.r = r; cell.dataset.c = c;
+      boardEl.appendChild(cell);
+      cellEls[r][c] = cell;
+      cellCache[r * SIZE + c] = undefined;
+    }
+  }
+  updateBoardMetrics();
 }
 
 function updateBoardMetrics() {
-if (!boardEl) return;
-boardRect = boardEl.getBoundingClientRect();
-cellW = boardRect.width / SIZE;
-cellH = boardRect.height / SIZE;
+  if (!boardEl) return;
+  boardRect = boardEl.getBoundingClientRect();
+  cellW = boardRect.width / SIZE;
+  cellH = boardRect.height / SIZE;
 }
 
 function updateCell(r, c) {
-const d = grid[r][c];
-const justSpawned = d && d.justSpawned;
-const key = d ? (d.kind + '_' + (d.level || '') + '_' + (d.tool || '')) : '';
-const idx = r * SIZE + c;
+  const d = grid[r][c];
+  const justSpawned = d && d.justSpawned;
+  const key = d ? (d.kind + '_' + (d.level || '') + '_' + (d.tool || '')) : '';
+  const idx = r * SIZE + c;
 
-if (cellCache[idx] === key && !justSpawned) return;
-cellCache[idx] = key;
+  if (cellCache[idx] === key && !justSpawned) return;
+  cellCache[idx] = key;
 
-const cell = cellEls[r][c];
-cell.style.opacity = '';
-cell.style.transition = '';
-cell.className = 'cell';
-cell.innerHTML = '';
+  const cell = cellEls[r][c];
+  cell.style.opacity = '';
+  cell.style.transition = '';
+  cell.className = 'cell';
+  cell.innerHTML = '';
 
-if (d) {
-cell.classList.add('occupied');
-cell.appendChild(makeTileContent(d));
-if (d.kind !== 'omon' && d.kind !== 'pioneer' && LARGE_TILES.includes(d.level)) {
-cell.classList.add('large-tile');
-}
-if (justSpawned) {
-cell.classList.add('anim-omon');
-delete d.justSpawned;
-}
-}
+  if (d) {
+    cell.classList.add('occupied');
+    cell.appendChild(makeTileContent(d));
+    if (d.kind !== 'omon' && d.kind !== 'pioneer' && LARGE_TILES.includes(d.level)) {
+      cell.classList.add('large-tile');
+    }
+    if (justSpawned) {
+      cell.classList.add('anim-omon');
+      delete d.justSpawned;
+    }
+  }
 }
 
 function updateHud() {
-renderNumber(score, 'score-num');
-renderNumber(coins, 'coins-num');
-renderNumber(moves, 'moves-num');
+  renderNumber(score, 'score-num');
+  renderNumber(coins, 'coins-num');
+  renderNumber(moves, 'moves-num');
 }
 
 function updateNext() {
-const nextCont = document.getElementById('next-content');
-nextCont.innerHTML = '';
-if (nextTile) nextCont.appendChild(makeTileContent(nextTile));
-else nextCont.textContent = '—';
+  const nextCont = document.getElementById('next-content');
+  nextCont.innerHTML = '';
+  if (nextTile) nextCont.appendChild(makeTileContent(nextTile));
+  else nextCont.textContent = '—';
 }
 
 function updateJail() {
-const jailCont = document.getElementById('jail-content');
-jailCont.innerHTML = '';
-if (jailTile) jailCont.appendChild(makeTileContent(jailTile));
-else jailCont.textContent = '—';
+  const jailCont = document.getElementById('jail-content');
+  jailCont.innerHTML = '';
+  if (jailTile) jailCont.appendChild(makeTileContent(jailTile));
+  else jailCont.textContent = '—';
 }
 
 function updateAll() {
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) updateCell(r, c);
-updateHud();
-updateNext();
-updateJail();
-checkForestMission();
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) updateCell(r, c);
+  updateHud();
+  updateNext();
+  updateJail();
+  checkForestMission();
 }
 
 function checkForestMission() {
-if (missions.forest.status !== 'active') return;
-let bears = 0;
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-const d = grid[r][c];
-if (d && d.kind === 'care' && d.level === 1) bears++;
-}
-if (bears >= 10) {
-missions.forest.status = 'completed';
-updateMailBadge();
-}
+  if (missions.forest.status !== 'active') return;
+  let bears = 0;
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+    const d = grid[r][c];
+    if (d && d.kind === 'care' && d.level === 1) bears++;
+  }
+  if (bears >= 10) {
+    missions.forest.status = 'completed';
+    updateMailBadge();
+    document.getElementById('log').textContent = 'Задание "В ЛЕСУ" выполнено! Проверь почту.';
+  }
 }
 
 function checkDiscovery(tile) {
-if (!tile) return;
-let key = tile.kind + '_' + (tile.level || '');
-if (tile.kind === 'tool') key = 'tool_' + tile.tool;
-if (discovered.has(key)) return;
-discovered.add(key);
-saveDiscovered();
+  if (!tile) return;
+  let key = tile.kind + '_' + (tile.level || '');
+  if (tile.kind === 'tool') key = 'tool_' + tile.tool;
+  if (discovered.has(key)) return;
+
+  discovered.add(key);
+  saveDiscovered();
+
+  let name = 'Неизвестно', desc = '';
+  if (tile.kind === 'chain') { name = 'Паша ур.' + tile.level; desc = 'Описание уровня ' + tile.level; }
+  else if (tile.kind === 'care') { name = 'Забота ур.' + tile.level; desc = 'Описание уровня ' + tile.level; }
+  else if (tile.kind === 'income') { name = 'Доход ур.' + tile.level; desc = 'Описание уровня ' + tile.level; }
+  else if (tile.kind === 'pioneer') { name = 'Пионер'; desc = 'Всегда готов!'; }
+  else if (tile.kind === 'omon') { name = 'ОМОН'; desc = 'Стоять! Бояться!'; }
+
+  let discImg = document.getElementById('disc-img');
+  let imgSrc = getTileImage(tile);
+  discImg.innerHTML = imgSrc ? '<img src="' + imgSrc + '" onerror="this.parentNode.innerHTML=\'<span>' + tileEmoji(tile) + '</span>\'">' : '<span>' + tileEmoji(tile) + '</span>';
+
+  document.getElementById('disc-title').textContent = name;
+  document.getElementById('disc-desc').textContent = desc;
+
+  let popup = document.getElementById('disc-popup');
+  popup.classList.add('show');
+  setTimeout(function() { popup.classList.remove('show'); }, 3000);
+}
+
+function showMeme(imgSrc) {
+  const popup = document.getElementById('meme-popup');
+  const img = document.getElementById('meme-img');
+  img.src = imgSrc;
+  popup.classList.add('show');
+  setTimeout(function() { popup.classList.remove('show'); }, 4000);
 }
 
 function updateMailBadge() {
-let hasCompleted = Object.values(missions).some(function(m) { return m.status === 'completed'; });
-const badge = document.getElementById('mail-badge');
-if (hasCompleted) badge.classList.add('show');
-else badge.classList.remove('show');
+  let hasCompleted = Object.values(missions).some(function(m) { return m.status === 'completed'; });
+  const badge = document.getElementById('mail-badge');
+  if (hasCompleted) badge.classList.add('show');
+  else badge.classList.remove('show');
 }
 
 function init() {
-grid = Array.from({ length: SIZE }, function() { return Array(SIZE).fill(null); });
-score = 0; coins = 1000000; moves = 0;
-jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
-isSawMode = false; isNanoboxMode = false;
-sawStreak = 0;
-localStorage.removeItem(SEEN_KEY);
-discovered = new Set();
-for (let k in lastNumVals) lastNumVals[k] = null;
+  grid = Array.from({ length: SIZE }, function() { return Array(SIZE).fill(null); });
+  score = 0; coins = 1000000; moves = 0;
+  jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
+  isSawMode = false; isNanoboxMode = false;
+  sawStreak = 0;
+  localStorage.removeItem(SEEN_KEY);
+  discovered = new Set();
+  for (let k in lastNumVals) lastNumVals[k] = null;
 
-missions = {
-forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
-elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
-saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
-};
-updateMailBadge();
+  missions = {
+    forest: { status: 'active', reward: 1400, img: 'img/mission_forest.png' },
+    elections: { status: 'active', reward: 2800, img: 'img/mission_elections.png' },
+    saw: { status: 'active', reward: 5000, img: 'img/mission_saw.png' }
+  };
+  updateMailBadge();
 
-buildBoard();
+  buildBoard();
 
-let spawned = 0;
-while (spawned < 25) {
-let r = Math.floor(Math.random() * SIZE);
-let c = Math.floor(Math.random() * SIZE);
-if (!grid[r][c]) {
-grid[r][c] = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
-let grp = findGroup(r, c);
-if (grp && grp.length >= 3) grid[r][c] = null;
-else { spawned++; checkDiscovery(grid[r][c]); }
-}
-}
-nextTile = newRandomTile();
-updateAll();
-}
-
-function loadGame() {
-const saved = localStorage.getItem(SAVE_KEY);
-if (saved) {
-try {
-const data = JSON.parse(saved);
-grid = data.grid;
-score = data.score;
-coins = data.coins;
-moves = data.moves;
-nextTile = data.nextTile;
-jailTile = data.jailTile;
-bufferedNext = data.bufferedNext;
-testSpawnIndex = data.testSpawnIndex;
-missions = data.missions || missions;
-
-buildBoard();
-updateAll();
-updateMailBadge();
-return;
-} catch(e) {
-console.error("Ошибка загрузки сохранения", e);
-}
-}
-init();
+  let spawned = 0;
+  while (spawned < 25) {
+    let r = Math.floor(Math.random() * SIZE);
+    let c = Math.floor(Math.random() * SIZE);
+    if (!grid[r][c]) {
+      grid[r][c] = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+      let grp = findGroup(r, c);
+      if (grp && grp.length >= 3) grid[r][c] = null;
+      else { spawned++; checkDiscovery(grid[r][c]); }
+    }
+  }
+  nextTile = newRandomTile();
+  updateAll();
+  document.getElementById('log').textContent = 'Игра начата!';
 }
 
 function newRandomTile() {
-testSpawnIndex++;
-if (testSpawnIndex <= 5) return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
-if (testSpawnIndex === 6) return { kind: 'omon', level: 1 };
-if (testSpawnIndex === 7) return { kind: 'omon', level: 2 };
-if (testSpawnIndex >= 8 && testSpawnIndex <= 12) return { kind: 'pioneer' };
+  testSpawnIndex++;
+  if (testSpawnIndex <= 5) return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+  if (testSpawnIndex === 6) return { kind: 'omon', level: 1 };
+  if (testSpawnIndex === 7) return { kind: 'omon', level: 2 };
+  if (testSpawnIndex >= 8 && testSpawnIndex <= 12) return { kind: 'pioneer' };
 
-let r = Math.random();
-if (r < 0.05) return { kind: 'pioneer' };
-if (r < 0.10) return { kind: 'chain', level: 1 };
-if (r < 0.15) return { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
-return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+  let r = Math.random();
+  if (r < 0.05) return { kind: 'pioneer' };
+  if (r < 0.10) return { kind: 'chain', level: 1 };
+  if (r < 0.15) return { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+  return { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
 }
 
 function findGroup(startR, startC, tempGrid) {
-let g = tempGrid || grid;
-const start = g[startR][startC];
-if (!start || start.kind === 'omon' || start.kind === 'pioneer' || start.kind === 'tool') return null;
-let visited = {}, stack = [[startR, startC]], group = [];
-while (stack.length) {
-const pos = stack.pop();
-const r = pos[0], c = pos[1];
-const key = r + ',' + c;
-if (visited[key]) continue;
-if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) continue;
-const t = g[r][c];
-if (!t || t.kind !== start.kind || t.level !== start.level) continue;
-visited[key] = true;
-group.push([r, c]);
-stack.push([r-1, c], [r+1, c], [r, c-1], [r, c+1]);
-}
-return group;
+  let g = tempGrid || grid;
+  const start = g[startR][startC];
+  if (!start || start.kind === 'omon' || start.kind === 'pioneer' || start.kind === 'tool') return null;
+  let visited = {}, stack = [[startR, startC]], group = [];
+  while (stack.length) {
+    const pos = stack.pop();
+    const r = pos[0], c = pos[1];
+    const key = r + ',' + c;
+    if (visited[key]) continue;
+    if (r < 0 || r >= SIZE || c < 0 || c >= SIZE) continue;
+    const t = g[r][c];
+    if (!t || t.kind !== start.kind || t.level !== start.level) continue;
+    visited[key] = true;
+    group.push([r, c]);
+    stack.push([r-1, c], [r+1, c], [r, c-1], [r, c+1]);
+  }
+  return group;
 }
 
 function processCascades(anchorR, anchorC, isSackMerge) {
-let cas = 0;
-while (cas < 50) {
-const group = findGroup(anchorR, anchorC);
-if (!group || group.length < 3) break;
+  let cas = 0;
+  while (cas < 50) {
+    const group = findGroup(anchorR, anchorC);
+    if (!group || group.length < 3) break;
 
-const tile = grid[anchorR][anchorC];
-const lvl = tile.level, kind = tile.kind;
-const maxL = kind === 'chain' ? CHAIN.length : (kind === 'care' ? CARE.length : INCOME.length);
-if (lvl >= maxL) break;
+    const tile = grid[anchorR][anchorC];
+    const lvl = tile.level, kind = tile.kind;
+    const maxL = kind === 'chain' ? CHAIN.length : (kind === 'care' ? CARE.length : INCOME.length);
+    if (lvl >= maxL) break;
 
-group.forEach(function(pos) {
-const r = pos[0], c = pos[1];
-const cell = cellEls[r][c];
-if (!cell) return;
-let img = cell.querySelector('img') || cell.querySelector('span');
-if (img) {
-let dx = (anchorC - c) * 100;
-let dy = (anchorR - r) * 100;
-img.classList.add('merging');
-img.style.transform = 'translate(-50%, -50%) translate(' + dx + '%, ' + dy + '%) scale(0.5)';
-img.style.opacity = '0';
-}
-});
+    group.forEach(function(pos) {
+      const r = pos[0], c = pos[1];
+      const cell = cellEls[r][c];
+      if (!cell) return;
+      let img = cell.querySelector('img') || cell.querySelector('span');
+      if (img) {
+        let dx = (anchorC - c) * 100;
+        let dy = (anchorR - r) * 100;
+        img.classList.add('merging');
+        img.style.transform = 'translate(-50%, -50%) translate(' + dx + '%, ' + dy + '%) scale(0.5)';
+        img.style.opacity = '0';
+      }
+    });
 
-setTimeout(function() {
-group.forEach(function(pos) { grid[pos[0]][pos[1]] = null; });
-let newLevel = lvl + 1;
+    setTimeout(function() {
+      group.forEach(function(pos) { grid[pos[0]][pos[1]] = null; });
+      let newLevel = lvl + 1;
 
-if (kind === 'chain' && lvl === 14) {
-const parts = [15, 16, 17];
-for (let p of parts) {
-let has = false;
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].level === p) has = true;
-if (!has) { newLevel = p; break; }
-}
-}
+      if (kind === 'chain' && lvl === 14) {
+        const parts = [15, 16, 17];
+        for (let p of parts) {
+          let has = false;
+          for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].level === p) has = true;
+          if (!has) { newLevel = p; break; }
+        }
+      }
 
-if (kind === 'chain' && lvl === 8 && newLevel === 9 && !isSackMerge && missions.elections.status === 'active') {
-missions.elections.status = 'completed';
-updateMailBadge();
-}
+      if (kind === 'chain' && newLevel === 5 && !discovered.has('meme_urna')) {
+        discovered.add('meme_urna'); saveDiscovered(); showMeme('img/popup_urna.png');
+      }
+      if (kind === 'chain' && newLevel === 9 && !discovered.has('meme_president')) {
+        discovered.add('meme_president'); saveDiscovered(); showMeme('img/popup_president.png');
+      }
 
-grid[anchorR][anchorC] = { kind: kind, level: newLevel };
-checkDiscovery(grid[anchorR][anchorC]);
+      if (kind === 'chain' && lvl === 8 && newLevel === 9 && !isSackMerge && missions.elections.status === 'active') {
+        missions.elections.status = 'completed';
+        updateMailBadge();
+        document.getElementById('log').textContent = 'Задание "ЧЕСТНЫЕ ВЫБОРЫ" выполнено!';
+      }
 
-group.forEach(function(pos) { updateCell(pos[0], pos[1]); });
+      grid[anchorR][anchorC] = { kind: kind, level: newLevel };
+      checkDiscovery(grid[anchorR][anchorC]);
 
-score += lvl * 15 * group.length;
-coins += lvl * 2 * group.length;
+      group.forEach(function(pos) { updateCell(pos[0], pos[1]); });
 
-updateHud();
-checkForestMission();
+      score += lvl * 15 * group.length;
+      coins += lvl * 2 * group.length;
 
-setTimeout(function() { processCascades(anchorR, anchorC); }, 100);
-}, 200);
+      updateHud();
+      checkForestMission();
 
-cas++;
-break;
-}
+      setTimeout(function() { processCascades(anchorR, anchorC); }, 100);
+    }, 200);
+
+    cas++;
+    break;
+  }
 }
 
 function endMove() {
-moves++;
-sawStreak = 0;
+  moves++;
+  sawStreak = 0;
 
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'income') {
-coins += INCOME_PER_TURN[grid[r][c].level - 1] || 5;
-}
-}
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+    if (grid[r][c] && grid[r][c].kind === 'income') {
+      coins += INCOME_PER_TURN[grid[r][c].level - 1] || 5;
+    }
+  }
 
-let omons = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'omon') {
-if (grid[r][c].skipMove) delete grid[r][c].skipMove;
-else omons.push([r, c]);
-}
-}
+  let omons = [];
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+    if (grid[r][c] && grid[r][c].kind === 'omon') {
+      if (grid[r][c].skipMove) delete grid[r][c].skipMove;
+      else omons.push([r, c]);
+    }
+  }
 
-if (omons.length > 0) {
-omons.forEach(function(pos) {
-const cell = cellEls[pos[0]][pos[1]];
-if (cell) { cell.style.transition = 'opacity 0.4s'; cell.style.opacity = '0'; }
-});
+  if (omons.length > 0) {
+    omons.forEach(function(pos) {
+      const cell = cellEls[pos[0]][pos[1]];
+      if (cell) { cell.style.transition = 'opacity 0.4s'; cell.style.opacity = '0'; }
+    });
 
-setTimeout(function() {
-omons.forEach(function(pos) {
-const r = pos[0], c = pos[1];
-if (!grid[r][c]) return;
-let empty = [];
-for (let r2 = 0; r2 < SIZE; r2++) for (let c2 = 0; c2 < SIZE; c2++) if (!grid[r2][c2]) empty.push([r2, c2]);
-if (empty.length) {
-let p = empty[Math.floor(Math.random() * empty.length)];
-grid[p[0]][p[1]] = grid[r][c];
-grid[p[0]][p[1]].justSpawned = true;
-grid[r][c] = null;
-}
-});
+    setTimeout(function() {
+      omons.forEach(function(pos) {
+        const r = pos[0], c = pos[1];
+        if (!grid[r][c]) return;
+        let empty = [];
+        for (let r2 = 0; r2 < SIZE; r2++) for (let c2 = 0; c2 < SIZE; c2++) if (!grid[r2][c2]) empty.push([r2, c2]);
+        if (empty.length) {
+          let p = empty[Math.floor(Math.random() * empty.length)];
+          grid[p[0]][p[1]] = grid[r][c];
+          grid[p[0]][p[1]].justSpawned = true;
+          grid[r][c] = null;
+        }
+      });
 
-let pioneers = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
-pioneers.forEach(function(pos) {
-const r = pos[0], c = pos[1];
-if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
-let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
-dirs.forEach(function(d) {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
-else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
-}
-});
-if (valid.length) {
-let move = valid[Math.floor(Math.random() * valid.length)];
-if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
-grid[move.r][move.c] = { kind: 'pioneer' };
-grid[r][c] = null;
-}
-});
+      let pioneers = [];
+      for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
+      pioneers.forEach(function(pos) {
+        const r = pos[0], c = pos[1];
+        if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
+        let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
+        dirs.forEach(function(d) {
+          let nr = r + d[0], nc = c + d[1];
+          if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+            if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
+            else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
+          }
+        });
+        if (valid.length) {
+          let move = valid[Math.floor(Math.random() * valid.length)];
+          if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
+          grid[move.r][move.c] = { kind: 'pioneer' };
+          grid[r][c] = null;
+        }
+      });
 
-let trapped = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'pioneer') {
-let hasMove = false;
-[[0,1], [0,-1], [1,0], [-1,0]].forEach(function(d) {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
-}
-});
-if (!hasMove) trapped.push([r, c]);
-}
-}
-trapped.forEach(function(pos) {
-grid[pos[0]][pos[1]] = { kind: 'care', level: 1 };
-processCascades(pos[0], pos[1]);
-});
+      let trapped = [];
+      for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+        if (grid[r][c] && grid[r][c].kind === 'pioneer') {
+          let hasMove = false;
+          [[0,1], [0,-1], [1,0], [-1,0]].forEach(function(d) {
+            let nr = r + d[0], nc = c + d[1];
+            if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+              if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
+            }
+          });
+          if (!hasMove) trapped.push([r, c]);
+        }
+      }
+      trapped.forEach(function(pos) {
+        grid[pos[0]][pos[1]] = { kind: 'care', level: 1 };
+        processCascades(pos[0], pos[1]);
+      });
 
-if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+      if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
 
-updateAll();
-saveGame();
-}, 400);
-} else {
-let pioneers = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
-pioneers.forEach(function(pos) {
-const r = pos[0], c = pos[1];
-if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
-let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
-dirs.forEach(function(d) {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
-else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
-}
-});
-if (valid.length) {
-let move = valid[Math.floor(Math.random() * valid.length)];
-if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
-grid[move.r][move.c] = { kind: 'pioneer' };
-grid[r][c] = null;
-}
-});
+      updateAll();
+      saveGame();
+    }, 400);
+  } else {
+    let pioneers = [];
+    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) if (grid[r][c] && grid[r][c].kind === 'pioneer') pioneers.push([r, c]);
+    pioneers.forEach(function(pos) {
+      const r = pos[0], c = pos[1];
+      if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
+      let dirs = [[0,1], [0,-1], [1,0], [-1,0]], valid = [];
+      dirs.forEach(function(d) {
+        let nr = r + d[0], nc = c + d[1];
+        if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+          if (!grid[nr][nc]) valid.push({r: nr, c: nc, type: 'empty'});
+          else if (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1) valid.push({r: nr, c: nc, type: 'money'});
+        }
+      });
+      if (valid.length) {
+        let move = valid[Math.floor(Math.random() * valid.length)];
+        if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
+        grid[move.r][move.c] = { kind: 'pioneer' };
+        grid[r][c] = null;
+      }
+    });
 
-let trapped = [];
-for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
-if (grid[r][c] && grid[r][c].kind === 'pioneer') {
-let hasMove = false;
-[[0,1], [0,-1], [1,0], [-1,0]].forEach(function(d) {
-let nr = r + d[0], nc = c + d[1];
-if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
-if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
-}
-});
-if (!hasMove) trapped.push([r, c]);
-}
-}
-trapped.forEach(function(pos) {
-grid[pos[0]][pos[1]] = { kind: 'care', level: 1 };
-processCascades(pos[0], pos[1]);
-});
+    let trapped = [];
+    for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+      if (grid[r][c] && grid[r][c].kind === 'pioneer') {
+        let hasMove = false;
+        [[0,1], [0,-1], [1,0], [-1,0]].forEach(function(d) {
+          let nr = r + d[0], nc = c + d[1];
+          if (nr >= 0 && nr < SIZE && nc >= 0 && nc < SIZE) {
+            if (!grid[nr][nc] || (grid[nr][nc].kind === 'chain' && grid[nr][nc].level === 1)) hasMove = true;
+          }
+        });
+        if (!hasMove) trapped.push([r, c]);
+      }
+    }
+    trapped.forEach(function(pos) {
+      grid[pos[0]][pos[1]] = { kind: 'care', level: 1 };
+      processCascades(pos[0], pos[1]);
+    });
 
-if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
-updateAll();
-saveGame();
-}
+    if (moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
+    updateAll();
+    saveGame();
+  }
 }
 
 function setGhostPosition(x, y) {
-drag.ghost.style.transform = 'translate3d(' + (x - drag.offsetX) + 'px, ' + (y - drag.offsetY) + 'px, 0)';
+  drag.ghost.style.transform = 'translate3d(' + (x - drag.offsetX) + 'px, ' + (y - drag.offsetY) + 'px, 0)';
 }
 
 function highlightCellAt(x, y) {
-document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(function(el) { el.classList.remove('hover', 'hover-bad'); });
-if (x >= boardRect.left && x < boardRect.right && y >= boardRect.top && y < boardRect.bottom) {
-const c = Math.floor((x - boardRect.left) / cellW);
-const r = Math.floor((y - boardRect.top) / cellH);
-if (r >= 0 && r < SIZE && c >= 0 && c < SIZE) {
-cellEls[r][c].classList.add(!grid[r][c] ? 'hover' : 'hover-bad');
-}
-}
+  document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(function(el) { el.classList.remove('hover', 'hover-bad'); });
+  if (x >= boardRect.left && x < boardRect.right && y >= boardRect.top && y < boardRect.bottom) {
+    const c = Math.floor((x - boardRect.left) / cellW);
+    const r = Math.floor((y - boardRect.top) / cellH);
+    if (r >= 0 && r < SIZE && c >= 0 && c < SIZE) {
+      cellEls[r][c].classList.add(!grid[r][c] ? 'hover' : 'hover-bad');
+    }
+  }
 }
 
 function startDrag(e, type, tile) {
-updateBoardMetrics();
-jailRect = document.getElementById('jail').getBoundingClientRect();
+  updateBoardMetrics();
+  jailRect = document.getElementById('jail').getBoundingClientRect();
 
-const ghost = document.createElement('div');
-ghost.className = 'ghost';
-ghost.style.width = cellW + 'px';
-ghost.style.height = cellH + 'px';
-ghost.appendChild(makeTileContent(tile));
-if (tile.kind !== 'omon' && tile.kind !== 'pioneer' && LARGE_TILES.includes(tile.level)) ghost.classList.add('large-tile');
-document.body.appendChild(ghost);
+  const ghost = document.createElement('div');
+  ghost.className = 'ghost';
+  ghost.style.width = cellW + 'px';
+  ghost.style.height = cellH + 'px';
+  ghost.appendChild(makeTileContent(tile));
+  if (tile.kind !== 'omon' && tile.kind !== 'pioneer' && LARGE_TILES.includes(tile.level)) ghost.classList.add('large-tile');
+  document.body.appendChild(ghost);
 
-drag = { type: type, ghost: ghost, offsetX: cellW / 2, offsetY: cellH / 2 };
-setGhostPosition(e.clientX, e.clientY);
-lastPointerX = e.clientX; lastPointerY = e.clientY;
+  drag = { type: type, ghost: ghost, offsetX: cellW / 2, offsetY: cellH / 2 };
+  setGhostPosition(e.clientX, e.clientY);
+  lastPointerX = e.clientX; lastPointerY = e.clientY;
 
-window.addEventListener('pointermove', onMove);
-window.addEventListener('pointerup', onUp);
+  window.addEventListener('pointermove', onMove);
+  window.addEventListener('pointerup', onUp);
 }
 
 document.getElementById('next-tile').addEventListener('pointerdown', function(e) {
-if (!nextTile || isSawMode || isNanoboxMode) return;
-e.preventDefault();
-startDrag(e, 'fromNext', nextTile);
+  if (!nextTile || isSawMode || isNanoboxMode) return;
+  e.preventDefault();
+  startDrag(e, 'fromNext', nextTile);
 });
 
 document.getElementById('jail').addEventListener('pointerdown', function(e) {
-if (!jailTile || isSawMode || isNanoboxMode) return;
-e.preventDefault();
-startDrag(e, 'fromJail', jailTile);
+  if (!jailTile || isSawMode || isNanoboxMode) return;
+  e.preventDefault();
+  startDrag(e, 'fromJail', jailTile);
 });
 
 function onMove(e) {
-if (!drag) return;
-lastPointerX = e.clientX;
-lastPointerY = e.clientY;
-if (!rafId) rafId = requestAnimationFrame(flushMove);
+  if (!drag) return;
+  lastPointerX = e.clientX;
+  lastPointerY = e.clientY;
+  if (!rafId) rafId = requestAnimationFrame(flushMove);
 }
 
 function flushMove() {
-rafId = null;
-if (!drag) return;
-setGhostPosition(lastPointerX, lastPointerY);
-highlightCellAt(lastPointerX, lastPointerY);
+  rafId = null;
+  if (!drag) return;
+  setGhostPosition(lastPointerX, lastPointerY);
+  highlightCellAt(lastPointerX, lastPointerY);
 }
 
 function onUp(e) {
-if (!drag) return;
-window.removeEventListener('pointermove', onMove);
-window.removeEventListener('pointerup', onUp);
-if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
-drag.ghost.remove();
-document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(function(el) { el.classList.remove('hover', 'hover-bad'); });
+  if (!drag) return;
+  window.removeEventListener('pointermove', onMove);
+  window.removeEventListener('pointerup', onUp);
+  if (rafId) { cancelAnimationFrame(rafId); rafId = null; }
+  drag.ghost.remove();
+  document.querySelectorAll('.cell.hover, .cell.hover-bad').forEach(function(el) { el.classList.remove('hover', 'hover-bad'); });
 
-const x = e.clientX, y = e.clientY;
-let cell = null;
-let inJail = (x >= jailRect.left && x < jailRect.right && y >= jailRect.top && y < jailRect.bottom);
+  const x = e.clientX, y = e.clientY;
+  let cell = null;
+  let inJail = (x >= jailRect.left && x < jailRect.right && y >= jailRect.top && y < jailRect.bottom);
 
-if (!inJail && x >= boardRect.left && x < boardRect.right && y >= boardRect.top && y < boardRect.bottom) {
-const c = Math.floor((x - boardRect.left) / cellW);
-const r = Math.floor((y - boardRect.top) / cellH);
-if (r >= 0 && r < SIZE && c >= 0 && c < SIZE) cell = cellEls[r][c];
-}
+  if (!inJail && x >= boardRect.left && x < boardRect.right && y >= boardRect.top && y < boardRect.bottom) {
+    const c = Math.floor((x - boardRect.left) / cellW);
+    const r = Math.floor((y - boardRect.top) / cellH);
+    if (r >= 0 && r < SIZE && c >= 0 && c < SIZE) cell = cellEls[r][c];
+  }
 
-if (drag.type === 'fromJail') {
-if (cell) {
-const r = +cell.dataset.r, c = +cell.dataset.c;
+  if (drag.type === 'fromJail') {
+    if (cell) {
+      const r = +cell.dataset.r, c = +cell.dataset.c;
 
-if (jailTile.kind === 'tool') {
-undoState = snapshot();
-let tool = jailTile;
-jailTile = null;
+      if (jailTile.kind === 'tool') {
+        undoState = snapshot();
+        let tool = jailTile;
+        jailTile = null;
 
-if (tool.tool === 'jurist') {
-if (grid[r][c] && grid[r][c].kind !== 'omon') {
-let taken = grid[r][c];
-grid[r][c] = null;
-nextTile = taken;
-updateCell(r, c);
-updateNext();
-updateJail();
-endMove();
-} else { updateAll(); }
-} else if (tool.tool === 'saw') {
-if (grid[r][c]) {
-if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
-grid[r][c] = { kind: 'care', level: 1 };
-checkDiscovery(grid[r][c]);
-updateCell(r, c);
-processCascades(r, c);
-} else {
-grid[r][c] = null;
-updateCell(r, c);
-}
-updateJail();
-endMove();
-} else { updateAll(); }
-} else if (tool.tool === 'nanobox') {
-if (grid[r][c]) {
-nextTile = Object.assign({}, grid[r][c]);
-updateNext();
-updateJail();
-saveGame();
-} else { updateAll(); }
-} else if (tool.tool === 'sack') {
-if (!grid[r][c]) {
-doSackAt(r, c);
-} else { updateAll(); }
-}
-drag = null;
-return;
-} else {
-if (!grid[r][c]) {
-undoState = snapshot();
-grid[r][c] = jailTile;
-jailTile = null;
-checkDiscovery(grid[r][c]);
-if (grid[r][c].kind === 'omon') grid[r][c].skipMove = true;
-updateCell(r, c);
-updateJail();
-processCascades(r, c);
-endMove();
-}
-}
-}
-drag = null;
-return;
-}
+        if (tool.tool === 'jurist') {
+          if (grid[r][c] && grid[r][c].kind !== 'omon') {
+            let taken = grid[r][c];
+            grid[r][c] = null;
+            nextTile = taken;
+            updateCell(r, c);
+            updateNext();
+            updateJail();
+            endMove();
+          } else { updateAll(); }
+        } else if (tool.tool === 'saw') {
+          if (grid[r][c]) {
+            if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
+              grid[r][c] = { kind: 'care', level: 1 };
+              checkDiscovery(grid[r][c]);
+              updateCell(r, c);
+              processCascades(r, c);
+            } else {
+              grid[r][c] = null;
+              updateCell(r, c);
+            }
+            updateJail();
+            endMove();
+          } else { updateAll(); }
+        } else if (tool.tool === 'nanobox') {
+          if (grid[r][c]) {
+            nextTile = Object.assign({}, grid[r][c]);
+            updateNext();
+            updateJail();
+            saveGame();
+          } else { updateAll(); }
+        } else if (tool.tool === 'sack') {
+          if (!grid[r][c]) {
+            doSackAt(r, c);
+          } else { updateAll(); }
+        }
+        drag = null;
+        return;
+      } else {
+        if (!grid[r][c]) {
+          undoState = snapshot();
+          grid[r][c] = jailTile;
+          jailTile = null;
+          checkDiscovery(grid[r][c]);
+          if (grid[r][c].kind === 'omon') grid[r][c].skipMove = true;
+          updateCell(r, c);
+          updateJail();
+          processCascades(r, c);
+          endMove();
+        }
+      }
+    }
+    drag = null;
+    return;
+  }
 
-if (inJail) {
-if (drag.type === 'fromNext') {
-if (jailTile) bufferedNext = jailTile;
-jailTile = nextTile;
-nextTile = bufferedNext || newRandomTile();
-bufferedNext = null;
-updateNext();
-updateJail();
-saveGame();
-drag = null;
-return;
-}
-}
+  if (inJail) {
+    if (drag.type === 'fromNext') {
+      if (jailTile) bufferedNext = jailTile;
+      jailTile = nextTile;
+      nextTile = bufferedNext || newRandomTile();
+      bufferedNext = null;
+      updateNext();
+      updateJail();
+      saveGame();
+      drag = null;
+      return;
+    }
+  }
 
-if (cell) {
-const r = +cell.dataset.r, c = +cell.dataset.c;
+  if (cell) {
+    const r = +cell.dataset.r, c = +cell.dataset.c;
 
-if (nextTile && nextTile.kind === 'tool') {
-if (nextTile.tool !== 'sack' && !grid[r][c]) {
-alert('Инструмент нужно кидать на фишку!');
-drag = null;
-return;
-}
+    if (nextTile && nextTile.kind === 'tool') {
+      if (nextTile.tool !== 'sack' && !grid[r][c]) {
+        document.getElementById('log').textContent = 'Инструмент нужно кидать на фишку!';
+        drag = null;
+        return;
+      }
 
-undoState = snapshot();
+      undoState = snapshot();
 
-if (nextTile.tool === 'jurist') {
-nextTile = grid[r][c];
-grid[r][c] = null;
-updateCell(r, c);
-updateNext();
-} else if (nextTile.tool === 'saw') {
-if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
-grid[r][c] = { kind: 'care', level: 1 };
-checkDiscovery(grid[r][c]);
-updateCell(r, c);
-processCascades(r, c);
-} else {
-grid[r][c] = null;
-updateCell(r, c);
-}
-nextTile = bufferedNext || newRandomTile();
-bufferedNext = null;
-updateNext();
+      if (nextTile.tool === 'jurist') {
+        nextTile = grid[r][c];
+        grid[r][c] = null;
+        updateCell(r, c);
+        updateNext();
+      } else if (nextTile.tool === 'saw') {
+        if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
+          grid[r][c] = { kind: 'care', level: 1 };
+          checkDiscovery(grid[r][c]);
+          updateCell(r, c);
+          processCascades(r, c);
+        } else {
+          grid[r][c] = null;
+          updateCell(r, c);
+        }
+        nextTile = bufferedNext || newRandomTile();
+        bufferedNext = null;
+        updateNext();
 
-sawStreak++;
-if (sawStreak >= 2 && missions.saw.status === 'active') {
-missions.saw.status = 'completed';
-updateMailBadge();
-}
-} else if (nextTile.tool === 'nanobox') {
-nextTile = Object.assign({}, grid[r][c]);
-updateNext();
-} else if (nextTile.tool === 'sack') {
-if (grid[r][c]) {
-alert('Мешок нужно ставить на пустую клетку!');
-drag = null;
-return;
-}
-doSackAt(r, c);
-nextTile = bufferedNext || newRandomTile();
-bufferedNext = null;
-updateNext();
-endMove();
-drag = null;
-return;
-}
-saveGame();
-drag = null;
-return;
-}
+        sawStreak++;
+        if (sawStreak >= 2 && missions.saw.status === 'active') {
+          missions.saw.status = 'completed';
+          updateMailBadge();
+          document.getElementById('log').textContent = 'Задание "ПИЛА-РАМА" выполнено!';
+        }
+      } else if (nextTile.tool === 'nanobox') {
+        nextTile = Object.assign({}, grid[r][c]);
+        updateNext();
+      } else if (nextTile.tool === 'sack') {
+        if (grid[r][c]) {
+          document.getElementById('log').textContent = 'Мешок нужно ставить на пустую клетку!';
+          drag = null;
+          return;
+        }
+        doSackAt(r, c);
+        nextTile = bufferedNext || newRandomTile();
+        bufferedNext = null;
+        updateNext();
+        endMove();
+        drag = null;
+        return;
+      }
+      saveGame();
+      drag = null;
+      return;
+    }
 
-if (!grid[r][c]) {
-undoState = snapshot();
-grid[r][c] = nextTile;
-checkDiscovery(nextTile);
-if (nextTile.kind === 'omon') grid[r][c].skipMove = true;
+    if (!grid[r][c]) {
+      undoState = snapshot();
+      grid[r][c] = nextTile;
+      checkDiscovery(nextTile);
+      if (nextTile.kind === 'omon') grid[r][c].skipMove = true;
 
-let isSack = nextTile.tool === 'sack';
-updateCell(r, c);
+      let isSack = nextTile.tool === 'sack';
+      updateCell(r, c);
 
-processCascades(r, c, isSack);
-nextTile = bufferedNext || newRandomTile();
-bufferedNext = null;
-updateNext();
-endMove();
-}
-}
-drag = null;
+      processCascades(r, c, isSack);
+      nextTile = bufferedNext || newRandomTile();
+      bufferedNext = null;
+      updateNext();
+      endMove();
+    }
+  }
+  drag = null;
 }
 
 function doSackAt(r, c) {
-let neighbors = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]], tryKinds = [];
-for (let i = 0; i < neighbors.length; i++) {
-let nr = neighbors[i][0], nc = neighbors[i][1];
-if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
-let nt = grid[nr][nc];
-if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
-let found = false;
-for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
-if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
-}
-tryKinds.sort(function(a, b) {
-if (a.kind === 'income' && b.kind !== 'income') return -1;
-if (b.kind === 'income' && a.kind !== 'income') return 1;
-return b.level - a.level;
-});
+  let neighbors = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]], tryKinds = [];
+  for (let i = 0; i < neighbors.length; i++) {
+    let nr = neighbors[i][0], nc = neighbors[i][1];
+    if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
+    let nt = grid[nr][nc];
+    if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+    let found = false;
+    for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
+    if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
+  }
+  tryKinds.sort(function(a, b) {
+    if (a.kind === 'income' && b.kind !== 'income') return -1;
+    if (b.kind === 'income' && a.kind !== 'income') return 1;
+    return b.level - a.level;
+  });
 
-let merged = false;
-for (let j = 0; j < tryKinds.length; j++) {
-let tk = tryKinds[j];
-grid[r][c] = { kind: tk.kind, level: tk.level };
-let grp = findGroup(r, c);
-let maxL = tk.kind === 'chain' ? CHAIN.length : (tk.kind === 'care' ? CARE.length : INCOME.length);
-if (grp && grp.length >= 3 && tk.level < maxL) {
-updateCell(r, c);
-processCascades(r, c);
-merged = true;
-break;
-}
-grid[r][c] = null;
-}
+  let merged = false;
+  for (let j = 0; j < tryKinds.length; j++) {
+    let tk = tryKinds[j];
+    grid[r][c] = { kind: tk.kind, level: tk.level };
+    let grp = findGroup(r, c);
+    let maxL = tk.kind === 'chain' ? CHAIN.length : (tk.kind === 'care' ? CARE.length : INCOME.length);
+    if (grp && grp.length >= 3 && tk.level < maxL) {
+      updateCell(r, c);
+      processCascades(r, c);
+      merged = true;
+      break;
+    }
+    grid[r][c] = null;
+  }
 
-if (!merged) {
-grid[r][c] = { kind: 'income', level: 1 };
-updateCell(r, c);
-if (findGroup(r, c) && findGroup(r, c).length >= 3) processCascades(r, c);
-}
+  if (!merged) {
+    grid[r][c] = { kind: 'income', level: 1 };
+    updateCell(r, c);
+    if (findGroup(r, c) && findGroup(r, c).length >= 3) processCascades(r, c);
+  }
 }
 
 function snapshot() {
-return {
-grid: grid.map(function(row) { return row.map(function(t) { return t ? Object.assign({}, t) : null; }); }),
-score: score, coins: coins, moves: moves,
-nextTile: nextTile ? Object.assign({}, nextTile) : null,
-jailTile: jailTile ? Object.assign({}, jailTile) : null,
-bufferedNext: bufferedNext ? Object.assign({}, bufferedNext) : null
-};
+  return {
+    grid: grid.map(function(row) { return row.map(function(t) { return t ? Object.assign({}, t) : null; }); }),
+    score: score, coins: coins, moves: moves,
+    nextTile: nextTile ? Object.assign({}, nextTile) : null,
+    jailTile: jailTile ? Object.assign({}, jailTile) : null,
+    bufferedNext: bufferedNext ? Object.assign({}, bufferedNext) : null
+  };
 }
 
 function openMail() { renderMail(); openModal('mail-modal'); }
 
 function renderMail() {
-const c = document.getElementById('mail-area');
-c.innerHTML = '';
-let hasMail = false;
-if (missions.forest.status === 'completed') {
-c.innerHTML += '<div class="mail-card"><img src="' + missions.forest.img + '"><div class="mail-claim-btn" onclick="claimReward(\'forest\')"></div></div>';
-hasMail = true;
-}
-if (missions.elections.status === 'completed') {
-c.innerHTML += '<div class="mail-card"><img src="' + missions.elections.img + '"><div class="mail-claim-btn" onclick="claimReward(\'elections\')"></div></div>';
-hasMail = true;
-}
-if (missions.saw.status === 'completed') {
-c.innerHTML += '<div class="mail-card"><img src="' + missions.saw.img + '"><div class="mail-claim-btn" onclick="claimReward(\'saw\')"></div></div>';
-hasMail = true;
-}
-if (!hasMail) {
-c.innerHTML = '<div style="text-align:center; padding:20px; font-size:18px; font-weight:bold; color:#3e2a16;">Пока пусто!</div>';
-}
+  const c = document.getElementById('mail-area');
+  c.innerHTML = '';
+  let hasMail = false;
+  if (missions.forest.status === 'completed') {
+    c.innerHTML += '<div class="mail-card"><img src="' + missions.forest.img + '"><div class="mail-claim-btn" onclick="claimReward(\'forest\')"></div></div>';
+    hasMail = true;
+  }
+  if (missions.elections.status === 'completed') {
+    c.innerHTML += '<div class="mail-card"><img src="' + missions.elections.img + '"><div class="mail-claim-btn" onclick="claimReward(\'elections\')"></div></div>';
+    hasMail = true;
+  }
+  if (missions.saw.status === 'completed') {
+    c.innerHTML += '<div class="mail-card"><img src="' + missions.saw.img + '"><div class="mail-claim-btn" onclick="claimReward(\'saw\')"></div></div>';
+    hasMail = true;
+  }
+  if (!hasMail) {
+    c.innerHTML = '<div style="text-align:center; padding:20px; font-size:18px; font-weight:bold; color:#3e2a16;">Пока пусто!</div>';
+  }
 }
 
 function claimReward(id) {
-if (missions[id] && missions[id].status === 'completed') {
-coins += missions[id].reward;
-missions[id].status = 'claimed';
-updateHud();
-saveGame();
-renderMail();
-updateMailBadge();
-}
+  if (missions[id] && missions[id].status === 'completed') {
+    coins += missions[id].reward;
+    missions[id].status = 'claimed';
+    updateHud();
+    saveGame();
+    renderMail();
+    updateMailBadge();
+  }
 }
 
 function openPause() { renderMissions(); openModal('pause-modal'); }
 
 function renderMissions() {
-const c = document.getElementById('missions-area');
-c.innerHTML = '';
-let html = '';
-if (missions.forest.status === 'active') html += '<div class="mission-img-card"><img src="' + missions.forest.img + '"></div>';
-if (missions.elections.status === 'active') html += '<div class="mission-img-card"><img src="' + missions.elections.img + '"></div>';
-if (missions.saw.status === 'active') html += '<div class="mission-img-card"><img src="' + missions.saw.img + '"></div>';
-c.innerHTML = html;
+  const c = document.getElementById('missions-area');
+  c.innerHTML = '';
+  let html = '';
+  if (missions.forest.status === 'active') html += '<div class="mission-img-card"><img src="' + missions.forest.img + '"></div>';
+  if (missions.elections.status === 'active') html += '<div class="mission-img-card"><img src="' + missions.elections.img + '"></div>';
+  if (missions.saw.status === 'active') html += '<div class="mission-img-card"><img src="' + missions.saw.img + '"></div>';
+  c.innerHTML = html;
 }
 
 function buyUndo() {
-if (coins >= 1500) {
-coins -= 1500;
-undoMove();
-closeModal('pause-modal');
-} else {
-alert('Не хватает монет!');
-}
+  if (coins >= 1500) {
+    coins -= 1500;
+    undoMove();
+    closeModal('pause-modal');
+  } else {
+    document.getElementById('log').textContent = 'Не хватает монет!';
+  }
 }
 
 function claimSocialBonus(amount) {
-coins += amount;
-updateHud();
-saveGame();
+  coins += amount;
+  updateHud();
+  saveGame();
+  document.getElementById('log').textContent = 'Бонус получен: +' + amount + ' монет!';
 }
 
 function useJurist() {
-if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
-if (nextTile) bufferedNext = nextTile;
-nextTile = { kind: 'tool', tool: 'jurist' };
-updateNext();
-saveGame();
+  if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
+  if (nextTile) bufferedNext = nextTile;
+  nextTile = { kind: 'tool', tool: 'jurist' };
+  updateNext();
+  saveGame();
 }
 
 function takeFromJail() { }
 
 function undoMove() {
-if (!undoState) return;
-grid = undoState.grid;
-score = undoState.score;
-coins = undoState.coins;
-moves = undoState.moves;
-nextTile = undoState.nextTile;
-jailTile = undoState.jailTile;
-bufferedNext = undoState.bufferedNext;
-undoState = null;
-updateAll();
-saveGame();
+  if (!undoState) return;
+  grid = undoState.grid;
+  score = undoState.score;
+  coins = undoState.coins;
+  moves = undoState.moves;
+  nextTile = undoState.nextTile;
+  jailTile = undoState.jailTile;
+  bufferedNext = undoState.bufferedNext;
+  undoState = null;
+  updateAll();
+  saveGame();
 }
 
 function buyItem(item) {
-if (coins < item.price) { alert('Мало монет!'); return; }
-coins -= item.price;
-if (nextTile) bufferedNext = nextTile;
-nextTile = item.tile;
-updateHud();
-updateNext();
-closeModal('shop-modal');
+  if (coins < item.price) { document.getElementById('log').textContent = 'Мало монет!'; return; }
+  coins -= item.price;
+  if (nextTile) bufferedNext = nextTile;
+  nextTile = item.tile;
+  updateHud();
+  updateNext();
+  closeModal('shop-modal');
 }
 
 function openModal(id) { document.getElementById(id).classList.add('open'); }
@@ -1274,111 +1211,120 @@ function closeModal(id) { document.getElementById(id).classList.remove('open'); 
 
 let currentBranch = 'chain';
 function switchTab(branch, el) {
-currentBranch = branch;
-document.querySelectorAll('.book-tab').forEach(function(t) { t.classList.remove('active'); });
-el.classList.add('active');
-renderBook();
+  currentBranch = branch;
+  document.querySelectorAll('.book-tab').forEach(function(t) { t.classList.remove('active'); });
+  el.classList.add('active');
+  renderBook();
 }
 
 function openBook() { renderBook(); document.getElementById('book-modal').classList.add('open'); }
 
 function renderBook() {
-let names = currentBranch === 'chain' ? CHAIN : (currentBranch === 'care' ? CARE : INCOME);
-let scroll = document.getElementById('book-scroll');
-scroll.innerHTML = '';
-for (let i = 0; i < names.length; i++) {
-let key = currentBranch + '_' + (i + 1);
-let isDiscovered = discovered.has(key);
-let card = document.createElement('div');
-card.className = 'book-card' + (isDiscovered ? '' : ' locked');
-let testTile = { kind: currentBranch, level: i + 1 };
-let imgSrc = getTileImage(testTile);
-let iconHTML = isDiscovered ? (imgSrc ? '<img src="' + imgSrc + '">' : names[i]) : '<span>❓</span>';
-card.innerHTML = '<div class="book-icon">' + iconHTML + '</div><div class="book-desc">' + (isDiscovered ? 'Уровень ' + (i + 1) : 'Соберите в игре') + '</div>';
-scroll.appendChild(card);
-}
+  let names = currentBranch === 'chain' ? CHAIN : (currentBranch === 'care' ? CARE : INCOME);
+  let scroll = document.getElementById('book-scroll');
+  scroll.innerHTML = '';
+  for (let i = 0; i < names.length; i++) {
+    let key = currentBranch + '_' + (i + 1);
+    let isDiscovered = discovered.has(key);
+    let card = document.createElement('div');
+    card.className = 'book-card' + (isDiscovered ? '' : ' locked');
+    let testTile = { kind: currentBranch, level: i + 1 };
+    let imgSrc = getTileImage(testTile);
+    let iconHTML = isDiscovered ? (imgSrc ? '<img src="' + imgSrc + '">' : names[i]) : '<span>❓</span>';
+    card.innerHTML = '<div class="book-icon">' + iconHTML + '</div><div class="book-desc">' + (isDiscovered ? 'Уровень ' + (i + 1) : 'Соберите в игре') + '</div>';
+    scroll.appendChild(card);
+  }
 }
 
 function showFloatText(r, c, amount) {
-const cell = cellEls[r][c];
-if (!cell) return;
-const rect = cell.getBoundingClientRect();
-const el = document.createElement('div');
-el.className = 'float-text';
-el.innerHTML = '<img src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
-el.style.left = (rect.left + rect.width / 2) + 'px';
-el.style.top = (rect.top + rect.height / 3) + 'px';
-document.body.appendChild(el);
-setTimeout(function() { el.remove(); }, 1000);
+  const cell = cellEls[r][c];
+  if (!cell) return;
+  const rect = cell.getBoundingClientRect();
+  const el = document.createElement('div');
+  el.className = 'float-text';
+  el.innerHTML = '<img src="img/Coin_1.png" onerror="this.style.display=\'none\'"> +' + amount;
+  el.style.left = (rect.left + rect.width / 2) + 'px';
+  el.style.top = (rect.top + rect.height / 3) + 'px';
+  document.body.appendChild(el);
+  setTimeout(function() { el.remove(); }, 1000);
 }
 
 function saveGame() {
-if (saveTimer) return;
-saveTimer = setTimeout(function() {
-saveTimer = null;
-try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({
-grid: grid, score: score, coins: coins, moves: moves,
-nextTile: nextTile, jailTile: jailTile, bufferedNext: bufferedNext,
-testSpawnIndex: testSpawnIndex, missions: missions
-}));
-} catch(e){}
-}, 250);
+  if (saveTimer) return;
+  saveTimer = setTimeout(function() {
+    saveTimer = null;
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify({
+        grid: grid, score: score, coins: coins, moves: moves,
+        nextTile: nextTile, jailTile: jailTile, bufferedNext: bufferedNext,
+        testSpawnIndex: testSpawnIndex, missions: missions
+      }));
+    } catch(e){}
+  }, 250);
 }
 
 function newGame() {
-if (confirm('Начать заново?')) {
-clearSave();
-init();
-closeModal('pause-modal');
-}
+  if (confirm('Начать заново?')) {
+    clearSave();
+    init();
+    closeModal('pause-modal');
+  }
 }
 function clearSave() { localStorage.removeItem(SAVE_KEY); }
 
+// ==========================================
+// 🚀 УНИВЕРСАЛЬНЫЙ СКРИПТ АДАПТАЦИИ ЭКРАНА
+// ==========================================
 function applyAdaptiveLayout() {
-const board = document.getElementById('board');
-const bottomPanel = document.querySelector('.bottom-panel');
-const topPanel = document.querySelector('.top-panel');
-const forestTop = document.querySelector('.forest-top');
-
-if (!board || !bottomPanel || !topPanel || !forestTop) return;
-
-const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
-const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
-const appWidth = Math.min(vw, 440);
-
-const forestHeight = appWidth * (400 / 880);
-const topPanelHeight = appWidth * (432 / 880);
-const bottomButtonsHeight = appWidth * (488 / 880);
-
-let boardSize = appWidth;
-const totalStaticHeight = forestHeight + topPanelHeight + bottomButtonsHeight;
-
-if (vh - totalStaticHeight < boardSize) {
-boardSize = vh - totalStaticHeight;
-}
-
-board.style.width = boardSize + 'px';
-board.style.height = boardSize + 'px';
-
-updateBoardMetrics();
-}
-
-function startTheGame() {
-document.getElementById('start-screen').classList.add('hidden');
-document.getElementById('app').classList.add('visible');
-setTimeout(applyAdaptiveLayout, 50);
+    const board = document.getElementById('board');
+    const bottomPanel = document.querySelector('.bottom-panel');
+    
+    // Получаем реальную высоту и ширину с учетом мобильных браузеров
+    const vh = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+    const vw = window.visualViewport ? window.visualViewport.width : window.innerWidth;
+    
+    // Максимальная ширина интерфейса - 440px (для планшетов)
+    const appWidth = Math.min(vw, 440);
+    
+    // Высчитываем пропорции на основе ваших картинок
+    const topPanelHeight = appWidth * (431 / 877);
+    const bottomButtonsHeight = appWidth * (733 / 1320); // Высота кнопок внизу
+    
+    // Идеальный размер доски - квадрат по ширине экрана
+    let boardSize = appWidth;
+    
+    // Если телефон слишком короткий (например, старый iPhone или ландшафт),
+    // уменьшаем доску, чтобы нижние кнопки не улетели за экран
+    if (vh - topPanelHeight - boardSize < bottomButtonsHeight) {
+        boardSize = vh - topPanelHeight - bottomButtonsHeight;
+    }
+    
+    // Применяем пиксельные размеры к доске
+    board.style.width = boardSize + 'px';
+    board.style.height = boardSize + 'px';
+    
+    // Нижняя панель забирает всё оставшееся пространство
+    const remainingHeight = vh - topPanelHeight - boardSize;
+    bottomPanel.style.height = remainingHeight + 'px';
+    
+    // Обновляем метрики для Drag&Drop
+    updateBoardMetrics();
 }
 
 preloadImages();
-loadGame();
-applyAdaptiveLayout();
+init();
 
+// Запускаем адаптацию при старте и изменениях (поворот экрана, клавиатура)
+applyAdaptiveLayout();
 window.addEventListener('load', applyAdaptiveLayout);
 window.addEventListener('resize', applyAdaptiveLayout);
-if (window.visualViewport) window.visualViewport.addEventListener('resize', applyAdaptiveLayout);
-if (window.Telegram && window.Telegram.WebApp) window.Telegram.WebApp.onEvent('viewportChanged', applyAdaptiveLayout);
-
+if (window.visualViewport) {
+    window.visualViewport.addEventListener('resize', applyAdaptiveLayout);
+}
+// Для Telegram Mini Apps (когда открывается клавиатура)
+if (window.Telegram && window.Telegram.WebApp) {
+    window.Telegram.WebApp.onEvent('viewportChanged', applyAdaptiveLayout);
+}
 </script>
 </body>
 </html>
