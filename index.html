@@ -171,14 +171,20 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .sheet-bar { flex: 0 0 auto; background: #6f8b46; color: #fff6c4; min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; font-weight: 900; letter-spacing: 0.08em; font-size: 16px; text-shadow: 0 1px 0 rgba(0,0,0,0.25); }
 .sheet-x { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 48px; height: 32px; border-radius: 8px; border: 2px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 22px; font-weight: 900; line-height: 1; cursor: pointer; padding: 0; }
-/* Магазинчик — картинка img/shop_bg.png (панель Артёма). Купюры на карточке 150 уменьшены на 10%. Хиты совпадают с карточками. */
+/* Магазинчик — картинка img/shop_bg.png целиком (панель Артёма). Ширина ≈ половина экрана, как в оригинале (~240/471), высота по пропорции 570×1438. Верх сразу под рядом кнопок (конверт, магазин, пауза, ↓), низ выше нижней панели — шапка Telegram и счёт не перекрываются. Купюры на карточке 150 уменьшены на 10%. Хиты в % от этой рамки. */
 .shop-window {
-  position: relative;
-  width: min(92vw, calc((100dvh - var(--ui-top) - var(--ui-bottom) - 16px) * 570 / 1438));
+  --buttons-bottom: max(var(--ui-top) + 100cqw * 176 / 877, 100cqw * 313 / 877);
+  --shop-top: calc(var(--buttons-bottom) + 8px);
+  --bottom-panel-top: calc(100dvh - var(--ui-bottom) - 100cqw * 408 / 1320);
+  --shop-room: calc(var(--bottom-panel-top) - var(--shop-top) - 10px);
+  position: absolute;
+  left: 50%;
+  top: var(--shop-top);
+  transform: translateX(-50%);
+  width: min(50vw, calc(var(--shop-room) * 570 / 1438));
   aspect-ratio: 570 / 1438;
-  max-height: calc(100dvh - var(--ui-top) - var(--ui-bottom) - 12px);
   background: #d7d8ae url('img/shop_bg.png') center / 100% 100% no-repeat;
-  border-radius: 22px;
+  border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
 }
