@@ -10,16 +10,25 @@
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; background: #7e6829; overscroll-behavior: none; }
 body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; min-height: 100dvh; height: 100dvh; }
-#app { width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #7e6829; padding-top: env(safe-area-inset-top); padding-right: env(safe-area-inset-right); padding-bottom: env(safe-area-inset-bottom); padding-left: env(safe-area-inset-left); }
+/* Telegram writes --tg-safe-area-inset-* and --tg-content-safe-area-inset-* from WebApp.safeAreaInset / contentSafeAreaInset. Content inset is the Telegram chrome only, so it is added to the device inset. env() covers the same device inset when the client has not reported one yet. */
+:root {
+  --ui-top: calc(max(env(safe-area-inset-top, 0px), var(--tg-safe-area-inset-top, 0px)) + var(--tg-content-safe-area-inset-top, 0px));
+  --ui-right: calc(max(env(safe-area-inset-right, 0px), var(--tg-safe-area-inset-right, 0px)) + var(--tg-content-safe-area-inset-right, 0px));
+  --ui-bottom: calc(max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px)) + var(--tg-content-safe-area-inset-bottom, 0px));
+  --ui-left: calc(max(env(safe-area-inset-left, 0px), var(--tg-safe-area-inset-left, 0px)) + var(--tg-content-safe-area-inset-left, 0px));
+}
+#app { --forest-lift: max(0px, calc(var(--ui-top) - 100cqw * 137 / 877)); width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #7e6829; container-type: inline-size; padding-top: 0; padding-right: var(--ui-right); padding-bottom: 0; padding-left: var(--ui-left); }
 
 #board { contain: layout paint; transform: translateZ(0); }
-.top-panel, .bottom-panel { transform: translateZ(0); }
+.bottom-panel { transform: translateZ(0); }
 
-/* ВЕРХНЯЯ ПАНЕЛЬ. Полосы ui_top.png сверху вниз: лес 176:313, счёт 0:83, кнопки 83:176, дорога+трава 313:431. */
-.top-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 877 / 431; flex-shrink: 0; margin-bottom: -1cm; }
+/* ВЕРХНЯЯ ПАНЕЛЬ. Полосы ui_top.png сверху вниз: лес 176:313, счёт 0:83, кнопки 83:176, дорога+трава 313:431.
+   Лес тянется до самого верха вьюпорта (за статус-бар и кнопки Telegram) и не кликается. Счёт, кнопки и дорога остаются ниже content safe area. */
+.top-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 877 / 431; flex-shrink: 0; margin-top: var(--forest-lift); margin-bottom: -1cm; overflow: visible; }
 .top-band { position: absolute; left: 0; width: 100%; pointer-events: none; }
 .top-band img { width: 100%; height: 100%; display: block; object-fit: fill; pointer-events: none; }
-.top-forest { top: 0; height: calc(137 / 431 * 100% + 1px); }
+.top-forest { top: calc(-1 * var(--forest-lift)); height: calc(137 / 431 * 100% + var(--forest-lift) + 1px); background-color: #57732b; pointer-events: none; }
+.top-forest img { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(100% - var(--forest-lift)); object-fit: fill; object-position: center bottom; }
 .top-stats { top: calc(137 / 431 * 100%); height: calc(83 / 431 * 100% + 1px); }
 .top-buttons { top: calc(220 / 431 * 100%); height: calc(93 / 431 * 100% + 1px); }
 .top-road { top: calc(313 / 431 * 100%); height: calc(118 / 431 * 100%); }
@@ -90,9 +99,31 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЖНЯЯ ПАНЕЛЬ */
-.bottom-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 1320 / 733; background: url('img/ui_bottom.png') center bottom / 100% 100% no-repeat; flex-shrink: 0; margin-top: calc(-15.5% - 0.35cm); }
-.bottom-slots { position: absolute; inset: 0; display: flex; }
+/* НИЖНЯЯ ПАНЕЛЬ. Декоративная трава сверху картинки (212/733) не входит в панель: низ поля совпадает с верхом клетки/слотов, без нахлёста и без щели. Картинка и заливка её нижнего края доходят до края экрана, включая home indicator. Слоты остаются в координатах полной картинки. */
+.bottom-panel {
+  --img-h: calc(100cqw * 733 / 1320);
+  --grass: calc(212 / 733);
+  position: relative;
+  z-index: 2;
+  width: 100%;
+  height: calc(var(--img-h) * (1 - var(--grass)) + var(--ui-bottom));
+  margin-top: 0;
+  overflow: hidden;
+  flex-shrink: 0;
+  background-color: #516e28;
+  background-image: url('img/ui_bottom.png'), url('img/ui_bottom.png');
+  background-repeat: no-repeat, no-repeat;
+  background-size: 100% var(--img-h), 100% var(--img-h);
+  background-position: left calc(var(--img-h) * var(--grass) * -1), center bottom;
+}
+.bottom-slots {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: calc(var(--img-h) * var(--grass) * -1);
+  height: var(--img-h);
+  display: flex;
+}
 .jail-block { width: 32%; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 8% 10% 10%; }
 .next-block { flex: 1; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 6% 10% 4%; }
 .hint-block { width: 32%; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10% 10% 10% 8%; }
@@ -287,7 +318,7 @@ width: 16px; height: 16px; border: 2px dashed #17210f; border-radius: 4px; flex:
 }
 
 #tutorial {
-position: absolute; inset: 0; z-index: 1900; display: none; pointer-events: none;
+position: absolute; top: env(safe-area-inset-top); right: 0; bottom: env(safe-area-inset-bottom); left: 0; z-index: 1900; display: none; pointer-events: none;
 }
 #tutorial.on { display: block; }
 .tut-bubble {
@@ -354,7 +385,7 @@ font-size: 15px;
 cursor: pointer;
 }
 .pause-extra.alt { background: #f4f0d8; }
-#title-screen { position: absolute; inset: 0; z-index: 2400; display: flex; align-items: center; justify-content: center; background: #2b1a0e; container-type: size; }
+#title-screen { position: absolute; top: env(safe-area-inset-top); right: 0; bottom: env(safe-area-inset-bottom); left: 0; z-index: 2400; display: flex; align-items: center; justify-content: center; background: #2b1a0e; container-type: size; }
 #title-screen.hidden { display: none; }
 #title-frame { position: relative; width: min(100cqw, calc(100cqh * 1076 / 1600)); aspect-ratio: 1076 / 1600; }
 #title-frame img { width: 100%; height: 100%; display: block; object-fit: fill; }
@@ -2388,6 +2419,40 @@ clearSave();
 init();
 }
 
+function applyTelegramInsets() {
+try {
+const tg = window.Telegram && window.Telegram.WebApp;
+if (!tg || tg.platform === 'unknown') return;
+const s = tg.safeAreaInset || {};
+const c = tg.contentSafeAreaInset || {};
+const root = document.documentElement.style;
+const set = (name, v) => {
+const n = typeof v === 'number' && isFinite(v) ? Math.max(0, v) : 0;
+root.setProperty(name, n + 'px');
+};
+set('--tg-safe-area-inset-top', s.top);
+set('--tg-safe-area-inset-right', s.right);
+set('--tg-safe-area-inset-bottom', s.bottom);
+set('--tg-safe-area-inset-left', s.left);
+set('--tg-content-safe-area-inset-top', c.top);
+set('--tg-content-safe-area-inset-right', c.right);
+set('--tg-content-safe-area-inset-bottom', c.bottom);
+set('--tg-content-safe-area-inset-left', c.left);
+} catch (e) {}
+}
+let telegramInsetsBound = false;
+function bindTelegramInsets() {
+applyTelegramInsets();
+if (telegramInsetsBound) return;
+try {
+const tg = window.Telegram && window.Telegram.WebApp;
+if (!tg || tg.platform === 'unknown' || typeof tg.onEvent !== 'function') return;
+tg.onEvent('safeAreaChanged', applyTelegramInsets);
+tg.onEvent('contentSafeAreaChanged', applyTelegramInsets);
+tg.onEvent('fullscreenChanged', applyTelegramInsets);
+telegramInsetsBound = true;
+} catch (e) {}
+}
 function bootTelegram() {
 try {
 const tg = window.Telegram && window.Telegram.WebApp;
@@ -2402,6 +2467,7 @@ try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) {}
 try { if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); } catch (e) {}
 document.documentElement.style.background = bg;
 document.body.style.background = bg;
+bindTelegramInsets();
 } catch (e) {}
 }
 bootTelegram();
