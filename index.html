@@ -52,9 +52,10 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .num-container { display: flex; align-items: center; justify-content: flex-start; height: 100%; width: 100%; min-width: 0; }
 .num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; }
 
-/* ПОЛЕ. ~4.5% меньше ширины и квадратное, сразу под дорогой: видны оба бордюра и полоска травы. */
-.playfield { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-top: 3px; background: #557a32; position: relative; z-index: 3; }
-#board { width: 95.5%; aspect-ratio: 1 / 1; max-height: 100%; flex: 0 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
+/* ПОЛЕ. На всю ширину и на всю высоту от полоски травы под дорогой до нижней панели.
+   Клетки выше, чем шире, когда вьюпорт это позволяет. Сверху и снизу одинаковый узкий зазор. */
+.playfield { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; padding: 4px 0; background: #557a32; position: relative; z-index: 3; }
+#board { width: 100%; flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; z-index: 1; }
 #shades { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); pointer-events: none; z-index: 0; }
 .shade { background: rgba(40, 25, 10, 0.35); opacity: 0; transition: opacity 250ms ease; border-radius: 0; }
@@ -731,14 +732,18 @@ return '?';
 function setStatus() {}
 
 const ROCKET_NOSE = 15, ROCKET_BODY = 16, ROCKET_TAIL = 17, ROCKET_FULL = 18, GAGARIN = 14;
-/* Alpha measurements of the rocket sprites (opaque fuselage, not the wire loop or nozzle lip).
-   diam* is the tube diameter at the mating face, rim* the silhouette edge that sits on the cell
-   boundary, ringL the tail's fuselage ring (the nozzle sticks out past it), axis the tube center. */
-const ROCKET_GEOM = {
-'img/pasha_15.png': { natW: 1520, natH: 1296, axis: 643.5, feet: 1181, rimR: 1116, diamR: 696 },
-'img/pasha_16.png': { natW: 1520, natH: 1296, axis: 633, feet: 1104, rimL: 230, rimR: 1311, diamL: 645, diamR: 429 },
-'img/pasha_17.png': { natW: 1552, natH: 1280, axis: 631.5, feet: 1197, ringL: 436, diamL: 514 }
+/* Mating edges from the sprite alpha, not the full bounding box (the nose is tilted, and the
+   body's wire loop / the tail's nozzle lip stick out past the tube). x is the edge column,
+   top/bot the vertical span of that face. The tail x is the fuselage ring; the nozzle overlaps
+   into the body. */
+const ROCKET_EDGE = {
+nose: { natW: 1520, natH: 1296, x: 1116, top: 296, bot: 991 },
+body: { natW: 1520, natH: 1296, x: 222, top: 311, bot: 954, rx: 1311, rTop: 409, rBot: 860 },
+tail: { natW: 1552, natH: 1280, x: 436, top: 375, bot: 888 }
 };
+const ROCKET_OVERLAP = 6;
+/* Extra tuck so the tail's ring meets the body's tapered cap, not just the nozzle lip. */
+const ROCKET_TAIL_TUCK = 8;
 const TRIM = {};
 let trimsPending = 0;
 
@@ -1197,64 +1202,70 @@ if (t) return 'right';
 }
 return null;
 }
+function rocketShift(piece, cellW, cellH, natW, natH, scale, imgX, cellX, imgY, cellY) {
+const dispW = natW * scale;
+const dispH = natH * scale;
+piece.style.width = dispW + 'px';
+piece.style.height = dispH + 'px';
+const dx = cellX - cellW / 2 - (imgX * scale - dispW / 2);
+const dy = cellY - cellH / 2 - (imgY * scale - dispH / 2);
+piece.style.setProperty('--piece-dx', dx.toFixed(2) + 'px');
+piece.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
+}
 function applyRocketJoin(cell, tile, r, c) {
 const piece = cell.querySelector('.piece');
 if (!piece) return;
 const side = rocketJoinSide(tile, r, c);
 if (!side) return;
-const src = getTileImage(tile);
-const geom = ROCKET_GEOM[src];
-const nose = ROCKET_GEOM['img/pasha_15.png'];
-const body = ROCKET_GEOM['img/pasha_16.png'];
-const tail = ROCKET_GEOM['img/pasha_17.png'];
 const cellW = cell.clientWidth;
 const cellH = cell.clientHeight;
-if (!geom || !cellW || !cellH || !nose || !body || !tail) return;
+if (!cellW || !cellH) return;
+const nose = ROCKET_EDGE.nose;
+const body = ROCKET_EDGE.body;
+const tail = ROCKET_EDGE.tail;
 const noseDisp = pieceDisplaySize('img/pasha_15.png', cellW, cellH);
 const noseScale = noseDisp.h / nose.natH;
 if (!noseScale) return;
-const noseDiam = nose.diamR * noseScale;
-const noseAxisY = (cellH - noseDisp.h) / 2 + nose.axis * noseScale;
-const place = (dispW, dispH, anchorImgX, anchorCellX, axisImgY, axisCellY, scaleX, scaleY) => {
-piece.style.width = dispW + 'px';
-piece.style.height = dispH + 'px';
-const anchor = (cellW - dispW) / 2 + anchorImgX * scaleX;
-const axis = (cellH - dispH) / 2 + axisImgY * scaleY;
-piece.style.setProperty('--piece-dx', (anchorCellX - anchor).toFixed(2) + 'px');
-piece.style.setProperty('--piece-dy', (axisCellY - axis).toFixed(2) + 'px');
-};
+const noseH = nose.bot - nose.top;
+const bodyH = body.bot - body.top;
+const bodyJoined = noseScale * noseH / bodyH;
+const noseTop = (cellH - noseDisp.h) / 2 + nose.top * noseScale;
 if (tile.level === ROCKET_NOSE) {
-const rim = (cellW - noseDisp.w) / 2 + nose.rimR * noseScale;
-piece.style.setProperty('--piece-dx', (cellW - rim).toFixed(2) + 'px');
+const dispW = noseDisp.w;
+const dx = (cellW + ROCKET_OVERLAP / 2) - cellW / 2 - (nose.x * noseScale - dispW / 2);
+piece.style.setProperty('--piece-dx', dx.toFixed(2) + 'px');
 return;
 }
 if (tile.level === ROCKET_BODY && (side === 'left' || side === 'both')) {
-const sy = noseDiam / body.diamL;
-const sx = cellW / (body.rimR - body.rimL);
-place(body.natW * sx, body.natH * sy, body.rimL, 0, body.axis, noseAxisY, sx, sy);
+rocketShift(piece, cellW, cellH, body.natW, body.natH, bodyJoined, body.x, -ROCKET_OVERLAP / 2, body.top, noseTop);
 return;
 }
 if (tile.level === ROCKET_BODY) {
-const bDisp = pieceDisplaySize(src, cellW, cellH);
-const s = bDisp.h / body.natH;
-const rim = (cellW - bDisp.w) / 2 + body.rimR * s;
-piece.style.setProperty('--piece-dx', (cellW - rim).toFixed(2) + 'px');
+const bDisp = pieceDisplaySize('img/pasha_16.png', cellW, cellH);
+const bs = bDisp.h / body.natH;
+const dispW = bDisp.w;
+const dx = (cellW + ROCKET_OVERLAP / 2) - cellW / 2 - (body.rx * bs - dispW / 2);
+piece.style.setProperty('--piece-dx', dx.toFixed(2) + 'px');
 return;
 }
 if (tile.level === ROCKET_TAIL) {
 const bodyHasNose = c >= 2 && grid[r][c - 2] && grid[r][c - 2].kind === 'chain' && grid[r][c - 2].level === ROCKET_NOSE;
-let refDiam, refAxis;
+let capTop, capX, capScale;
 if (bodyHasNose) {
-refDiam = body.diamR * (noseDiam / body.diamL);
-refAxis = noseAxisY;
+capScale = bodyJoined;
+capTop = noseTop + (body.rTop - body.top) * capScale;
+capX = -ROCKET_OVERLAP / 2 + (body.rx - body.x) * capScale;
 } else {
 const bDisp = pieceDisplaySize('img/pasha_16.png', cellW, cellH);
-const bs = bDisp.h / body.natH;
-refDiam = body.diamR * bs;
-refAxis = (cellH - bDisp.h) / 2 + body.axis * bs;
+capScale = bDisp.h / body.natH;
+capTop = (cellH - bDisp.h) / 2 + body.rTop * capScale;
+capX = cellW + ROCKET_OVERLAP / 2;
 }
-const sy = refDiam / tail.diamL;
-place(tail.natW * sy, tail.natH * sy, tail.ringL, 0, tail.axis, refAxis, sy, sy);
+const capH = (body.rBot - body.rTop) * capScale;
+const tailH = tail.bot - tail.top;
+const ts = capH / tailH;
+const tailX = (capX - cellW) - ROCKET_OVERLAP - ROCKET_TAIL_TUCK;
+rocketShift(piece, cellW, cellH, tail.natW, tail.natH, ts, tail.x, tailX, tail.top, capTop);
 }
 }
 function findRocketRow() {
