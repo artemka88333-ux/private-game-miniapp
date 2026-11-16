@@ -5,6 +5,13 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#7e6829">
 <title>Демократия — Финал</title>
+<link rel="preload" as="image" href="img/loading.jpg" fetchpriority="high">
+<style id="boot-css">
+html, body { margin: 0; background: #6a7a72; }
+#boot { position: fixed; inset: 0; z-index: 6000; background: #6a7a72; transition: opacity 0.3s ease; }
+#boot img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
+#boot.hide { opacity: 0; pointer-events: none; }
+</style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; outline: none; -webkit-touch-callout: none; }
@@ -204,12 +211,43 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .slot-10 { top: 81.64%; left: 55.09%; width: 37.89%; height: 15.65%; }
 .slot-close { top: 1.53%; left: 84.21%; width: 12.81%; height: 4.87%; border-radius: 10px; }
 .sheet-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px; }
-.pause-actions, .pause-social { display: flex; gap: 6px; flex: 0 0 auto; }
-.pause-actions button, .pause-social button { flex: 1; min-height: 48px; border-radius: 10px; border: 2px solid #6b4e12; background: #ffd24a; color: #2b1a0e; font-weight: 900; font-size: 11px; line-height: 1.15; cursor: pointer; padding: 4px; }
-.pause-missions-area { flex: 1; min-height: 0; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; }
-.pause-missions-area::-webkit-scrollbar { display: none; }
-.mission-img-card { width: 100%; position: relative; }
-.mission-img-card img { width: 100%; display: block; border-radius: 8px; }
+/* Пауза — картинка img/pause_bg.png целиком. Та же логика размера и места, что у магазина: ≈50% ширины, по центру, сразу под рядом кнопок, масштаб одним кадром. Хиты в % от рамки. */
+.pause-window {
+  --buttons-bottom: max(var(--ui-top) + 100cqw * 176 / 877, 100cqw * 313 / 877);
+  --pause-top: calc(var(--buttons-bottom) + 8px);
+  --bottom-panel-top: calc(100dvh - var(--ui-bottom) - 100cqw * 408 / 1320);
+  --pause-room: calc(var(--bottom-panel-top) - var(--pause-top) - 10px);
+  position: absolute;
+  left: 50%;
+  top: var(--pause-top);
+  transform: translateX(-50%);
+  width: min(50vw, calc(var(--pause-room) * 902 / 1600));
+  aspect-ratio: 902 / 1600;
+  background: url('img/pause_bg.png') center / 100% 100% no-repeat;
+  border-radius: 2.2% / 1.2%;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+.pause-undo { left: 6.76%; top: 12.69%; width: 18.74%; height: 11.50%; }
+.pause-list { left: 29.82%; top: 12.69%; width: 18.74%; height: 11.50%; }
+.pause-restart { left: 52.66%; top: 12.69%; width: 18.63%; height: 11.50%; }
+.pause-play { left: 75.50%; top: 12.69%; width: 18.40%; height: 11.50%; }
+.pause-fb { left: 9.76%; top: 77.44%; width: 21.06%; height: 17.62%; }
+.pause-like { left: 39.25%; top: 77.44%; width: 21.06%; height: 17.68%; }
+.pause-star { left: 68.07%; top: 77.44%; width: 20.95%; height: 17.56%; }
+.pause-missions {
+  position: absolute;
+  left: 4%;
+  width: 92%;
+  top: 28.2%;
+  height: 46.4%;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  gap: 1.5%;
+  pointer-events: none;
+}
+.pause-missions img { width: 100%; min-height: 0; flex: 1 1 0; object-fit: contain; object-position: center; display: block; }
 
 /* ПОЧТА */
 .mail-card { width: 100%; cursor: pointer; position: relative; margin-bottom: 8px;}
@@ -408,7 +446,7 @@ cursor: pointer;
 #title-screen.hidden { display: none; }
 #title-wordmark { position: absolute; left: 3%; width: 94%; height: auto; top: calc(var(--ui-top) + 8px); object-fit: contain; object-position: center top; pointer-events: none; z-index: 2; }
 #title-play { position: absolute; border: 0; background: transparent; padding: 0; cursor: pointer; z-index: 2; }
-#title-play img { width: 100%; height: auto; display: block; pointer-events: none; }
+#title-play img { width: 100%; height: 100%; object-fit: contain; display: block; pointer-events: none; }
 .title-hot { position: absolute; border: 0; background: transparent; padding: 0; cursor: pointer; z-index: 3; }
 .title-hot .sfx-slash { display: none; position: absolute; left: 16%; right: 16%; top: 46%; height: 8%; min-height: 4px; background: #e02323; border-radius: 4px; transform: rotate(-38deg); box-shadow: 0 0 0 1px rgba(0,0,0,0.45); }
 #title-sfx.off .sfx-slash { display: block; }
@@ -444,11 +482,12 @@ cursor: pointer;
 .cell.anim-shake > .piece,
 .piece.piece-pop, .piece.land-bounce, .merge-glow, .score-float,
 .cell.tut-target, #tut-arrow, .float-text, .saw-swipe { animation: none !important; }
-.shade { transition: none !important; }
+.shade, #boot { transition: none !important; }
 }
 </style>
 </head>
 <body>
+<div id="boot" aria-hidden="true"><img src="img/loading.jpg" alt="" fetchpriority="high" decoding="sync"></div>
 <div id="app">
 <div class="top-panel">
 <div class="top-band top-forest"><img src="img/ui_top_forest.png" alt=""></div>
@@ -541,24 +580,17 @@ cursor: pointer;
 </div>
 </div>
 
-<!-- МЕНЮ ПАУЗЫ -->
-<div class="modal" id="pause-modal">
-<div class="sheet" role="dialog" aria-label="Пауза">
-<div class="sheet-bar"><span>ПАУЗА</span><button type="button" class="sheet-x" onclick="closeModal('pause-modal')" aria-label="Закрыть">×</button></div>
-<div class="sheet-body">
-<div class="pause-actions">
-<button type="button" onclick="buyUndo()">Отмена<br>1500</button>
-<button type="button" onclick="exitToMenu()">В меню</button>
-<button type="button" onclick="newGame()">Заново</button>
-<button type="button" onclick="closeModal('pause-modal')">Играть</button>
-</div>
-<div class="pause-missions-area" id="missions-area"></div>
-<div class="pause-social">
-<button type="button" onclick="claimSocialBonus(5000)">+5000</button>
-<button type="button" onclick="claimSocialBonus(5000)">+5000</button>
-<button type="button" onclick="claimSocialBonus(5000)">+5000</button>
-</div>
-</div>
+<!-- ПАУЗА: панель img/pause_bg.png, хиты поверх кнопок. Низ (f / лайк / звезда) — заглушки. -->
+<div class="shop-modal" id="pause-modal">
+<div class="pause-window" role="dialog" aria-label="Пауза">
+<button type="button" class="shop-hitbox pause-undo" onclick="buyUndo()" aria-label="Отмена за 1500"></button>
+<button type="button" class="shop-hitbox pause-list" onclick="openPauseList()" aria-label="Подсказки"></button>
+<button type="button" class="shop-hitbox pause-restart" onclick="newGame()" aria-label="Заново"></button>
+<button type="button" class="shop-hitbox pause-play" onclick="closeModal('pause-modal')" aria-label="Играть"></button>
+<div class="pause-missions" id="missions-area"></div>
+<button type="button" class="shop-hitbox pause-fb" aria-disabled="true" tabindex="-1" aria-label="Facebook"></button>
+<button type="button" class="shop-hitbox pause-like" aria-disabled="true" tabindex="-1" aria-label="Нравится"></button>
+<button type="button" class="shop-hitbox pause-star" aria-disabled="true" tabindex="-1" aria-label="Оценка"></button>
 </div>
 </div>
 
@@ -650,13 +682,16 @@ const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
 const OCCUPIED_SHADE = false;
 /* Live merge recipe inside «Нажми меня». The panel stays «? НАЖМИ МЕНЯ»; tap still opens the hint gallery. */
 const LIVE_HINT_PREVIEW = false;
-/* Extra scale / floor seat for pieces that read small or high inside the trimmed cell. */
+/* Extra scale / floor seat for pieces that read small or high inside the trimmed cell.
+   drop / lift are fractions of the cell height (positive drop moves the piece down). */
 const PIECE_LAYOUT = {
+  'img/pasha_01.png': { scale: 0.85 },
+  'img/pasha_07.png': { scale: 1.2, drop: 0.05 },
   'img/bear_8.png': { scale: 1.2, z: 4 },
-  'img/bear_9.png': { scale: 1.1, floor: true, z: 4 },
-  'img/bear_13.png': { scale: 1.25, floor: true, z: 4 },
+  'img/bear_9.png': { scale: 1.21, floor: true, lift: 0.05, z: 4 },
+  'img/bear_13.png': { scale: 1.375, floor: true, lift: 0.05, z: 4 },
   'img/bear_14.png': { scale: 1.2, floor: true, z: 4 },
-  'img/bear_17.png': { scale: 1.2, floor: true, z: 4 }
+  'img/bear_17.png': { scale: 1.32, floor: true, lift: 0.05, z: 4 }
 };
 const CARE = ['🐻','🪙','🥇','🏛️','📜','💰','🏦','👑','🌍','🚀','🦁','🐯','🐘','🐳','🦅','🦉','🦄','🐉','👽','🛸'];
 const INCOME = ['💻','📺','🏦','🏢','🥚'];
@@ -873,17 +908,24 @@ function seatPiece(wrap, src, cell) {
 const tweak = src && PIECE_LAYOUT[src];
 if (!tweak || !cell) return;
 if (tweak.z) cell.style.zIndex = String(tweak.z);
-if (!tweak.floor) return;
+const cellH = cell.clientHeight || cellSize().h;
+const cellW = cell.clientWidth || cellSize().w;
+let dy = 0;
+let moved = false;
+if (tweak.floor) {
 const trim = TRIM[src];
 const b = trim ? trim.b : 1;
 const h = parseFloat(wrap.style.height) || 0;
-const cellH = cell.clientHeight || cellSize().h;
-const cellW = cell.clientWidth || cellSize().w;
-if (!h || !cellH) return;
+if (h && cellH) {
 const pad = Math.min(cellW, cellH) * 0.04;
 const currentBottom = (cellH - h) / 2 + b * h;
-const dy = (cellH - pad) - currentBottom;
-wrap.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
+dy = (cellH - pad) - currentBottom;
+moved = true;
+}
+}
+if (tweak.drop) { dy += tweak.drop * cellH; moved = true; }
+if (tweak.lift) { dy -= tweak.lift * cellH; moved = true; }
+if (moved) wrap.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
 }
 
 function layoutJurist() {
@@ -937,19 +979,29 @@ if (moneyBags >= 4) showDiscoveryOnce('disc_moneybag', 'img/discovery-moneybag.j
 }
 
 let memeTimer = null;
+/* Подсказки, которые пока не показываем. Вызовы showMeme остаются.
+   Чтобы вернуть кадр (Артём пришлёт прозрачную замену), удалите его src отсюда. */
+const DEFERRED_HINTS = {
+'img/discovery-moneybag.jpg': 1,
+'img/discovery-deputy.jpg': 1,
+'img/discovery-gold-coin.jpg': 1,
+'img/discovery-building.jpg': 1
+};
+const MEME_HOLD_MS = 10000;
 function hideMeme() {
 const popup = document.getElementById('meme-popup');
 if (popup) popup.classList.remove('show', 'discovery');
 if (memeTimer) { clearTimeout(memeTimer); memeTimer = null; }
 }
 function showMeme(imgSrc, discovery) {
+if (DEFERRED_HINTS[imgSrc]) return;
 const popup = document.getElementById('meme-popup');
 const img = document.getElementById('meme-img');
 img.src = imgSrc;
 popup.classList.toggle('discovery', !!discovery);
 popup.classList.add('show');
 if (memeTimer) clearTimeout(memeTimer);
-memeTimer = setTimeout(hideMeme, 6000);
+memeTimer = setTimeout(hideMeme, MEME_HOLD_MS);
 }
 document.getElementById('meme-popup').addEventListener('pointerdown', function(e) {
 if (!this.classList.contains('show')) return;
@@ -1925,31 +1977,29 @@ openModal('pause-modal');
 
 function renderMissions() {
 const c = document.getElementById('missions-area');
-c.innerHTML = '';
-let html = '';
-
-// В паузе показываем ТОЛЬКО активные задания
-if (missions.forest.status === 'active') {
-html += `<div class="mission-img-card"><img decoding="async" src="${missions.forest.img}"></div>`;
-}
-if (missions.elections.status === 'active') {
-html += `<div class="mission-img-card"><img decoding="async" src="${missions.elections.img}"></div>`;
-}
-if (missions.saw.status === 'active') {
-html += `<div class="mission-img-card"><img decoding="async" src="${missions.saw.img}"></div>`;
+if (!c) return;
+c.replaceChildren();
+['img/mission_elections.png', 'img/mission_forest.png', 'img/mission_saw.png'].forEach(src => {
+const img = document.createElement('img');
+img.src = src;
+img.alt = '';
+img.draggable = false;
+c.appendChild(img);
+});
 }
 
-c.innerHTML = html;
+function openPauseList() {
+closeModal('pause-modal');
+openHintGallery();
 }
 
 function buyUndo() {
-if (coins >= 1500) {
-coins -= 1500;
+if (!undoState || coins < 1500) return;
 undoMove();
+coins = Math.max(0, coins - 1500);
+render();
+saveGame();
 closeModal('pause-modal');
-} else {
-setStatus();
-}
 }
 
 function claimSocialBonus(amount) {
@@ -2305,13 +2355,118 @@ closeModal('pause-modal');
 startTutorial();
 }
 
-function ensureAudio() {
-if (sfxMuted) return null;
+let masterGain = null;
+let audioGen = 0;
+const audioLoopMakers = new Map();
+const audioLoopNodes = new Map();
+
+function audioBus(ctx) {
+if (masterGain && ctx === audioCtx) return masterGain;
+return ctx.destination;
+}
+
+function stopAudioLoops() {
+audioLoopNodes.forEach(node => {
+try { if (node.stop) node.stop(); } catch (e) {}
+try { if (node.disconnect) node.disconnect(); } catch (e) {}
+});
+audioLoopNodes.clear();
+}
+
+function startAudioLoops(ctx) {
+stopAudioLoops();
+if (!ctx || !masterGain || sfxMuted) return;
+audioLoopMakers.forEach((maker, name) => {
+try {
+const node = maker(ctx, masterGain);
+if (node) audioLoopNodes.set(name, node);
+} catch (e) {}
+});
+}
+
+/* Единственная точка для фоновой петли: при пересоздании контекста старая петля
+   гасится и стартует ровно одна новая, без наложения. */
+function addAudioLoop(name, maker) {
+audioLoopMakers.set(name, maker);
+if (!audioCtx || audioCtx.state === 'closed' || sfxMuted || !masterGain) return;
+const prev = audioLoopNodes.get(name);
+if (prev) {
+try { if (prev.stop) prev.stop(); } catch (e) {}
+audioLoopNodes.delete(name);
+}
+try {
+const node = maker(audioCtx, masterGain);
+if (node) audioLoopNodes.set(name, node);
+} catch (e) {}
+}
+
+function createAudio() {
 const AC = window.AudioContext || window.webkitAudioContext;
 if (!AC) return null;
-if (!audioCtx) audioCtx = new AC();
-if (audioCtx.state === 'suspended') audioCtx.resume();
+const gen = ++audioGen;
+stopAudioLoops();
+const prev = audioCtx;
+audioCtx = null;
+masterGain = null;
+if (prev && prev.state !== 'closed') {
+try { prev.close(); } catch (e) {}
+}
+let ctx;
+try { ctx = new AC(); } catch (e) { return null; }
+if (gen !== audioGen) {
+try { ctx.close(); } catch (e) {}
 return audioCtx;
+}
+const bus = ctx.createGain();
+bus.gain.value = sfxMuted ? 0 : 1;
+bus.connect(ctx.destination);
+audioCtx = ctx;
+masterGain = bus;
+startAudioLoops(ctx);
+return ctx;
+}
+
+function audioBroken(ctx) {
+if (!ctx) return true;
+const state = ctx.state;
+return state === 'closed' || state === 'interrupted';
+}
+
+function ensureAudio() {
+if (sfxMuted) return null;
+if (audioBroken(audioCtx)) createAudio();
+if (!audioCtx) return null;
+if (audioCtx.state !== 'running') {
+const pending = audioCtx;
+try {
+const p = pending.resume();
+if (p && typeof p.then === 'function') {
+p.then(function () {
+if (audioCtx !== pending) return;
+if (audioBroken(pending)) createAudio();
+}).catch(function () {
+if (audioCtx === pending) createAudio();
+});
+}
+} catch (e) {
+if (audioCtx === pending) createAudio();
+}
+}
+return audioCtx && !audioBroken(audioCtx) ? audioCtx : null;
+}
+
+function resumeAudio() {
+if (sfxMuted) return;
+ensureAudio();
+}
+
+function suspendAudio() {
+const ctx = audioCtx;
+if (!ctx || ctx.state !== 'running') return;
+try {
+const p = ctx.suspend();
+if (p && typeof p.catch === 'function') p.catch(function () {});
+} catch (e) {}
 }
 
 function envTone(ctx, freq, t, dur, type, gain) {
@@ -2321,7 +2476,7 @@ o.type = type;
 o.frequency.setValueAtTime(freq, t);
 g.gain.setValueAtTime(gain, t);
 g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-o.connect(g); g.connect(ctx.destination);
+o.connect(g); g.connect(audioBus(ctx));
 o.start(t); o.stop(t + dur + 0.02);
 }
 
@@ -2337,7 +2492,7 @@ o.frequency.setValueAtTime(160, t);
 o.frequency.exponentialRampToValueAtTime(55, t + 0.12);
 g.gain.setValueAtTime(0.28, t);
 g.gain.exponentialRampToValueAtTime(0.001, t + 0.13);
-o.connect(g); g.connect(ctx.destination);
+o.connect(g); g.connect(audioBus(ctx));
 o.start(t); o.stop(t + 0.15);
 } else if (name === 'merge') {
 envTone(ctx, 523, t, 0.12, 'sine', 0.16);
@@ -2371,7 +2526,7 @@ o.frequency.setValueAtTime(480, t);
 o.frequency.exponentialRampToValueAtTime(120, t + 0.08);
 g.gain.setValueAtTime(0.2, t);
 g.gain.exponentialRampToValueAtTime(0.001, t + 0.09);
-o.connect(g); g.connect(ctx.destination);
+o.connect(g); g.connect(audioBus(ctx));
 o.start(t); o.stop(t + 0.1);
 }
 
@@ -2394,7 +2549,7 @@ const g = ctx.createGain();
 g.gain.setValueAtTime(0.0001, t);
 g.gain.linearRampToValueAtTime(gainVal, t + Math.min(0.025, dur * 0.15));
 g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-src.connect(f); f.connect(g); g.connect(ctx.destination);
+src.connect(f); f.connect(g); g.connect(audioBus(ctx));
 src.start(t);
 src.stop(t + dur + 0.02);
 }
@@ -2410,7 +2565,7 @@ o.frequency.setValueAtTime(168, t);
 o.frequency.exponentialRampToValueAtTime(86, t + dur);
 g.gain.setValueAtTime(0.11, t);
 g.gain.exponentialRampToValueAtTime(0.001, t + dur);
-o.connect(g); g.connect(ctx.destination);
+o.connect(g); g.connect(audioBus(ctx));
 o.start(t); o.stop(t + dur + 0.02);
 }
 
@@ -2428,7 +2583,7 @@ o.frequency.exponentialRampToValueAtTime(freq * 0.985, t + dur);
 g.gain.setValueAtTime(0.0001, t);
 g.gain.exponentialRampToValueAtTime(gain, t + 0.01);
 g.gain.exponentialRampToValueAtTime(0.0001, t + dur);
-o.connect(g); g.connect(ctx.destination);
+o.connect(g); g.connect(audioBus(ctx));
 o.start(t); o.stop(t + dur + 0.02);
 const o2 = ctx.createOscillator();
 const g2 = ctx.createGain();
@@ -2436,7 +2591,7 @@ o2.type = 'triangle';
 o2.frequency.setValueAtTime(freq * 2.65, t);
 g2.gain.setValueAtTime(gain * 0.28, t);
 g2.gain.exponentialRampToValueAtTime(0.0001, t + 0.07);
-o2.connect(g2); g2.connect(ctx.destination);
+o2.connect(g2); g2.connect(audioBus(ctx));
 o2.start(t); o2.stop(t + 0.09);
 noiseBurst(ctx, t, 0.04, Math.min(2400, freq * 4), freq * 1.4, gain * 0.22, 3.5);
 }
@@ -2450,7 +2605,7 @@ o.frequency.setValueAtTime(1480, t);
 o.frequency.exponentialRampToValueAtTime(980, t + 0.05);
 g.gain.setValueAtTime(0.05, t);
 g.gain.exponentialRampToValueAtTime(0.001, t + 0.06);
-o.connect(g); g.connect(ctx.destination);
+o.connect(g); g.connect(audioBus(ctx));
 o.start(t); o.stop(t + 0.07);
 }
 
@@ -2470,7 +2625,9 @@ function toggleSfx(e) {
 if (e) { e.preventDefault(); e.stopPropagation(); }
 sfxMuted = !sfxMuted;
 try { localStorage.setItem(SFX_KEY, sfxMuted ? '1' : '0'); } catch (err) {}
-if (sfxMuted && audioCtx && audioCtx.state === 'running') audioCtx.suspend();
+if (masterGain) masterGain.gain.value = sfxMuted ? 0 : 1;
+if (sfxMuted) suspendAudio();
+else resumeAudio();
 updateSfxButton();
 if (!sfxMuted) sfx('ui');
 }
@@ -2887,10 +3044,14 @@ place('title-info', 0.1969, 0.8984);
 place('title-sfx', 0.8318, 0.8984);
 const play = document.getElementById('title-play');
 if (!play) return;
-const pw = Math.min(cw * 0.62, dw * 0.48);
+const oldW = Math.min(cw * 0.62, dw * 0.48);
+const oldH = oldW * (151 / 491);
+const cy = top + dh * 0.42 + oldH / 2;
+const pw = Math.min(cw * 0.42, 200);
 play.style.width = pw + 'px';
+play.style.height = pw + 'px';
 play.style.left = ((cw - pw) / 2) + 'px';
-play.style.top = (top + dh * 0.42) + 'px';
+play.style.top = (cy - pw / 2) + 'px';
 }
 function showTitle() {
 const el = document.getElementById('title-screen');
@@ -2996,6 +3157,8 @@ if (!tg || tg.platform === 'unknown' || typeof tg.onEvent !== 'function') return
 tg.onEvent('safeAreaChanged', applyTelegramInsets);
 tg.onEvent('contentSafeAreaChanged', applyTelegramInsets);
 tg.onEvent('fullscreenChanged', applyTelegramInsets);
+tg.onEvent('activated', resumeAudio);
+tg.onEvent('deactivated', suspendAudio);
 telegramInsetsBound = true;
 } catch (e) {}
 }
@@ -3026,13 +3189,57 @@ bindOutsideClose('pause-modal');
 bootTelegram();
 updateSfxButton();
 indexTrims();
+document.addEventListener('visibilitychange', function () {
+if (document.visibilityState === 'hidden') suspendAudio();
+else resumeAudio();
+});
+window.addEventListener('focus', resumeAudio);
+window.addEventListener('pageshow', resumeAudio);
+window.addEventListener('pagehide', suspendAudio);
 window.addEventListener('pointerdown', function () { ensureAudio(); bootTelegram(); }, { passive: true });
+window.addEventListener('touchend', function () { ensureAudio(); }, { passive: true });
 window.addEventListener('resize', function () {
 fingerSig = '';
 layoutTitle();
 const title = document.getElementById('title-screen');
 if (title && title.classList.contains('hidden')) render();
 });
+
+function finishBoot() {
+const boot = document.getElementById('boot');
+if (!boot || boot.dataset.done) return;
+boot.dataset.done = '1';
+boot.classList.add('hide');
+setTimeout(function () { boot.style.display = 'none'; }, 320);
+}
+function preloadGameImages() {
+const urls = new Set();
+const add = (u) => {
+if (!u) return;
+const s = String(u).replace(/['"]/g, '').trim();
+if (!s || s.indexOf('data:') === 0) return;
+try { urls.add(new URL(s, location.href).href); } catch (e) {}
+};
+document.querySelectorAll('img[src]').forEach(img => add(img.getAttribute('src')));
+const styleText = [...document.querySelectorAll('style')].map(s => s.textContent).join('\n');
+const re = /url\(([^)]+)\)/g;
+let m;
+while ((m = re.exec(styleText))) add(m[1]);
+for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
+for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
+for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/loading.jpg','img/play.png','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+let left = urls.size;
+const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
+if (!left) finishBoot();
+urls.forEach(src => {
+const img = new Image();
+img.onload = img.onerror = tick;
+img.src = src;
+});
+setTimeout(finishBoot, 10000);
+}
+preloadGameImages();
 
 const forceTutorial = new URLSearchParams(location.search).has('tutorial');
 if (forceTutorial) startTutorial();
