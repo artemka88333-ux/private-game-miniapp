@@ -46,8 +46,16 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .hit-rating { left: 3%; top: calc(220 / 431 * 100%); width: 17%; height: calc(93 / 431 * 100%); }
 .hit-shop { left: 36%; top: calc(220 / 431 * 100%); width: 17%; height: calc(93 / 431 * 100%); }
 .hit-pause { left: 68%; top: calc(220 / 431 * 100%); width: 15%; height: calc(93 / 431 * 100%); }
-/* Portrait is one board-cell wide and its bottom edge sits on the buttons band, centered on the ↓ button (88.94% of ui_top_buttons.png). */
-.hit-jurist { left: calc(88.94% - 100% / 12); top: calc(220 / 431 * 100% - 100% * 877 / 431 / 6); width: calc(100% / 6); height: calc(100% * 877 / 431 / 6); z-index: 6; }
+/* ↓ button plaque in ui_top_buttons.png is x 778–877 of 877. layoutJurist() centers the portrait on this rect. */
+.hit-down { position: absolute; left: 88.71%; width: 11.29%; top: calc(220 / 431 * 100%); height: calc(93 / 431 * 100%); pointer-events: none; z-index: 1; }
+/* Fallback before measurement: a square that fits the stats band, centered on the ↓ button, entirely below the forest. */
+.hit-jurist {
+  left: calc(94.36% - (100% * 83 / 877 * 0.92) / 2);
+  top: calc(137 / 431 * 100% + 83 / 431 * 4%);
+  width: calc(100% * 83 / 877 * 0.92);
+  height: calc(83 / 431 * 92%);
+  z-index: 6;
+}
 .hit-jurist img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 92%; height: 92%; object-fit: fill; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
 
 /* БЕЙДЖ НА КОНВЕРТЕ (ПОЧТА) */
@@ -81,14 +89,14 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 #shades.no-anim .shade { transition: none; }
 .ghost { position: fixed; left: 0; top: 0; display: block; background: none; pointer-events: none; z-index: 2000; overflow: visible; will-change: transform; transition: none; }
 .ghost::after { content: ''; position: absolute; left: 52%; top: 82%; width: 34%; height: 16%; background: rgba(0, 0, 0, 0.45); border-radius: 50%; filter: blur(3px); z-index: 0; pointer-events: none; }
-.piece { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); display: block; pointer-events: none; z-index: 1; }
+.piece { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)); display: block; pointer-events: none; z-index: 1; }
 .piece img { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; position: static; transform: none; }
 .piece.piece-emoji { font-size: 32px; line-height: 1; display: flex; align-items: center; justify-content: center; }
 
 /* АНИМАЦИИ */
-@keyframes piece-pop { 0% { transform: translate(-50%, -50%) scale(0); } 60% { transform: translate(-50%, -50%) scale(1.15); } 100% { transform: translate(-50%, -50%) scale(1); } }
+@keyframes piece-pop { 0% { transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)) scale(0); } 60% { transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)) scale(1.15); } 100% { transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)) scale(1); } }
 .piece.piece-pop { animation: piece-pop 0.35s ease-out both; }
-@keyframes land-bounce { 0% { transform: translate(-50%, -50%) scale(1.22, 0.72); } 45% { transform: translate(-50%, -50%) scale(0.9, 1.14); } 100% { transform: translate(-50%, -50%) scale(1, 1); } }
+@keyframes land-bounce { 0% { transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)) scale(1.22, 0.72); } 45% { transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)) scale(0.9, 1.14); } 100% { transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)) scale(1, 1); } }
 .piece.land-bounce { animation: land-bounce 0.12s ease-out both; }
 .merge-glow { position: fixed; z-index: 2080; pointer-events: none; border-radius: 50%; transform: translate(-50%, -50%); background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,226,90,0.9) 32%, rgba(255,196,40,0.35) 58%, rgba(255,196,40,0) 72%); animation: glowFlash 0.4s ease-out forwards; }
 @keyframes glowFlash { 0% { opacity: 0; transform: translate(-50%, -50%) scale(0.25); } 28% { opacity: 1; transform: translate(-50%, -50%) scale(1); } 100% { opacity: 0; transform: translate(-50%, -50%) scale(1.4); } }
@@ -102,14 +110,15 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЖНЯЯ ПАНЕЛЬ. Декоративная трава сверху картинки (212/733) не входит в панель: низ поля совпадает с верхом клетки/слотов, без нахлёста и без щели. Картинка и заливка её нижнего края доходят до края экрана, включая home indicator. Слоты остаются в координатах полной картинки. */
+/* НИЖНЯЯ ПАНЕЛЬ. Трава сверху картинки (212/733) не входит в панель. Видимая часть кончается у низа слотов (620/733), дальше только safe-area, чтобы панель сидела у низа экрана и не заезжала под home indicator. */
 .bottom-panel {
   --img-h: calc(100cqw * 733 / 1320);
   --grass: calc(212 / 733);
+  --art-end: calc(620 / 733);
   position: relative;
   z-index: 2;
   width: 100%;
-  height: calc(var(--img-h) * (1 - var(--grass)) + var(--ui-bottom));
+  height: calc(var(--img-h) * (var(--art-end) - var(--grass)) + var(--ui-bottom));
   margin-top: 0;
   overflow: hidden;
   flex-shrink: 0;
@@ -162,13 +171,32 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .sheet-bar { flex: 0 0 auto; background: #6f8b46; color: #fff6c4; min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; font-weight: 900; letter-spacing: 0.08em; font-size: 16px; text-shadow: 0 1px 0 rgba(0,0,0,0.25); }
 .sheet-x { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 48px; height: 32px; border-radius: 8px; border: 2px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 22px; font-weight: 900; line-height: 1; cursor: pointer; padding: 0; }
-.shop-grid { flex: 1; min-height: 0; display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: repeat(5, 1fr); gap: 6px; padding: 8px; }
-.shop-card { background: #f4f8e4; border: 2px solid #6d8a45; border-radius: 10px; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px; min-height: 0; cursor: pointer; padding: 4px; position: relative; }
-.shop-card img.shop-art { max-width: 72%; max-height: 62%; object-fit: contain; flex: 1 1 auto; pointer-events: none; }
-.shop-price { display: flex; align-items: center; justify-content: center; gap: 3px; font-weight: 900; font-size: 13px; color: #3a2a10; line-height: 1; }
-.shop-price img { width: 14px; height: 14px; object-fit: contain; }
-.shop-card.soon { cursor: default; }
-.shop-card .badge-new { position: absolute; top: 3px; left: 4px; background: #e23b3b; color: #fff; font-size: 9px; font-weight: 900; border-radius: 4px; padding: 1px 4px; }
+/* Магазинчик — картинка img/shop_bg.png (панель Артёма). Купюры на карточке 150 уменьшены на 10%. Хиты совпадают с карточками. */
+.shop-window {
+  position: relative;
+  width: min(92vw, calc((100dvh - var(--ui-top) - var(--ui-bottom) - 16px) * 570 / 1438));
+  aspect-ratio: 570 / 1438;
+  max-height: calc(100dvh - var(--ui-top) - var(--ui-bottom) - 12px);
+  background: #d7d8ae url('img/shop_bg.png') center / 100% 100% no-repeat;
+  border-radius: 22px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  overflow: hidden;
+}
+.shop-hitbox { position: absolute; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer; border-radius: 16px; }
+.shop-hitbox:active { background: rgba(255,255,255,0.18); }
+.shop-hitbox[aria-disabled="true"] { cursor: default; }
+.shop-hitbox[aria-disabled="true"]:active { background: transparent; }
+.slot-1 { top: 8.97%; left: 7.19%; width: 38.42%; height: 15.37%; }
+.slot-2 { top: 8.97%; left: 55.09%; width: 37.89%; height: 15.37%; }
+.slot-3 { top: 27.05%; left: 7.19%; width: 38.42%; height: 15.37%; }
+.slot-4 { top: 27.05%; left: 55.09%; width: 37.89%; height: 15.37%; }
+.slot-5 { top: 45.13%; left: 7.19%; width: 38.42%; height: 15.44%; }
+.slot-6 { top: 45.13%; left: 55.09%; width: 37.89%; height: 15.44%; }
+.slot-7 { top: 63.28%; left: 7.19%; width: 38.42%; height: 15.58%; }
+.slot-8 { top: 63.28%; left: 55.09%; width: 37.89%; height: 15.58%; }
+.slot-9 { top: 81.64%; left: 7.19%; width: 38.42%; height: 15.65%; }
+.slot-10 { top: 81.64%; left: 55.09%; width: 37.89%; height: 15.65%; }
+.slot-close { top: 1.53%; left: 84.21%; width: 12.81%; height: 4.87%; border-radius: 10px; }
 .sheet-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px; }
 .pause-actions, .pause-social { display: flex; gap: 6px; flex: 0 0 auto; }
 .pause-actions button, .pause-social button { flex: 1; min-height: 48px; border-radius: 10px; border: 2px solid #6b4e12; background: #ffd24a; color: #2b1a0e; font-weight: 900; font-size: 11px; line-height: 1.15; cursor: pointer; padding: 4px; }
@@ -251,11 +279,12 @@ animation: pieceWalk 0.56s linear both;
 will-change: transform;
 }
 @keyframes omonHop {
-0% { transform: translate(-50%, -50%) translateY(8px) scale(0.72); opacity: 0.15; }
-45% { transform: translate(-50%, -50%) translateY(-14px) scale(1.08); opacity: 1; }
+0% { transform: translate(-50%, -50%) translateY(4px) scale(0.9); opacity: 0.45; }
+32% { transform: translate(-50%, -50%) translateY(-8px) scale(1.04); opacity: 1; }
+58% { transform: translate(-50%, -50%) translateY(-7px) scale(1.02); opacity: 1; }
 100% { transform: translate(-50%, -50%) translateY(0) scale(1); opacity: 1; }
 }
-.cell.anim-hop > .piece { animation: omonHop 0.44s ease-out; will-change: transform; }
+.cell.anim-hop > .piece { animation: omonHop 0.75s cubic-bezier(0.45, 0.05, 0.55, 0.95) both; will-change: transform; }
 @keyframes pieceShake {
 0%, 100% { transform: translate(-50%, -50%) rotate(0deg); }
 18% { transform: translate(-50%, -50%) rotate(-10deg); }
@@ -438,6 +467,7 @@ cursor: pointer;
 <div class="hitbox hit-shop" onclick="openModal('shop-modal')"></div>
 <div class="hitbox hit-pause" onclick="openPause()"></div>
 
+<div class="hit-down" id="hit-down" aria-hidden="true"></div>
 <div class="hitbox hit-jurist" onclick="useJurist()">
 <img decoding="async" src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
 </div>
@@ -480,22 +510,20 @@ cursor: pointer;
 <img decoding="async" src="" id="meme-img">
 </div>
 
-<!-- МАГАЗИН -->
+<!-- МАГАЗИН: панель нарисована в img/shop_bg.png, хиты поверх карточек. -->
 <div class="shop-modal" id="shop-modal">
-<div class="sheet" role="dialog" aria-label="Магазинчик">
-<div class="sheet-bar"><span>МАГАЗИНЧИК</span><button type="button" class="sheet-x" onclick="closeModal('shop-modal')" aria-label="Закрыть">×</button></div>
-<div class="shop-grid">
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Деньги', price: 150, tile: { kind: 'chain', level: 1 } })"><img class="shop-art" src="img/pasha_01.png" alt=""><span class="shop-price"><img src="img/coin_1.png" alt="">150</span></button>
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Баран', price: 450, tile: { kind: 'chain', level: 2 } })"><img class="shop-art" src="img/pasha_02.png" alt=""><span class="shop-price"><img src="img/coin_1.png" alt="">450</span></button>
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Избиратель', price: 1200, tile: { kind: 'chain', level: 3 } })"><img class="shop-art" src="img/pasha_03.png" alt=""><span class="shop-price"><img src="img/coin_1.png" alt="">1200</span></button>
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Школа', price: 2500, tile: { kind: 'chain', level: 4 } })"><img class="shop-art" src="img/pasha_04.png" alt=""><span class="shop-price"><img src="img/coin_1.png" alt="">2500</span></button>
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })"><img class="shop-art" src="img/tool_saw.png" alt=""><span class="shop-price"><img src="img/coin_1.png" alt="">3000</span></button>
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })"><img class="shop-art" src="img/tool_sack.png" alt=""><span class="shop-price"><img src="img/coin_1.png" alt="">4500</span></button>
-<button type="button" class="shop-card soon"><img class="shop-art" src="img/pasha_06.png" alt=""><span class="shop-price">КУПИТЬ</span></button>
-<button type="button" class="shop-card" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })"><img class="shop-art" src="img/tool_nanobox.png" alt=""><span class="shop-price">ПРИМЕНИТЬ</span></button>
-<button type="button" class="shop-card soon"><span class="badge-new">NEW</span><img class="shop-art" src="img/pasha_24.png" alt=""><span class="shop-price">КУПИТЬ</span></button>
-<button type="button" class="shop-card soon"><img class="shop-art" src="img/coin_1.png" alt=""><span class="shop-price">НУЖНЫ ДЕНЬГИ</span></button>
-</div>
+<div class="shop-window" role="dialog" aria-label="Магазинчик">
+<button type="button" class="shop-hitbox slot-close" onclick="closeModal('shop-modal')" aria-label="Закрыть"></button>
+<button type="button" class="shop-hitbox slot-1" onclick="buyItem({ name: 'Деньги', price: 150, tile: { kind: 'chain', level: 1 } })" aria-label="Деньги 150"></button>
+<button type="button" class="shop-hitbox slot-2" onclick="buyItem({ name: 'Баран', price: 450, tile: { kind: 'chain', level: 2 } })" aria-label="Баран 450"></button>
+<button type="button" class="shop-hitbox slot-3" onclick="buyItem({ name: 'Избиратель', price: 1200, tile: { kind: 'chain', level: 3 } })" aria-label="Избиратель 1200"></button>
+<button type="button" class="shop-hitbox slot-4" onclick="buyItem({ name: 'Школа', price: 2500, tile: { kind: 'chain', level: 4 } })" aria-label="Школа 2500"></button>
+<button type="button" class="shop-hitbox slot-5" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })" aria-label="Пила 3000"></button>
+<button type="button" class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })" aria-label="Мешок 4500"></button>
+<button type="button" class="shop-hitbox slot-7" aria-disabled="true" aria-label="Купить"></button>
+<button type="button" class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })" aria-label="Нанокоробка"></button>
+<button type="button" class="shop-hitbox slot-9" aria-disabled="true" aria-label="Купить"></button>
+<button type="button" class="shop-hitbox slot-10" aria-disabled="true" aria-label="Нужны деньги"></button>
 </div>
 </div>
 
@@ -612,6 +640,18 @@ const SEEN_KEY = 'pasha_match_seen_v46';
 
 const CHAIN = ['💵','🐑','🗳️','🏫','📜','🧑‍💼','🏛️','👔','🤴','👑','👴','🧔','✍️','👨‍🚀','🍕','🏠','🛠️','🚀','🌌','🎩','💼','🏦','🎖️','🗽','🏰','💎','🚁','🛸'];
 const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
+/* Occupied-cell darkening from batch 5. Set true to restore the shade overlay. */
+const OCCUPIED_SHADE = false;
+/* Live merge recipe inside «Нажми меня». The panel stays «? НАЖМИ МЕНЯ»; tap still opens the hint gallery. */
+const LIVE_HINT_PREVIEW = false;
+/* Extra scale / floor seat for pieces that read small or high inside the trimmed cell. */
+const PIECE_LAYOUT = {
+  'img/bear_8.png': { scale: 1.2, z: 4 },
+  'img/bear_9.png': { scale: 1.1, floor: true, z: 4 },
+  'img/bear_13.png': { scale: 1.25, floor: true, z: 4 },
+  'img/bear_14.png': { scale: 1.2, floor: true, z: 4 },
+  'img/bear_17.png': { scale: 1.2, floor: true, z: 4 }
+};
 const CARE = ['🐻','🪙','🥇','🏛️','📜','💰','🏦','👑','🌍','🚀','🦁','🐯','🐘','🐳','🦅','🦉','🦄','🐉','👽','🛸'];
 const INCOME = ['💻','📺','🏦','🏢','🥚'];
 const INCOME_PER_TURN = [5, 15, 50, 150, 500];
@@ -812,17 +852,56 @@ wrap.style.width = (cs.w * 0.92) + 'px';
 wrap.style.height = (cs.h * 0.92) + 'px';
 wrap.textContent = tileEmoji(tile);
 }
+applyPieceScale(wrap, src);
 return wrap;
 }
 
+function applyPieceScale(wrap, src) {
+const tweak = src && PIECE_LAYOUT[src];
+if (!tweak || !tweak.scale || tweak.scale === 1) return;
+wrap.style.width = (parseFloat(wrap.style.width) * tweak.scale) + 'px';
+wrap.style.height = (parseFloat(wrap.style.height) * tweak.scale) + 'px';
+}
+
+function seatPiece(wrap, src, cell) {
+const tweak = src && PIECE_LAYOUT[src];
+if (!tweak || !cell) return;
+if (tweak.z) cell.style.zIndex = String(tweak.z);
+if (!tweak.floor) return;
+const trim = TRIM[src];
+const b = trim ? trim.b : 1;
+const h = parseFloat(wrap.style.height) || 0;
+const cellH = cell.clientHeight || cellSize().h;
+const cellW = cell.clientWidth || cellSize().w;
+if (!h || !cellH) return;
+const pad = Math.min(cellW, cellH) * 0.04;
+const currentBottom = (cellH - h) / 2 + b * h;
+const dy = (cellH - pad) - currentBottom;
+wrap.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
+}
+
 function layoutJurist() {
-const img = document.querySelector('.hit-jurist img');
-if (!img || !img.parentElement) return;
-const S = img.parentElement.clientWidth;
-if (!S) return;
-const size = pieceDisplaySize(img.getAttribute('src'), S, S);
-img.style.width = size.w + 'px';
-img.style.height = size.h + 'px';
+const box = document.querySelector('.hit-jurist');
+const img = box && box.querySelector('img');
+const down = document.getElementById('hit-down');
+const stats = document.querySelector('.top-stats');
+const panel = document.querySelector('.top-panel');
+if (!box || !down || !stats || !panel) return;
+const pr = panel.getBoundingClientRect();
+const dr = down.getBoundingClientRect();
+const sr = stats.getBoundingClientRect();
+if (!pr.width || !sr.height || !dr.width) return;
+const pad = Math.max(1, sr.height * 0.04);
+const size = Math.max(8, sr.height - pad * 2);
+const cx = dr.left + dr.width / 2 - pr.left;
+box.style.width = size + 'px';
+box.style.height = size + 'px';
+box.style.left = (cx - size / 2) + 'px';
+box.style.top = (sr.top - pr.top + pad) + 'px';
+if (!img) return;
+const disp = pieceDisplaySize(img.getAttribute('src'), size, size);
+img.style.width = disp.w + 'px';
+img.style.height = disp.h + 'px';
 }
 
 function checkDiscovery(tile) {
@@ -968,6 +1047,11 @@ shadeHolds.push({ r, c, on, until: Date.now() + ms });
 setTimeout(syncShades, ms + 30);
 }
 function syncShades() {
+if (!OCCUPIED_SHADE) {
+const shadesOff = document.getElementById('shades');
+if (shadesOff) shadesOff.querySelectorAll('.shade.on').forEach(el => el.classList.remove('on'));
+return;
+}
 const now = Date.now();
 shadeHolds = shadeHolds.filter(h => h.until > now);
 const hold = {};
@@ -999,10 +1083,13 @@ for (let r = 0; r < SIZE; r++) {
 for (let c = 0; c < SIZE; c++) {
 const cell = cells[r * SIZE + c];
 cell.className = 'cell';
+cell.style.zIndex = '';
 const d = grid[r][c];
 cell.replaceChildren();
 if (d) {
-cell.appendChild(makeTileContent(d));
+const pieceEl = makeTileContent(d);
+cell.appendChild(pieceEl);
+seatPiece(pieceEl, getTileImage(d), cell);
 applyRocketJoin(cell, d, r, c);
 if (d.justSpawned || d.pop) {
 const spawnedVisual = cell.querySelector('.piece');
@@ -1410,7 +1497,8 @@ stepPioneers();
 if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 const trapped = trappedPioneers();
 render();
-if (document.querySelector('.cell.anim-walk, .cell.anim-hop')) markBusy(660);
+if (document.querySelector('.cell.anim-hop')) markBusy(860);
+else if (document.querySelector('.cell.anim-walk')) markBusy(660);
 if (trapped.length) {
 sfx('trap');
 trapped.forEach(([r, c]) => {
@@ -1446,7 +1534,7 @@ else omons.push([r, c]);
 }
 
 if (omons.length > 0) {
-markBusy(900);
+markBusy(1100);
 setTimeout(() => {
 stepOmons(omons);
 finishUnits();
@@ -1469,7 +1557,7 @@ const anim = moveAnims.find(a => a.r === r && a.c === c);
 if (!anim) return;
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 const piece = cell.querySelector('.piece');
-const ms = anim.hop ? 480 : 620;
+const ms = anim.hop ? 780 : 620;
 if (anim.fromR != null) {
 holdShade(anim.fromR, anim.fromC, true, reduce ? 0 : ms);
 holdShade(r, c, false, reduce ? 0 : ms);
@@ -1499,6 +1587,7 @@ drag.ghost.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
 function hideCellHighlight() {}
 
 function updateDragPreview(clientX, clientY) {
+if (!LIVE_HINT_PREVIEW) { clearPreview(); return; }
 if (!drag) { clearPreview(); return; }
 const hit = document.elementFromPoint(clientX, clientY);
 const cell = hit && hit.closest ? hit.closest('.cell') : null;
@@ -2361,19 +2450,6 @@ o.start(t); o.stop(t + 0.07);
 
 function playSawFx(r, c) {
 sfx('saw');
-const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
-if (!cell) return;
-const rect = cell.getBoundingClientRect();
-const img = document.createElement('img');
-img.src = 'img/tool_saw.png';
-img.alt = '';
-img.className = 'saw-swipe';
-img.style.left = rect.left + 'px';
-img.style.top = rect.top + 'px';
-img.style.width = rect.width + 'px';
-img.style.height = rect.height + 'px';
-document.body.appendChild(img);
-setTimeout(() => img.remove(), 1100);
 }
 
 function updateSfxButton() {
@@ -2528,6 +2604,7 @@ box.innerHTML = '';
 box.classList.remove('has-recipe', 'compact');
 }
 function showPreview(nodes) {
+if (!LIVE_HINT_PREVIEW) { clearPreview(); return; }
 const box = document.getElementById('hint-recipe');
 if (!box) return;
 box.innerHTML = '';
@@ -2641,15 +2718,6 @@ g.fillText('КЛОН', 176, 166);
 closedBoxCache = c.toDataURL('image/png');
 return closedBoxCache;
 }
-function nearestEmpty(r, c) {
-let best = null, bestScore = 1e9;
-for (let r2 = 0; r2 < SIZE; r2++) for (let c2 = 0; c2 < SIZE; c2++) {
-if (grid[r2][c2]) continue;
-const score = (r2 - r) * (r2 - r) + (c2 - c) * (c2 - c) + (r2 - r) * 0.15;
-if (score < bestScore) { bestScore = score; best = [r2, c2]; }
-}
-return best;
-}
 function playNanobox(r, c, fromJail) {
 const target = grid[r] && grid[r][c];
 if (!target || target.kind === 'tool') { render(); return; }
@@ -2659,8 +2727,12 @@ const rect = cell.getBoundingClientRect();
 const cx = rect.left + rect.width / 2;
 const cy = rect.top + rect.height / 2;
 const pointer = drag && drag.dropRect ? drag.dropRect : null;
-if (fromJail) jailTile = null;
-else { nextTile = bufferedNext || dealNext(); bufferedNext = null; }
+if (fromJail) {
+jailTile = null;
+if (nextTile) { bufferedNext = nextTile; nextTile = null; }
+} else {
+nextTile = null;
+}
 render();
 const box = document.createElement('img');
 box.src = closedBoxData();
@@ -2694,19 +2766,18 @@ shrink.onfinish = () => { box.remove(); launchClone(target, r, c, cx, cy); };
 }, 100);
 }, 80);
 }
-function launchClone(target, r, c, x0, y0) {
-const dest = nearestEmpty(r, c);
-if (!dest) {
-const clone = { ...target };
-delete clone.pop; delete clone.bounce;
-if (!nextTile) nextTile = clone;
-else if (!jailTile) jailTile = clone;
-else { bufferedNext = nextTile; nextTile = clone; }
-render(); saveGame();
-return;
+function giveClone(target) {
+const clone = { ...target, bounce: true };
+delete clone.pop;
+if (nextTile) bufferedNext = nextTile;
+nextTile = clone;
+render();
+saveGame();
 }
-const destCell = document.querySelector('.cell[data-r="' + dest[0] + '"][data-c="' + dest[1] + '"]');
-const dr = destCell.getBoundingClientRect();
+function launchClone(target, r, c, x0, y0) {
+const slot = document.getElementById('next-content') || document.getElementById('next-tile');
+const dr = slot && slot.getBoundingClientRect();
+if (!dr || dr.width < 2 || dr.height < 2) { giveClone(target); return; }
 const x1 = dr.left + dr.width / 2;
 const y1 = dr.top + dr.height / 2;
 const flyer = makeTileContent(target);
@@ -2728,11 +2799,7 @@ flyer.style.transform = 'translate(' + x + 'px,' + y + 'px) translate(-50%, -50%
 if (t < 1) requestAnimationFrame(frame);
 else {
 flyer.remove();
-const clone = { ...target, bounce: true };
-delete clone.pop;
-grid[dest[0]][dest[1]] = clone;
-render();
-processCascades(dest[0], dest[1], false, () => saveGame());
+giveClone(target);
 }
 }
 requestAnimationFrame(frame);
