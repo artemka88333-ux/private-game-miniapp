@@ -30,65 +30,31 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 #board { contain: layout paint; transform: translateZ(0); }
 .bottom-panel { transform: translateZ(0); }
 
-/* ВЕРХНЯЯ ПАНЕЛЬ. Полосы ui_top.png сверху вниз: лес 176:313, счёт 0:83, кнопки 83:176, дорога+трава 313:431.
-   Лес тянется до самого верха вьюпорта (за статус-бар и кнопки Telegram) и не кликается. Счёт, кнопки и дорога остаются ниже content safe area. */
-.top-panel { position: relative; z-index: 2; width: 100%; aspect-ratio: 877 / 431; flex-shrink: 0; margin-top: var(--forest-lift); margin-bottom: -1cm; overflow: visible; }
-.top-band { position: absolute; left: 0; width: 100%; pointer-events: none; }
-.top-band img { width: 100%; height: 100%; display: block; object-fit: fill; pointer-events: none; }
-.top-forest { top: calc(-1 * var(--forest-lift)); height: calc(137 / 431 * 100% + var(--forest-lift) + 1px); background-color: #57732b; pointer-events: none; }
-.top-forest img { position: absolute; left: 0; bottom: 0; width: 100%; height: calc(100% - var(--forest-lift)); object-fit: fill; object-position: center bottom; }
-.top-stats { top: calc(137 / 431 * 100%); height: calc(83 / 431 * 100% + 1px); }
-.top-buttons { top: calc(220 / 431 * 100%); height: calc(93 / 431 * 100% + 1px); }
-.top-road { top: calc(313 / 431 * 100%); height: calc(118 / 431 * 100%); }
-.val-box { position: absolute; top: calc(137 / 431 * 100% + 1.2%); height: 16.4%; display: flex; align-items: center; justify-content: center; pointer-events: none; gap: 3px; overflow: visible; }
-.val-box img.icon { width: auto; object-fit: contain; flex: 0 0 auto; align-self: center; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
-#score-box { left: 0.8%; width: 37.2%; }
-#score-box img.icon { height: 82%; }
-#coins-box { left: 39.4%; width: 23.5%; }
-#coins-box img.icon { height: 114%; }
-#moves-box { left: 64.15%; width: 23.6%; }
-#moves-box img.icon { height: 74%; }
+/* ВЕРХ. Лес тянется под шапку Telegram и не кликается. Под ним img/hud_top.png (кубок, монета, часы, аватар; подиум, магазин, пауза, стрелка). Дорога под панелью целиком: оба бордюра и полоска травы. */
+.top-panel { position: relative; z-index: 2; width: 100%; flex-shrink: 0; margin-top: var(--forest-lift); display: flex; flex-direction: column; }
+.top-forest { position: absolute; left: 0; right: 0; top: calc(-1 * var(--forest-lift)); height: calc(100cqw * 137 / 877 + var(--forest-lift)); background: #57732b url('img/ui_top_forest.png') center bottom / 100% calc(100cqw * 137 / 877) no-repeat; pointer-events: none; }
+.top-hud { position: relative; width: 100%; margin-top: calc(100cqw * 137 / 877); aspect-ratio: 2400 / 470; flex-shrink: 0; background: #4f3b18 url('img/hud_top.png?v=47') center / 100% 100% no-repeat; z-index: 1; }
+.top-road { width: 100%; aspect-ratio: 877 / 118; flex-shrink: 0; background: #557a32 url('img/ui_top_road.png') center / 100% 100% no-repeat; pointer-events: none; }
+/* Счётчики стоят сразу справа от иконки на картинке и не заходят в соседнюю секцию. */
+.val-box { position: absolute; top: 11%; height: 30%; display: flex; align-items: center; justify-content: flex-start; pointer-events: none; overflow: hidden; }
+#score-box { left: 8.3%; width: 20.0%; }
+#coins-box { left: 38.0%; width: 19.6%; }
+#moves-box { left: 67.4%; width: 19.4%; }
 
-.hitbox { position: absolute; cursor: pointer; border-radius: 10px; }
-.hit-rating { left: 3%; top: calc(220 / 431 * 100%); width: 17%; height: calc(93 / 431 * 100%); }
-.hit-shop { left: 36%; top: calc(220 / 431 * 100%); width: 17%; height: calc(93 / 431 * 100%); }
-.hit-pause { left: 68%; top: calc(220 / 431 * 100%); width: 15%; height: calc(93 / 431 * 100%); }
-/* ↓ button plaque in ui_top_buttons.png is x 778–877 of 877. layoutJurist() centers the portrait on this rect. */
-.hit-down { position: absolute; left: 88.71%; width: 11.29%; top: calc(220 / 431 * 100%); height: calc(93 / 431 * 100%); pointer-events: none; z-index: 1; }
-/* Fallback before measurement: a square that fits the stats band, centered on the ↓ button, entirely below the forest. */
-.hit-jurist {
-  left: calc(94.36% - (100% * 83 / 877 * 0.92) / 2);
-  top: calc(137 / 431 * 100% + 83 / 431 * 4%);
-  width: calc(100% * 83 / 877 * 0.92);
-  height: calc(83 / 431 * 92%);
-  z-index: 6;
-}
-.hit-jurist img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 92%; height: 92%; object-fit: fill; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.hitbox { position: absolute; cursor: pointer; border-radius: 12px; }
+.hit-rating { left: 0; top: 48.3%; width: 28.92%; height: 51.7%; cursor: default; }
+.hit-shop { left: 29.58%; top: 48.3%; width: 28.55%; height: 51.7%; }
+.hit-pause { left: 58.79%; top: 48.3%; width: 28.59%; height: 51.7%; }
+.hit-down { position: absolute; left: 88.04%; width: 11.96%; top: 48.3%; height: 51.7%; cursor: pointer; z-index: 2; }
+.hit-jurist { position: absolute; left: 88.6%; width: 10.6%; top: 3%; height: 42%; z-index: 3; }
+.hit-jurist img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 86%; height: 86%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
 
-/* БЕЙДЖ НА КОНВЕРТЕ (ПОЧТА) */
-.mail-badge {
-position: absolute;
-top: -5px; right: -5px;
-background: #ff3333;
-color: #fff;
-font-size: 14px;
-font-weight: bold;
-width: 22px; height: 22px;
-border-radius: 50%;
-display: none;
-justify-content: center;
-align-items: center;
-border: 2px solid #fff;
-z-index: 30;
-box-shadow: 0 2px 5px rgba(0,0,0,0.5);
-}
-.mail-badge.show { display: flex; }
+.num-container { display: flex; align-items: center; justify-content: flex-start; height: 100%; width: 100%; min-width: 0; }
+.num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; }
 
-.num-container { display: flex; align-items: center; justify-content: center; height: 70%; min-width: 0; max-width: 78%; flex: 0 1 auto; align-self: center; }
-.num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; align-self: center; }
-
-/* ПОЛЕ */
-#board { flex: 1 1 auto; min-height: 0; width: 100%; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; z-index: 3; }
+/* ПОЛЕ. ~4.5% меньше ширины и квадратное, сразу под дорогой: видны оба бордюра и полоска травы. */
+.playfield { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; justify-content: center; align-items: flex-start; padding-top: 3px; background: #557a32; position: relative; z-index: 3; }
+#board { width: 95.5%; aspect-ratio: 1 / 1; max-height: 100%; flex: 0 0 auto; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; z-index: 1; }
 #shades { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); pointer-events: none; z-index: 0; }
 .shade { background: rgba(40, 25, 10, 0.35); opacity: 0; transition: opacity 250ms ease; border-radius: 0; }
@@ -96,7 +62,7 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 #shades.no-anim .shade { transition: none; }
 .ghost { position: fixed; left: 0; top: 0; display: block; background: none; pointer-events: none; z-index: 2000; overflow: visible; will-change: transform; transition: none; }
 .ghost::after { content: ''; position: absolute; left: 52%; top: 82%; width: 34%; height: 16%; background: rgba(0, 0, 0, 0.45); border-radius: 50%; filter: blur(3px); z-index: 0; pointer-events: none; }
-.piece { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)); display: block; pointer-events: none; z-index: 1; }
+.piece { position: absolute; left: calc(50% + var(--piece-dx, 0px)); top: 50%; transform: translate(-50%, -50%) translateY(var(--piece-dy, 0px)); display: block; pointer-events: none; z-index: 1; }
 .piece img { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; position: static; transform: none; }
 .piece.piece-emoji { font-size: 32px; line-height: 1; display: flex; align-items: center; justify-content: center; }
 
@@ -117,39 +83,26 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЖНЯЯ ПАНЕЛЬ. Трава сверху картинки (212/733) не входит в панель. Видимая часть кончается у низа слотов (620/733), дальше только safe-area, чтобы панель сидела у низа экрана и не заезжала под home indicator. */
+/* НИЖНЯЯ ПАНЕЛЬ img/hud_bottom.jpg: решётка, слот следующей фигурки, «НАЖМИ МЕНЯ». Под картинкой только safe-area. */
 .bottom-panel {
-  --img-h: calc(100cqw * 733 / 1320);
-  --grass: calc(212 / 733);
-  --art-end: calc(620 / 733);
   position: relative;
   z-index: 2;
   width: 100%;
-  height: calc(var(--img-h) * (var(--art-end) - var(--grass)) + var(--ui-bottom));
+  height: calc(100cqw * 768 / 2544 + var(--ui-bottom));
   margin-top: 0;
   overflow: hidden;
   flex-shrink: 0;
-  background-color: #516e28;
-  background-image: url('img/ui_bottom.png'), url('img/ui_bottom.png');
-  background-repeat: no-repeat, no-repeat;
-  background-size: 100% var(--img-h), 100% var(--img-h);
-  background-position: left calc(var(--img-h) * var(--grass) * -1), center bottom;
+  background-color: #5a7a34;
+  background-image: url('img/hud_bottom.jpg?v=47');
+  background-repeat: no-repeat;
+  background-size: 100% calc(100cqw * 768 / 2544);
+  background-position: top center;
 }
-.bottom-slots {
-  position: absolute;
-  left: 0;
-  right: 0;
-  top: calc(var(--img-h) * var(--grass) * -1);
-  height: var(--img-h);
-  display: flex;
-}
-.jail-block { width: 32%; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 8% 10% 10%; }
-.next-block { flex: 1; cursor: grab; display: flex; align-items: center; justify-content: center; padding: 10% 6% 10% 4%; }
-.hint-block { width: 32%; cursor: pointer; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 10% 10% 10% 8%; }
-
+.bottom-art { position: relative; width: 100%; height: calc(100cqw * 768 / 2544); }
+.jail-block { position: absolute; left: 2.36%; top: 3.78%; width: 22.25%; height: 83.85%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
+.next-block { position: absolute; left: 31.05%; top: 4.43%; width: 25.63%; height: 85.55%; cursor: grab; display: flex; align-items: center; justify-content: center; }
+.hint-block { position: absolute; left: 60.89%; top: 4.43%; width: 36.99%; height: 85.55%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .jail-block .content, .next-block .content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
-.next-block .content { transform: translate(-15%, 5%); }
-.jail-block .content { transform: translate(-23.7%, 6.5%); }
 
 #log { display: none !important; }
 
@@ -178,18 +131,20 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 }
 .sheet-bar { flex: 0 0 auto; background: #6f8b46; color: #fff6c4; min-height: 38px; display: flex; align-items: center; justify-content: center; position: relative; font-weight: 900; letter-spacing: 0.08em; font-size: 16px; text-shadow: 0 1px 0 rgba(0,0,0,0.25); }
 .sheet-x { position: absolute; right: 6px; top: 50%; transform: translateY(-50%); width: 48px; height: 32px; border-radius: 8px; border: 2px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 22px; font-weight: 900; line-height: 1; cursor: pointer; padding: 0; }
-/* Магазинчик — картинка img/shop_bg.png целиком (панель Артёма). Ширина ≈ половина экрана, как в оригинале (~240/471), высота по пропорции 570×1438. Верх сразу под рядом кнопок (конверт, магазин, пауза, ↓), низ выше нижней панели — шапка Telegram и счёт не перекрываются. Купюры на карточке 150 уменьшены на 10%. Хиты в % от этой рамки. */
-.shop-window {
-  --buttons-bottom: max(var(--ui-top) + 100cqw * 176 / 877, 100cqw * 313 / 877);
-  --shop-top: calc(var(--buttons-bottom) + 8px);
-  --bottom-panel-top: calc(100dvh - var(--ui-bottom) - 100cqw * 408 / 1320);
-  --shop-room: calc(var(--bottom-panel-top) - var(--shop-top) - 10px);
+/* Магазинчик и пауза — одна и та же рамка: ширина ≈ половина экрана, пропорция 570×1438, верх сразу под рядом кнопок HUD. */
+.shop-window, .pause-window {
+  --buttons-bottom: calc(max(var(--ui-top), 100cqw * 137 / 877) + 100cqw * 470 / 2400);
+  --panel-top: calc(var(--buttons-bottom) + 8px);
+  --bottom-panel-top: calc(100dvh - var(--ui-bottom) - 100cqw * 768 / 2544);
+  --panel-room: calc(var(--bottom-panel-top) - var(--panel-top) - 10px);
   position: absolute;
   left: 50%;
-  top: var(--shop-top);
+  top: var(--panel-top);
   transform: translateX(-50%);
-  width: min(50vw, calc(var(--shop-room) * 570 / 1438));
+  width: min(50vw, calc(var(--panel-room) * 570 / 1438));
   aspect-ratio: 570 / 1438;
+}
+.shop-window {
   background: #d7d8ae url('img/shop_bg.png') center / 100% 100% no-repeat;
   border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
@@ -211,40 +166,36 @@ box-shadow: 0 2px 5px rgba(0,0,0,0.5);
 .slot-10 { top: 81.64%; left: 55.09%; width: 37.89%; height: 15.65%; }
 .slot-close { top: 1.53%; left: 84.21%; width: 12.81%; height: 4.87%; border-radius: 10px; }
 .sheet-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px; }
-/* Пауза — картинка img/pause_bg.png целиком. Та же логика размера и места, что у магазина: ≈50% ширины, по центру, сразу под рядом кнопок, масштаб одним кадром. Хиты в % от рамки. */
+/* Пауза растянута до размера магазина. Верх (шапка и кнопки) и низ (f / лайк / звезда) не искажаются, тянется только оливковая середина. */
 .pause-window {
-  --buttons-bottom: max(var(--ui-top) + 100cqw * 176 / 877, 100cqw * 313 / 877);
-  --pause-top: calc(var(--buttons-bottom) + 8px);
-  --bottom-panel-top: calc(100dvh - var(--ui-bottom) - 100cqw * 408 / 1320);
-  --pause-room: calc(var(--bottom-panel-top) - var(--pause-top) - 10px);
-  position: absolute;
-  left: 50%;
-  top: var(--pause-top);
-  transform: translateX(-50%);
-  width: min(50vw, calc(var(--pause-room) * 902 / 1600));
-  aspect-ratio: 902 / 1600;
-  background: url('img/pause_bg.png') center / 100% 100% no-repeat;
+  display: flex;
+  flex-direction: column;
   border-radius: 2.2% / 1.2%;
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
+  background: #c5c6a0;
 }
-.pause-undo { left: 6.76%; top: 12.69%; width: 18.74%; height: 11.50%; }
-.pause-list { left: 29.82%; top: 12.69%; width: 18.74%; height: 11.50%; }
-.pause-restart { left: 52.66%; top: 12.69%; width: 18.63%; height: 11.50%; }
-.pause-play { left: 75.50%; top: 12.69%; width: 18.40%; height: 11.50%; }
-.pause-fb { left: 9.76%; top: 77.44%; width: 21.06%; height: 17.62%; }
-.pause-like { left: 39.25%; top: 77.44%; width: 21.06%; height: 17.68%; }
-.pause-star { left: 68.07%; top: 77.44%; width: 20.95%; height: 17.56%; }
+.pause-top, .pause-mid, .pause-bot { position: relative; width: 100%; background-repeat: no-repeat; }
+.pause-top { flex: 0 0 auto; height: calc(100% * 430 / 902 * 570 / 1438); background-image: url('img/pause_top.png?v=47'); background-size: 100% 100%; }
+.pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=47'); background-size: 100% 100%; }
+.pause-mid { flex: 1 1 auto; min-height: 0; background-image: url('img/pause_mid.png?v=47'); background-size: 100% 100%; }
+.pause-undo { left: 6.76%; top: 47.22%; width: 18.74%; height: 42.79%; }
+.pause-list { left: 29.82%; top: 47.22%; width: 18.74%; height: 42.79%; }
+.pause-restart { left: 52.66%; top: 47.22%; width: 18.63%; height: 42.79%; }
+.pause-play { left: 75.50%; top: 47.22%; width: 18.40%; height: 42.79%; }
+.pause-fb { left: 9.76%; top: 7.45%; width: 21.06%; height: 72.29%; }
+.pause-like { left: 39.25%; top: 7.45%; width: 21.06%; height: 72.53%; }
+.pause-star { left: 68.07%; top: 7.45%; width: 20.95%; height: 72.04%; }
 .pause-missions {
   position: absolute;
   left: 4%;
   width: 92%;
-  top: 28.2%;
-  height: 46.4%;
+  top: 3%;
+  bottom: 3%;
   display: flex;
   flex-direction: column;
   justify-content: space-evenly;
-  gap: 1.5%;
+  gap: 2%;
   pointer-events: none;
 }
 .pause-missions img { width: 100%; min-height: 0; flex: 1 1 0; object-fit: contain; object-position: center; display: block; }
@@ -344,7 +295,6 @@ will-change: transform;
 .cell.tut-target { background: rgba(255, 214, 80, 0.38); animation: targetPulse 1s ease-in-out infinite; z-index: 5; }
 #next-tile.tut-source { outline: 3px solid #ffe566; outline-offset: -8px; border-radius: 12px; }
 
-.hint-block { position: relative; }
 #hint-recipe {
 position: absolute;
 left: 5%;
@@ -490,52 +440,40 @@ cursor: pointer;
 <div id="boot" aria-hidden="true"><img src="img/loading.jpg" alt="" fetchpriority="high" decoding="sync"></div>
 <div id="app">
 <div class="top-panel">
-<div class="top-band top-forest"><img src="img/ui_top_forest.png" alt=""></div>
-<div class="top-band top-stats"><img src="img/ui_top_stats.png" alt=""></div>
-<div class="top-band top-buttons"><img src="img/ui_top_buttons.png" alt=""></div>
-<div class="top-band top-road"><img src="img/ui_top_road.png" alt=""></div>
-<div class="val-box" id="score-box">
-<img decoding="async" src="img/Cup_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="score-num"></div>
-</div>
-<div class="val-box" id="coins-box">
-<img decoding="async" src="img/Coin_1.png" class="icon icon-coin" onerror="this.style.display='none'"><div class="num-container" id="coins-num"></div>
-</div>
-<div class="val-box" id="moves-box">
-<img decoding="async" src="img/Clock_1.png" class="icon" onerror="this.style.display='none'"><div class="num-container" id="moves-num"></div>
-</div>
-
-<!-- Кнопка Почты (Конверт) -->
-<div class="hitbox hit-rating" onclick="openMail()">
-<div class="mail-badge" id="mail-badge">!</div>
-</div>
-
-<div class="hitbox hit-shop" onclick="openModal('shop-modal')"></div>
-<div class="hitbox hit-pause" onclick="openPause()"></div>
-
-<div class="hit-down" id="hit-down" aria-hidden="true"></div>
-<div class="hitbox hit-jurist" onclick="useJurist()">
-<img decoding="async" src="img/tool_jurist.png" onerror="this.style.display='none'; this.parentNode.innerHTML='⚖️'">
+<div class="top-forest"></div>
+<div class="top-hud">
+<div class="val-box" id="score-box"><div class="num-container" id="score-num"></div></div>
+<div class="val-box" id="coins-box"><div class="num-container" id="coins-num"></div></div>
+<div class="val-box" id="moves-box"><div class="num-container" id="moves-num"></div></div>
+<div class="hitbox hit-rating" aria-label="Рейтинг"></div>
+<div class="hitbox hit-shop" onclick="openModal('shop-modal')" aria-label="Магазин"></div>
+<div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"></div>
+<div class="hitbox hit-down" id="hit-down" onclick="useJurist()" aria-label="Юрист"></div>
+<div class="hitbox hit-jurist" onclick="useJurist()" aria-label="Юрист">
+<img decoding="async" src="img/tool_jurist.png" onerror="this.style.display='none'">
 </div>
 <div id="log"></div>
 </div>
+<div class="top-road"></div>
+</div>
 
-<div id="board"></div>
+<div class="playfield"><div id="board"></div></div>
 
 <div class="bottom-panel">
-<div class="bottom-slots">
+<div class="bottom-art">
 <div class="jail-block" id="jail" onclick="takeFromJail()">
 <div class="content" id="jail-content"></div>
 </div>
 <div class="next-block" id="next-tile">
 <div class="content" id="next-content"></div>
 </div>
-<div class="hint-block" onclick="openHintGallery()"><div id="hint-recipe"></div></div>
+<div class="hint-block" onclick="openHintGallery()" aria-label="Нажми меня"><div id="hint-recipe"></div></div>
 </div>
 </div>
 
 <div id="title-screen">
 <img id="title-wordmark" src="img/title.png" alt="Демократия">
-<button type="button" id="title-play" onclick="onPlay()" aria-label="Играть"><img src="img/play.png" alt=""></button>
+<button type="button" id="title-play" onclick="onPlay()" aria-label="Играть"><img src="img/play.png?v=47" alt=""></button>
 <button type="button" id="title-info" class="title-hot" onclick="openHintGallery()" aria-label="Подсказки"></button>
 <button type="button" id="title-sfx" class="title-hot" onclick="toggleSfx(event)" aria-label="Звук включен" aria-pressed="true"><span class="sfx-slash"></span></button>
 </div>
@@ -580,17 +518,21 @@ cursor: pointer;
 </div>
 </div>
 
-<!-- ПАУЗА: панель img/pause_bg.png, хиты поверх кнопок. Низ (f / лайк / звезда) — заглушки. -->
+<!-- ПАУЗА: тот же размер, что у магазина. Середина растянута, кнопки на своих местах. Низ — заглушки. -->
 <div class="shop-modal" id="pause-modal">
 <div class="pause-window" role="dialog" aria-label="Пауза">
+<div class="pause-top">
 <button type="button" class="shop-hitbox pause-undo" onclick="buyUndo()" aria-label="Отмена за 1500"></button>
 <button type="button" class="shop-hitbox pause-list" onclick="openPauseList()" aria-label="Подсказки"></button>
 <button type="button" class="shop-hitbox pause-restart" onclick="newGame()" aria-label="Заново"></button>
 <button type="button" class="shop-hitbox pause-play" onclick="closeModal('pause-modal')" aria-label="Играть"></button>
-<div class="pause-missions" id="missions-area"></div>
+</div>
+<div class="pause-mid"><div class="pause-missions" id="missions-area"></div></div>
+<div class="pause-bot">
 <button type="button" class="shop-hitbox pause-fb" aria-disabled="true" tabindex="-1" aria-label="Facebook"></button>
 <button type="button" class="shop-hitbox pause-like" aria-disabled="true" tabindex="-1" aria-label="Нравится"></button>
 <button type="button" class="shop-hitbox pause-star" aria-disabled="true" tabindex="-1" aria-label="Оценка"></button>
+</div>
 </div>
 </div>
 
@@ -750,28 +692,18 @@ el.appendChild(img);
 }
 }
 function fitNumbers() {
-const boxes = [...document.querySelectorAll('.val-box')];
-let size = Infinity;
-boxes.forEach(box => {
+document.querySelectorAll('.val-box').forEach(box => {
 const nums = box.querySelector('.num-container');
 if (!nums) return;
 const imgs = [...nums.querySelectorAll('img')].filter(img => img.style.display !== 'none');
 if (!imgs.length) return;
-const icon = box.querySelector('img.icon');
-const iconW = icon ? icon.getBoundingClientRect().width : 0;
-const avail = Math.max(12, box.clientWidth - iconW - 6);
-const h = Math.max(10, box.clientHeight * 0.62);
-size = Math.min(size, h, avail / imgs.length);
-});
-if (!isFinite(size)) return;
-boxes.forEach(box => {
-const nums = box.querySelector('.num-container');
-if (!nums) return;
-nums.querySelectorAll('img').forEach(img => {
-if (img.style.display === 'none') return;
-img.style.height = size + 'px';
-img.style.width = size + 'px';
-});
+const availW = Math.max(8, box.clientWidth);
+const availH = Math.max(8, box.clientHeight);
+let size = availH;
+imgs.forEach(img => { img.style.height = size + 'px'; img.style.width = 'auto'; });
+const need = nums.scrollWidth;
+if (need > availW) size = Math.max(6, size * availW / need);
+imgs.forEach(img => { img.style.height = size + 'px'; img.style.width = 'auto'; });
 });
 }
 
@@ -799,6 +731,14 @@ return '?';
 function setStatus() {}
 
 const ROCKET_NOSE = 15, ROCKET_BODY = 16, ROCKET_TAIL = 17, ROCKET_FULL = 18, GAGARIN = 14;
+/* Alpha measurements of the rocket sprites (opaque fuselage, not the wire loop or nozzle lip).
+   diam* is the tube diameter at the mating face, rim* the silhouette edge that sits on the cell
+   boundary, ringL the tail's fuselage ring (the nozzle sticks out past it), axis the tube center. */
+const ROCKET_GEOM = {
+'img/pasha_15.png': { natW: 1520, natH: 1296, axis: 643.5, feet: 1181, rimR: 1116, diamR: 696 },
+'img/pasha_16.png': { natW: 1520, natH: 1296, axis: 633, feet: 1104, rimL: 230, rimR: 1311, diamL: 645, diamR: 429 },
+'img/pasha_17.png': { natW: 1552, natH: 1280, axis: 631.5, feet: 1197, ringL: 436, diamL: 514 }
+};
 const TRIM = {};
 let trimsPending = 0;
 
@@ -931,23 +871,9 @@ if (moved) wrap.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
 function layoutJurist() {
 const box = document.querySelector('.hit-jurist');
 const img = box && box.querySelector('img');
-const down = document.getElementById('hit-down');
-const stats = document.querySelector('.top-stats');
-const panel = document.querySelector('.top-panel');
-if (!box || !down || !stats || !panel) return;
-const pr = panel.getBoundingClientRect();
-const dr = down.getBoundingClientRect();
-const sr = stats.getBoundingClientRect();
-if (!pr.width || !sr.height || !dr.width) return;
-const pad = Math.max(1, sr.height * 0.04);
-const size = Math.max(8, sr.height - pad * 2);
-const cx = dr.left + dr.width / 2 - pr.left;
-box.style.width = size + 'px';
-box.style.height = size + 'px';
-box.style.left = (cx - size / 2) + 'px';
-box.style.top = (sr.top - pr.top + pad) + 'px';
-if (!img) return;
-const disp = pieceDisplaySize(img.getAttribute('src'), size, size);
+if (!box || !img || !box.clientWidth || !box.clientHeight) return;
+const size = Math.min(box.clientWidth, box.clientHeight);
+const disp = pieceDisplaySize(img.getAttribute('src'), size * 0.92, size * 0.92);
 img.style.width = disp.w + 'px';
 img.style.height = disp.h + 'px';
 }
@@ -1011,8 +937,9 @@ hideMeme();
 });
 
 function updateMailBadge() {
-let hasCompleted = Object.values(missions).some(m => m.status === 'completed');
 const badge = document.getElementById('mail-badge');
+if (!badge) return;
+let hasCompleted = Object.values(missions).some(m => m.status === 'completed');
 if (hasCompleted) badge.classList.add('show');
 else badge.classList.remove('show');
 }
@@ -1272,34 +1199,63 @@ return null;
 }
 function applyRocketJoin(cell, tile, r, c) {
 const piece = cell.querySelector('.piece');
-const img = piece && piece.querySelector('img');
-if (!img) return;
+if (!piece) return;
 const side = rocketJoinSide(tile, r, c);
 if (!side) return;
-const trim = TRIM[img.getAttribute('src')];
+const src = getTileImage(tile);
+const geom = ROCKET_GEOM[src];
+const nose = ROCKET_GEOM['img/pasha_15.png'];
+const body = ROCKET_GEOM['img/pasha_16.png'];
+const tail = ROCKET_GEOM['img/pasha_17.png'];
 const cellW = cell.clientWidth;
-const dispW = piece.offsetWidth;
-if (!trim || !cellW || !dispW) return;
-const k = dispW / cellW;
-const L = trim.l, R = trim.r;
-if (R - L < 0.02) return;
-const imgLeft = (1 - k) / 2;
-const p = (x) => imgLeft + x * k;
-let sx, ox;
-if (side === 'right') {
-ox = L;
-sx = (1 - p(L)) / (p(R) - p(L));
-} else if (side === 'left') {
-ox = R;
-sx = p(R) / (p(R) - p(L));
-} else {
-sx = 1 / (p(R) - p(L));
-const pO = p(L) * sx / (sx - 1);
-ox = (pO - imgLeft) / k;
+const cellH = cell.clientHeight;
+if (!geom || !cellW || !cellH || !nose || !body || !tail) return;
+const noseDisp = pieceDisplaySize('img/pasha_15.png', cellW, cellH);
+const noseScale = noseDisp.h / nose.natH;
+if (!noseScale) return;
+const noseDiam = nose.diamR * noseScale;
+const noseAxisY = (cellH - noseDisp.h) / 2 + nose.axis * noseScale;
+const place = (dispW, dispH, anchorImgX, anchorCellX, axisImgY, axisCellY, scaleX, scaleY) => {
+piece.style.width = dispW + 'px';
+piece.style.height = dispH + 'px';
+const anchor = (cellW - dispW) / 2 + anchorImgX * scaleX;
+const axis = (cellH - dispH) / 2 + axisImgY * scaleY;
+piece.style.setProperty('--piece-dx', (anchorCellX - anchor).toFixed(2) + 'px');
+piece.style.setProperty('--piece-dy', (axisCellY - axis).toFixed(2) + 'px');
+};
+if (tile.level === ROCKET_NOSE) {
+const rim = (cellW - noseDisp.w) / 2 + nose.rimR * noseScale;
+piece.style.setProperty('--piece-dx', (cellW - rim).toFixed(2) + 'px');
+return;
 }
-if (!isFinite(sx) || sx <= 0) return;
-img.style.transformOrigin = (ox * 100) + '% 50%';
-img.style.transform = 'scaleX(' + sx + ')';
+if (tile.level === ROCKET_BODY && (side === 'left' || side === 'both')) {
+const sy = noseDiam / body.diamL;
+const sx = cellW / (body.rimR - body.rimL);
+place(body.natW * sx, body.natH * sy, body.rimL, 0, body.axis, noseAxisY, sx, sy);
+return;
+}
+if (tile.level === ROCKET_BODY) {
+const bDisp = pieceDisplaySize(src, cellW, cellH);
+const s = bDisp.h / body.natH;
+const rim = (cellW - bDisp.w) / 2 + body.rimR * s;
+piece.style.setProperty('--piece-dx', (cellW - rim).toFixed(2) + 'px');
+return;
+}
+if (tile.level === ROCKET_TAIL) {
+const bodyHasNose = c >= 2 && grid[r][c - 2] && grid[r][c - 2].kind === 'chain' && grid[r][c - 2].level === ROCKET_NOSE;
+let refDiam, refAxis;
+if (bodyHasNose) {
+refDiam = body.diamR * (noseDiam / body.diamL);
+refAxis = noseAxisY;
+} else {
+const bDisp = pieceDisplaySize('img/pasha_16.png', cellW, cellH);
+const bs = bDisp.h / body.natH;
+refDiam = body.diamR * bs;
+refAxis = (cellH - bDisp.h) / 2 + body.axis * bs;
+}
+const sy = refDiam / tail.diamL;
+place(tail.natW * sy, tail.natH * sy, tail.ringL, 0, tail.axis, refAxis, sy, sy);
+}
 }
 function findRocketRow() {
 for (let r = 0; r < SIZE; r++) {
@@ -1427,13 +1383,13 @@ function tryAssembleRocket(isSackMerge, depth, done) {
 const found = findRocketRow();
 if (!found) { if (done) done(); return; }
 const r = found.r, c = found.c;
-const anchorR = r, anchorC = c + 1;
+const anchorR = r, anchorC = c + 2;
 const group = [[r, c], [r, c + 1], [r, c + 2]];
 const points = 17 * 15 * 3;
 animateMerge(group, anchorR, anchorC, (x, y) => {
 if (x != null) showScoreFloatAt(x, y, points);
 grid[r][c] = null;
-grid[r][c + 2] = null;
+grid[r][c + 1] = null;
 grid[anchorR][anchorC] = { kind: 'chain', level: ROCKET_FULL, pop: true };
 score += points;
 coins += 17 * 2 * 3;
@@ -3228,7 +3184,7 @@ while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/loading.jpg','img/play.png','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/hud_bottom.jpg?v=47','img/loading.jpg','img/play.png?v=47','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
