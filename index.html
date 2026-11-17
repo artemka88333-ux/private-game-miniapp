@@ -46,48 +46,41 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .hit-shop { left: 29.58%; top: 48.3%; width: 28.55%; height: 51.7%; }
 .hit-pause { left: 58.79%; top: 48.3%; width: 28.59%; height: 51.7%; }
 .hit-down { position: absolute; left: 88.04%; width: 11.96%; top: 48.3%; height: 51.7%; cursor: pointer; z-index: 2; }
-.hit-jurist { position: absolute; left: 88.6%; width: 10.6%; top: 3%; height: 42%; z-index: 3; overflow: visible; }
-.hit-jurist.cooling { cursor: default; }
-.hit-jurist img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); object-fit: contain; pointer-events: none; z-index: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
-.jurist-ring { position: absolute; left: 50%; top: 50%; display: none; pointer-events: none; z-index: 0; overflow: visible; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.55)); }
+/* Правая плитка: юрист по центру над стрелкой, низ фигурки сразу над стрелкой, целиком внутри плитки. */
+.hit-jurist { position: absolute; left: 88.25%; width: 11.7%; top: 0.6%; height: 62.6%; z-index: 3; overflow: visible; }
+.hit-jurist.cooling, .hit-jurist.empty { cursor: default; }
+.hit-jurist.empty img, .hit-jurist.empty .jurist-ring { visibility: hidden; }
+.hit-jurist img { position: absolute; left: 0; top: 0; width: 0; height: 0; object-fit: fill; pointer-events: none; z-index: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.jurist-ring { position: absolute; left: 0; top: 0; display: none; pointer-events: none; z-index: 0; overflow: visible; }
 .jurist-ring.on { display: block; }
 .jurist-ring-track, .jurist-ring-fill { fill: none; stroke-linecap: round; }
-.jurist-ring-track { stroke: rgba(255,255,255,0.42); stroke-width: 5; }
-.jurist-ring-fill { stroke: #fff; stroke-width: 5; transform-origin: 50px 50px; transform: rotate(-90deg); }
+.jurist-ring-track { stroke: rgba(255,255,255,0.18); stroke-width: 4.5; }
+.jurist-ring-fill { stroke: rgba(255,255,255,0.55); stroke-width: 4.5; transform-origin: 50px 50px; transform: rotate(-90deg); }
 @keyframes juristSway {
-0% { transform: translate(-50%, -50%) rotate(0deg); }
-20% { transform: translate(-50%, -50%) rotate(-11deg); }
-50% { transform: translate(-50%, -50%) rotate(0deg); }
-78% { transform: translate(-50%, -50%) rotate(12deg); }
-100% { transform: translate(-50%, -50%) rotate(0deg); }
+0% { transform: rotate(0deg); }
+20% { transform: rotate(-11deg); }
+50% { transform: rotate(0deg); }
+78% { transform: rotate(12deg); }
+100% { transform: rotate(0deg); }
 }
 .hit-jurist img.sway { transform-origin: var(--sway-ox, 50%) var(--sway-oy, 84%); animation: juristSway 0.7s ease-in-out 2; }
 
-/* Один размер на все три счётчика. Цифры табличные, белые, с тёмной обводкой. */
+/* Золотые цифры-спрайты. Одна высота на все три счётчика, слот одной ширины, чтобы число не прыгало. */
 .num-container {
   display: flex; align-items: center; justify-content: flex-start;
   height: 100%; width: 100%; min-width: 0;
-  font-family: Inter, "Liberation Sans", "Nimbus Sans", Arial, sans-serif;
-  font-weight: 800;
-  font-variant-numeric: tabular-nums lining-nums;
-  font-feature-settings: "tnum" 1, "lnum" 1;
-  font-size: calc(100cqw * 0.034);
-  line-height: 1;
-  letter-spacing: 0;
-  white-space: nowrap;
-  color: #fff;
-  -webkit-text-stroke: 1px #1a1006;
-  paint-order: stroke fill;
-  text-shadow:
-    0 1px 0 #140e06,
-    1px 0 0 #140e06,
-    -1px 0 0 #140e06,
-    0 -1px 0 #140e06,
-    1px 1px 0 #140e06,
-    -1px 1px 0 #140e06,
-    1px -1px 0 #140e06,
-    -1px -1px 0 #140e06,
-    0 2px 1px rgba(0,0,0,0.5);
+  line-height: 0;
+}
+.hud-digit {
+  flex: 0 0 var(--digit-slot, 10px);
+  width: var(--digit-slot, 10px);
+  height: var(--digit-h, 12px);
+  display: flex; align-items: flex-end; justify-content: center;
+}
+.hud-glyph {
+  display: block;
+  background-repeat: no-repeat;
+  pointer-events: none;
 }
 
 /* ПОЛЕ. На всю ширину и на всю высоту от полоски травы под дорогой до нижней панели.
@@ -122,8 +115,9 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЗ. Тот же лес, что над шапкой, на всю нижнюю зону (включая 4px под полем и safe-area).
-   Три коробки лежат сверху без своей зелёной подложки — между ними виден лес. */
+/* НИЗ. Тот же лес, что над шапкой, повторённый вертикально до самого низа экрана
+   (включая 4px под полем и safe-area). Нижняя полоска земли у спрайта обрезана, чтобы шов был травой.
+   Три прозрачные коробки лежат сверху — между ними и под ними виден лес. */
 .bottom-panel {
   position: relative;
   z-index: 2;
@@ -134,8 +128,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   flex-shrink: 0;
   background: transparent;
 }
-.bottom-panel::before {
-  content: '';
+.bottom-forest {
   position: absolute;
   left: 0;
   right: 0;
@@ -143,23 +136,47 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   bottom: 0;
   z-index: 0;
   pointer-events: none;
-  background-color: #57732b;
-  background-image: url('img/ui_top_forest.png');
-  background-repeat: no-repeat;
-  background-position: center 58%;
-  background-size: 100% auto;
+  overflow: hidden;
+  background: #57732b;
+  display: flex;
+  flex-direction: column;
+}
+.bottom-forest i {
+  display: block;
+  flex: 0 0 auto;
+  width: 100%;
+  height: calc(100cqw * 108 / 877);
+  margin-bottom: -1px;
+  background: url('img/ui_top_forest.png') center top / 100% calc(100cqw * 137 / 877) no-repeat;
 }
 .bottom-art {
   position: relative;
   z-index: 1;
   width: 100%;
   height: calc(100cqw * 768 / 2544);
-  background: url('img/hud_boxes.png?v=48') top center / 100% 100% no-repeat;
+  background: none;
 }
 .jail-block { position: absolute; left: 2.36%; top: 3.78%; width: 22.25%; height: 83.85%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .next-block { position: absolute; left: 31.05%; top: 4.43%; width: 25.63%; height: 85.55%; cursor: grab; display: flex; align-items: center; justify-content: center; }
 .hint-block { position: absolute; left: 60.89%; top: 4.43%; width: 36.99%; height: 85.55%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
-.jail-block .content, .next-block .content { width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.jail-block .content, .next-block .content { position: relative; z-index: 1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
+.tray-fill {
+  position: absolute;
+  inset: 7.5%;
+  border-radius: 18%;
+  background: rgba(235, 240, 215, 0.35);
+  pointer-events: none;
+  z-index: 0;
+}
+.tray-frame {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: fill;
+  pointer-events: none;
+  z-index: 2;
+}
 
 #log { display: none !important; }
 
@@ -222,6 +239,21 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .slot-9 { top: 81.64%; left: 7.19%; width: 38.42%; height: 15.65%; }
 .slot-10 { top: 81.64%; left: 55.09%; width: 37.89%; height: 15.65%; }
 .slot-close { top: 1.53%; left: 84.21%; width: 12.81%; height: 4.87%; border-radius: 10px; }
+.shop-voter-art {
+  display: none;
+  position: absolute;
+  z-index: 1;
+  pointer-events: none;
+  left: calc(7.19% + 38.42% * 0.06);
+  top: calc(27.05% + 15.37% * 0.02);
+  width: calc(38.42% * 0.88);
+  height: calc(15.37% * 0.68);
+  object-fit: contain;
+  object-position: center center;
+  background: #979765;
+  border-radius: 10px;
+}
+.shop-voter-art.on { display: block; }
 .sheet-body { flex: 1; min-height: 0; display: flex; flex-direction: column; gap: 8px; padding: 8px; }
 /* Пауза растянута до размера магазина. Верх (шапка и кнопки) и низ (f / лайк / звезда) не искажаются, тянется только оливковая середина. */
 .pause-window {
@@ -482,7 +514,7 @@ cursor: pointer;
 .choice-btn.alt { background: #f4f0d8; }
 #confirm-yes { background: #ffd700; color: #2b1a0e; }
 #confirm-no { background: #8b3a3a; color: #fff; }
-#confirm-text { text-align: center; font-weight: 800; font-size: 18px; line-height: 1.35; margin-bottom: 14px; }
+#confirm-text, #channel-text { text-align: center; font-weight: 800; font-size: 18px; line-height: 1.35; margin-bottom: 14px; }
 .gameover-card { align-items: stretch; }
 .gameover-card h2 { font-size: 20px; margin-bottom: 4px; }
 .go-btn {
@@ -555,9 +587,9 @@ cursor: pointer;
 <div class="top-panel">
 <div class="top-forest"></div>
 <div class="top-hud">
-<div class="val-box" id="score-box"><div class="num-container" id="score-num">0</div></div>
-<div class="val-box" id="coins-box"><div class="num-container" id="coins-num">0</div></div>
-<div class="val-box" id="moves-box"><div class="num-container" id="moves-num">0</div></div>
+<div class="val-box" id="score-box"><div class="num-container" id="score-num"></div></div>
+<div class="val-box" id="coins-box"><div class="num-container" id="coins-num"></div></div>
+<div class="val-box" id="moves-box"><div class="num-container" id="moves-num"></div></div>
 <div class="hitbox hit-rating" aria-label="Рейтинг"></div>
 <div class="hitbox hit-shop" onclick="openModal('shop-modal')" aria-label="Магазин"></div>
 <div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"></div>
@@ -577,14 +609,22 @@ cursor: pointer;
 <div class="playfield"><div id="board"></div></div>
 
 <div class="bottom-panel">
+<div class="bottom-forest" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
 <div class="bottom-art">
 <div class="jail-block" id="jail" onclick="takeFromJail()">
 <div class="content" id="jail-content"></div>
+<img class="tray-frame" src="img/jail.png?v=49" alt="">
 </div>
 <div class="next-block" id="next-tile">
+<div class="tray-fill"></div>
 <div class="content" id="next-content"></div>
+<img class="tray-frame" src="img/next.png?v=49" alt="">
 </div>
-<div class="hint-block" onclick="openHintGallery()" aria-label="Нажми меня"><div id="hint-recipe"></div></div>
+<div class="hint-block" onclick="openHintGallery()" aria-label="Нажми меня">
+<div class="tray-fill"></div>
+<div id="hint-recipe"></div>
+<img class="tray-frame" src="img/hint.png?v=49" alt="">
+</div>
 </div>
 </div>
 
@@ -613,6 +653,7 @@ cursor: pointer;
 <!-- МАГАЗИН: панель нарисована в img/shop_bg.png, хиты поверх карточек. -->
 <div class="shop-modal" id="shop-modal">
 <div class="shop-window" role="dialog" aria-label="Магазинчик">
+<img id="shop-voter-art" class="shop-voter-art" alt="" draggable="false">
 <button type="button" class="shop-hitbox slot-close" onclick="closeModal('shop-modal')" aria-label="Закрыть"></button>
 <button type="button" class="shop-hitbox slot-1" onclick="buyItem({ name: 'Деньги', price: 150, tile: { kind: 'chain', level: 1 } })" aria-label="Деньги 150"></button>
 <button type="button" class="shop-hitbox slot-2" onclick="buyItem({ name: 'Баран', price: 450, tile: { kind: 'chain', level: 2 } })" aria-label="Баран 450"></button>
@@ -715,6 +756,12 @@ cursor: pointer;
 </div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
+<div class="modal" id="channel-modal">
+<div class="modal-content">
+<p id="channel-text">Ёбаный в рот, ты хули тут накликал, нахуй ты телеканал переключил</p>
+<button type="button" class="close-btn" onclick="closeChannelEgg()">OK</button>
+</div>
+</div>
 
 <div id="hint-gallery" aria-hidden="true">
 <div id="hint-track">
@@ -816,6 +863,9 @@ const PIECE_REWARDS = {
 
 let grid = [], score = 0, coins = 0, moves = 0;
 let juristCooldown = 0;
+let juristPending = false;
+let voterChannel = false;
+let voterTapStreak = 0;
 const JURIST_COOLDOWN = 123;
 let nextTile = null, jailTile = null, bufferedNext = null, drag = null, undoState = null;
 let isSawMode = false, isNanoboxMode = false;
@@ -871,49 +921,77 @@ let hudView = { score: 0, coins: 0 };
 let hudGoal = { score: 0, coins: 0 };
 let hudAnimToken = 0;
 let hudReady = false;
-function paintHud() {
-const scoreEl = document.getElementById('score-num');
-const coinsEl = document.getElementById('coins-num');
-const movesEl = document.getElementById('moves-num');
-if (scoreEl) scoreEl.textContent = String(hudView.score);
-if (coinsEl) coinsEl.textContent = String(hudView.coins);
-if (movesEl) movesEl.textContent = String(moves);
+/* Visible bbox of img/num_0.png … num_9.png (1254², alpha > 16). r/b are exclusive. */
+const NUM_NAT = 1254;
+const DIGIT_BOX = [
+[151, 54, 1110, 1206],
+[280, 65, 986, 1200],
+[248, 71, 1064, 1214],
+[210, 59, 1091, 1199],
+[155, 60, 1105, 1206],
+[196, 40, 1069, 1207],
+[203, 70, 1080, 1194],
+[214, 121, 1077, 1187],
+[183, 45, 1093, 1204],
+[197, 31, 1075, 1201]
+];
+const DIGIT_SLOT_ASPECT = DIGIT_BOX.reduce((m, b) => Math.max(m, (b[2] - b[0]) / (b[3] - b[1])), 0);
+function paintGlyph(g, i) {
+const b = DIGIT_BOX[i];
+const visW = b[2] - b[0], visH = b[3] - b[1];
+g.style.width = 'calc(var(--digit-h) * ' + (visW / visH).toFixed(5) + ')';
+g.style.height = 'var(--digit-h)';
+const full = (NUM_NAT / visH).toFixed(5);
+g.style.backgroundSize = 'calc(var(--digit-h) * ' + full + ') calc(var(--digit-h) * ' + full + ')';
+g.style.backgroundPosition = 'calc(var(--digit-h) * ' + (-b[0] / visH).toFixed(5) + ') calc(var(--digit-h) * ' + (-b[1] / visH).toFixed(5) + ')';
+g.style.backgroundImage = "url('img/num_" + i + ".png')";
 }
-function hudDigitEm() {
-const probe = document.getElementById('score-num');
-if (!probe) return 0.62;
-const cs = getComputedStyle(probe);
-const s = document.createElement('span');
-s.textContent = '000000000';
-s.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;font-weight:' + cs.fontWeight + ';font-family:' + cs.fontFamily + ';font-size:100px;font-variant-numeric:tabular-nums;letter-spacing:0;white-space:nowrap;';
-document.body.appendChild(s);
-const w = s.getBoundingClientRect().width;
-s.remove();
-return w > 0 ? w / 9 / 100 : 0.62;
+function makeDigit(ch) {
+const slot = document.createElement('span');
+slot.className = 'hud-digit';
+slot.dataset.d = ch;
+const g = document.createElement('span');
+g.className = 'hud-glyph';
+paintGlyph(g, ch.charCodeAt(0) - 48);
+slot.appendChild(g);
+return slot;
+}
+function setDigits(el, value) {
+if (!el) return;
+const text = String(Math.max(0, value | 0));
+const slots = el.children;
+if (slots.length === text.length) {
+for (let i = 0; i < text.length; i++) {
+if (slots[i].dataset.d === text[i]) continue;
+slots[i].dataset.d = text[i];
+paintGlyph(slots[i].firstChild, text.charCodeAt(i) - 48);
+}
+return;
+}
+const frag = document.createDocumentFragment();
+for (let i = 0; i < text.length; i++) frag.appendChild(makeDigit(text[i]));
+el.replaceChildren(frag);
+}
+function paintHud() {
+setDigits(document.getElementById('score-num'), hudView.score);
+setDigits(document.getElementById('coins-num'), hudView.coins);
+setDigits(document.getElementById('moves-num'), moves);
 }
 function layoutHudDigits() {
 const boxes = ['score-box', 'coins-box', 'moves-box'].map(id => document.getElementById(id));
 if (boxes.some(b => !b || !b.clientWidth)) return;
-const em = hudDigitEm();
-const scoreBox = boxes[0], coinsBox = boxes[1];
-const byScore = (scoreBox.clientWidth - 2) / (9 * em);
-const byCoins = (coinsBox.clientWidth - 2) / (8 * em);
-const byH = scoreBox.clientHeight * 0.92;
-let size = Math.max(8, Math.min(byScore, byCoins, byH));
-boxes.forEach(box => { box.querySelector('.num-container').style.fontSize = size + 'px'; });
-let scale = 1;
-boxes.forEach(box => {
-const nums = box.querySelector('.num-container');
-if (nums.scrollWidth > box.clientWidth + 0.5) scale = Math.min(scale, box.clientWidth / nums.scrollWidth);
+const counts = [9, 8, 6];
+let h = Infinity;
+boxes.forEach((box, i) => {
+h = Math.min(h, (box.clientWidth - 1) / (counts[i] * DIGIT_SLOT_ASPECT), box.clientHeight);
 });
-if (scale < 0.999) {
-const shrunk = Math.max(6, size * scale);
-boxes.forEach(box => { box.querySelector('.num-container').style.fontSize = shrunk + 'px'; });
-}
+if (!isFinite(h)) return;
+h = Math.max(6, h);
+const root = document.documentElement.style;
+root.setProperty('--digit-h', h.toFixed(2) + 'px');
+root.setProperty('--digit-slot', (h * DIGIT_SLOT_ASPECT).toFixed(2) + 'px');
 }
 function syncHud() {
-const movesEl = document.getElementById('moves-num');
-if (movesEl) movesEl.textContent = String(moves);
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (!hudReady || reduce) {
 hudReady = true;
@@ -950,9 +1028,16 @@ requestAnimationFrame(frame);
 layoutHudDigits();
 }
 
+function isVoter(tile) {
+return !!(tile && tile.kind === 'chain' && tile.level === 3);
+}
 function getTileImage(tile) {
 if (!tile) return null;
-if (tile.kind === 'chain') return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
+if (tile.kind === 'chain') {
+if (tile.level === 2) return 'img/sheep-src.png?v=49';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=49';
+return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
+}
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
 if (tile.kind === 'income') return `img/income_${tile.level}.png`;
 if (tile.kind === 'omon') return tile.level === 1 ? 'img/omon_1.png' : 'img/omon_2.png';
@@ -1020,6 +1105,8 @@ return { l: minX / c.width, t: minY / c.height, r: (maxX + 1) / c.width, b: (max
 function indexTrims() {
 const srcs = new Set();
 for (let i = 1; i <= 28; i++) srcs.add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
+srcs.add('img/sheep-src.png');
+srcs.add('img/voter-grandpa.png');
 for (let i = 1; i <= 20; i++) srcs.add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) srcs.add('img/income_' + i + '.png');
 ['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png','img/tool_nanobox.png'].forEach(s => srcs.add(s));
@@ -1044,9 +1131,12 @@ const h = board && board.clientHeight ? board.clientHeight / SIZE : w;
 return { w, h };
 }
 
+function bareSrc(src) {
+return src ? String(src).split('?')[0] : src;
+}
 function pieceDisplaySize(src, cellW, cellH) {
 const limit = 0.92 * Math.min(cellW, cellH);
-const trim = src && TRIM[src];
+const trim = src && TRIM[bareSrc(src)];
 if (!trim) return { w: limit, h: limit };
 const cW = Math.max(1, (trim.r - trim.l) * trim.natW);
 const cH = Math.max(1, (trim.b - trim.t) * trim.natH);
@@ -1085,14 +1175,15 @@ return wrap;
 }
 
 function applyPieceScale(wrap, src) {
-const tweak = src && PIECE_LAYOUT[src];
+const tweak = src && PIECE_LAYOUT[bareSrc(src)];
 if (!tweak || !tweak.scale || tweak.scale === 1) return;
 wrap.style.width = (parseFloat(wrap.style.width) * tweak.scale) + 'px';
 wrap.style.height = (parseFloat(wrap.style.height) * tweak.scale) + 'px';
 }
 
 function seatPiece(wrap, src, cell) {
-const tweak = src && PIECE_LAYOUT[src];
+const key = bareSrc(src);
+const tweak = key && PIECE_LAYOUT[key];
 if (!tweak || !cell) return;
 if (tweak.z) cell.style.zIndex = String(tweak.z);
 const cellH = cell.clientHeight || cellSize().h;
@@ -1100,7 +1191,7 @@ const cellW = cell.clientWidth || cellSize().w;
 let dy = 0;
 let moved = false;
 if (tweak.floor) {
-const trim = TRIM[src];
+const trim = TRIM[key];
 const b = trim ? trim.b : 1;
 const h = parseFloat(wrap.style.height) || 0;
 if (h && cellH) {
@@ -1115,29 +1206,59 @@ if (tweak.lift) { dy -= tweak.lift * cellH; moved = true; }
 if (moved) wrap.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
 }
 
+function isJuristTile(t) {
+return !!(t && t.kind === 'tool' && t.tool === 'jurist');
+}
+function juristIsHeld() {
+return isJuristTile(nextTile) || isJuristTile(bufferedNext) || isJuristTile(jailTile);
+}
+function armJuristCooldown() {
+juristPending = false;
+juristCooldown = JURIST_COOLDOWN;
+}
 function layoutJurist() {
 const box = document.querySelector('.hit-jurist');
 const img = document.getElementById('jurist-img');
 const ring = document.getElementById('jurist-ring');
 if (!box || !img) return;
+if (box.classList.contains('empty')) {
+if (ring) ring.classList.remove('on');
+return;
+}
+const bw = box.clientWidth, bh = box.clientHeight;
+if (!bw || !bh) return;
 const cs = cellSize();
 const src = (img.getAttribute('src') || '').split('?')[0];
-const disp = pieceDisplaySize(src, cs.w, cs.h);
-img.style.width = disp.w + 'px';
-img.style.height = disp.h + 'px';
+const base = pieceDisplaySize(src, cs.w, cs.h);
+let dispW = base.w * 0.8;
+let dispH = base.h * 0.8;
 const trim = TRIM[src] || { l: 0, t: 0, r: 1, b: 1 };
+const padX = 1, padTop = 1, padBot = 2;
+let visW = Math.max(1, (trim.r - trim.l) * dispW);
+let visH = Math.max(1, (trim.b - trim.t) * dispH);
+const maxW = Math.max(8, bw - padX * 2);
+const maxH = Math.max(8, bh - padTop - padBot);
+const fit = Math.min(1, maxW / visW, maxH / visH);
+dispW *= fit; dispH *= fit; visW *= fit; visH *= fit;
+img.style.width = dispW + 'px';
+img.style.height = dispH + 'px';
 img.style.setProperty('--sway-ox', (((trim.l + trim.r) / 2) * 100).toFixed(2) + '%');
 img.style.setProperty('--sway-oy', (trim.b * 100).toFixed(2) + '%');
+const visLeft = (bw - visW) / 2;
+const visTop = bh - padBot - visH;
+img.style.left = (visLeft - trim.l * dispW).toFixed(2) + 'px';
+img.style.top = (visTop - trim.t * dispH).toFixed(2) + 'px';
 if (!ring) return;
-const visW = Math.max(8, (trim.r - trim.l) * disp.w);
-const visH = Math.max(8, (trim.b - trim.t) * disp.h);
-const d = Math.max(visW * 1.62, visH * 0.78);
-ring.style.width = d + 'px';
-ring.style.height = d + 'px';
-const cx = ((trim.l + trim.r) / 2 - 0.5) * disp.w;
-const visTop = -disp.h / 2 + trim.t * disp.h;
-const cy = visTop + Math.min(visH * 0.34, visH - d / 2 - visH * 0.08);
-ring.style.transform = 'translate(calc(-50% + ' + cx.toFixed(1) + 'px), calc(-50% + ' + cy.toFixed(1) + 'px))';
+let ringD = Math.max(visW * 1.62, visH * 0.72);
+ringD = Math.min(ringD, maxW, maxH);
+ring.style.width = ringD.toFixed(2) + 'px';
+ring.style.height = ringD.toFixed(2) + 'px';
+const ringCX = bw / 2;
+let ringCY = visTop + Math.min(visH * 0.36, visH - ringD * 0.15);
+ringCY = Math.max(ringD / 2, Math.min(ringCY, bh - ringD / 2));
+ring.style.left = (ringCX - ringD / 2).toFixed(2) + 'px';
+ring.style.top = (ringCY - ringD / 2).toFixed(2) + 'px';
+ring.style.transform = 'none';
 }
 let juristCelebrate = false;
 function setJuristProgress(p) {
@@ -1153,14 +1274,23 @@ const img = document.getElementById('jurist-img');
 const ring = document.getElementById('jurist-ring');
 const box = document.querySelector('.hit-jurist');
 if (!img) return;
-const next = juristCooldown > 0 ? 'img/tool_jurist_bound.png?v=48' : 'img/tool_jurist.png';
-if (img.getAttribute('src') !== next) img.setAttribute('src', next);
-if (ring) ring.classList.toggle('on', juristCooldown > 0);
+if (juristPending && !juristIsHeld() && juristCooldown === 0) juristPending = false;
+const empty = juristPending && juristCooldown === 0;
+const bound = juristCooldown > 0;
 if (box) {
-box.classList.toggle('cooling', juristCooldown > 0);
-box.setAttribute('aria-disabled', juristCooldown > 0 ? 'true' : 'false');
+box.classList.toggle('empty', empty);
+box.classList.toggle('cooling', bound);
+box.setAttribute('aria-disabled', (empty || bound) ? 'true' : 'false');
 }
-const progress = juristCooldown > 0 ? (JURIST_COOLDOWN - juristCooldown) / JURIST_COOLDOWN : 0;
+if (ring) ring.classList.toggle('on', bound);
+if (empty) {
+layoutJurist();
+return;
+}
+const next = bound ? 'img/tool_jurist_bound.png?v=48' : 'img/tool_jurist.png';
+if (img.getAttribute('src') !== next) img.setAttribute('src', next);
+img.style.visibility = '';
+const progress = bound ? (JURIST_COOLDOWN - juristCooldown) / JURIST_COOLDOWN : 0;
 setJuristProgress(progress);
 layoutJurist();
 if (juristCelebrate && juristCooldown === 0) {
@@ -1244,13 +1374,14 @@ else badge.classList.remove('show');
 function init() {
 hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
-score = 0; coins = 1000000; moves = 0; juristCooldown = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
+score = 0; coins = 1000000; moves = 0; juristCooldown = 0; juristPending = false; voterChannel = false; voterTapStreak = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
 isSawMode = false; isNanoboxMode = false;
 sawStreak = 0;
 gameOver = false;
 moneyBags = 0;
 hideTutorial();
 closeModal('gameover-modal');
+closeModal('channel-modal');
 localStorage.removeItem(SEEN_KEY);
 discovered = new Set();
 
@@ -1404,6 +1535,7 @@ if ((exp && exp.r === r && exp.c === c) || (sug && sug.r === r && sug.c === c)) 
 moveAnims = [];
 syncShades();
 updateJuristFace();
+updateShopVoter();
 
 // Проверка задания "В лесу"
 if (missions.forest.status === 'active' && bearsOnBoard >= 10) {
@@ -1828,7 +1960,20 @@ checkGameOver();
 }
 }
 
+function updateShopVoter() {
+const el = document.getElementById('shop-voter-art');
+if (!el) return;
+el.classList.toggle('on', !!voterChannel);
+if (voterChannel) el.src = 'img/pasha_03.png';
+}
+function closeChannelEgg() {
+closeModal('channel-modal');
+}
+function openChannelEgg() {
+openModal('channel-modal');
+}
 function endMove() {
+voterTapStreak = 0;
 moves++;
 if (juristCooldown > 0) {
 juristCooldown--;
@@ -1927,6 +2072,7 @@ clearPreview();
 }
 
 function startTrayDrag(e, type, tile) {
+voterTapStreak = 0;
 if (!tile || isSawMode || isNanoboxMode || gameOver || isBusy() || tutorialBlocksBoard()) return;
 e.preventDefault();
 if (drag) { detachDragListeners(); clearDragVisuals(); drag = null; }
@@ -1953,6 +2099,57 @@ startTrayDrag(e, 'fromNext', nextTile);
 document.getElementById('jail').addEventListener('pointerdown', e => {
 startTrayDrag(e, 'fromJail', jailTile);
 });
+
+(function bindVoterTaps() {
+const board = document.getElementById('board');
+if (!board) return;
+let pending = null;
+board.addEventListener('pointerdown', (e) => {
+if (drag || e.button > 0) { voterTapStreak = 0; pending = null; return; }
+const cell = e.target.closest && e.target.closest('.cell');
+if (!cell) { voterTapStreak = 0; pending = null; return; }
+const r = +cell.dataset.r, c = +cell.dataset.c;
+const tile = grid[r] && grid[r][c];
+if (!isVoter(tile)) { voterTapStreak = 0; pending = null; return; }
+pending = { id: e.pointerId, x: e.clientX, y: e.clientY, r: r, c: c };
+});
+function finish(e) {
+if (!pending || (e && e.pointerId !== pending.id)) return;
+const p = pending;
+pending = null;
+if (drag) { voterTapStreak = 0; return; }
+const dist = Math.hypot(e.clientX - p.x, e.clientY - p.y);
+const el = document.elementFromPoint(e.clientX, e.clientY);
+const cell = el && el.closest ? el.closest('.cell') : null;
+if (dist > 12 || !cell || +cell.dataset.r !== p.r || +cell.dataset.c !== p.c) {
+voterTapStreak = 0;
+return;
+}
+if (voterChannel) return;
+voterTapStreak++;
+if (voterTapStreak >= 10) {
+voterTapStreak = 0;
+voterChannel = true;
+saveGame();
+render();
+openChannelEgg();
+}
+}
+board.addEventListener('pointerup', finish);
+board.addEventListener('pointercancel', (e) => {
+if (!pending || (e && e.pointerId !== pending.id)) return;
+pending = null;
+voterTapStreak = 0;
+});
+document.addEventListener('pointerdown', (e) => {
+const cell = e.target.closest && e.target.closest('#board .cell');
+if (cell) {
+const t = grid[+cell.dataset.r] && grid[+cell.dataset.r][+cell.dataset.c];
+if (isVoter(t)) return;
+}
+voterTapStreak = 0;
+}, true);
+})();
 
 function onMove(e) {
 if (!drag) return;
@@ -1993,6 +2190,9 @@ if (tool.tool === 'jurist') {
 if (grid[r][c] && grid[r][c].kind !== 'omon') {
 let taken = grid[r][c]; grid[r][c] = null;
 nextTile = taken;
+const arm = juristPending && !tutorial.active;
+juristPending = false;
+if (arm) juristCooldown = JURIST_COOLDOWN + 1;
 sfx('pop');
 endMove();
 } else { render(); }
@@ -2094,6 +2294,8 @@ undoState = takeSnapshot();
 
 if (nextTile.tool === 'jurist') {
 nextTile = grid[r][c]; grid[r][c] = null;
+if (juristPending && !tutorial.active) armJuristCooldown();
+else juristPending = false;
 sfx('pop');
 render(); saveGame();
 notifyTutorial({ type: 'jurist' });
@@ -2279,12 +2481,12 @@ setStatus();
 
 function useJurist() {
 if (tutorial.active) { setStatus(); return; }
-if (gameOver || juristCooldown > 0) return;
-if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
+if (gameOver || juristCooldown > 0 || juristPending) return;
+if (isJuristTile(nextTile)) return;
 sfx('pop');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
-juristCooldown = JURIST_COOLDOWN;
+juristPending = true;
 render(); saveGame();
 }
 
@@ -2297,7 +2499,8 @@ score, coins, moves,
 nextTile: nextTile ? { ...nextTile } : null,
 jailTile: jailTile ? { ...jailTile } : null,
 bufferedNext: bufferedNext ? { ...bufferedNext } : null,
-juristCooldown: juristCooldown || 0
+juristCooldown: juristCooldown || 0,
+juristPending: !!juristPending
 };
 }
 function undoMove(cost) {
@@ -2305,6 +2508,7 @@ if (!undoState) return;
 grid = undoState.grid; score = undoState.score; coins = undoState.coins; moves = undoState.moves;
 nextTile = undoState.nextTile; jailTile = undoState.jailTile; bufferedNext = undoState.bufferedNext;
 juristCooldown = undoState.juristCooldown || 0;
+juristPending = !!undoState.juristPending;
 undoState = null;
 if (cost) coins = Math.max(0, coins - cost);
 render(); saveGame();
@@ -2374,7 +2578,7 @@ setTimeout(function() { el.remove(); }, 2000);
 
 function saveGame() {
 try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown }));
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown, juristPending, voterChannel }));
 } catch(e){}
 }
 
@@ -2615,7 +2819,7 @@ saveGame();
 function startTutorial() {
 hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
-score = 0; coins = 1000000; moves = 0; juristCooldown = 0; jailTile = null; bufferedNext = null; undoState = null;
+score = 0; coins = 1000000; moves = 0; juristCooldown = 0; juristPending = false; voterChannel = false; voterTapStreak = 0; jailTile = null; bufferedNext = null; undoState = null;
 gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
 moneyBags = 0;
 nextTile = chainTile(1);
@@ -3416,9 +3620,15 @@ score = data.score || 0;
 coins = typeof data.coins === 'number' ? data.coins : 0;
 moves = data.moves || 0;
 juristCooldown = typeof data.juristCooldown === 'number' ? Math.max(0, data.juristCooldown) : 0;
+juristPending = !!data.juristPending;
 nextTile = data.nextTile || { kind: 'chain', level: 1 };
 jailTile = data.jailTile || null;
 bufferedNext = data.bufferedNext || null;
+if (!data.juristPending && juristCooldown > 0 && juristIsHeld()) {
+juristPending = true;
+juristCooldown = 0;
+}
+voterChannel = !!data.voterChannel;
 testSpawnIndex = data.testSpawnIndex || 0;
 moneyBags = data.moneyBags || 0;
 if (data.missions) missions = data.missions;
@@ -3569,9 +3779,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
+add('img/sheep-src.png?v=49');
+add('img/voter-grandpa.png?v=49');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/hud_boxes.png?v=48','img/loading.jpg','img/play.png?v=47','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=49','img/next.png?v=49','img/hint.png?v=49','img/sheep-src.png?v=49','img/voter-grandpa.png?v=49','img/loading.jpg','img/play.png?v=47','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
