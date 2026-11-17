@@ -36,7 +36,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .top-hud { position: relative; width: 100%; margin-top: calc(100cqw * 137 / 877); aspect-ratio: 2400 / 470; flex-shrink: 0; background: #4f3b18 url('img/hud_top.png?v=47') center / 100% 100% no-repeat; z-index: 1; }
 .top-road { width: 100%; aspect-ratio: 877 / 118; flex-shrink: 0; background: #557a32 url('img/ui_top_road.png') center / 100% 100% no-repeat; pointer-events: none; }
 /* Счётчики стоят сразу справа от иконки на картинке и не заходят в соседнюю секцию. */
-.val-box { position: absolute; top: 11%; height: 30%; display: flex; align-items: center; justify-content: flex-start; pointer-events: none; overflow: hidden; }
+.val-box { position: absolute; top: 11%; height: 30%; display: flex; align-items: center; justify-content: flex-start; pointer-events: none; overflow: visible; }
 #score-box { left: 8.3%; width: 20.0%; }
 #coins-box { left: 38.0%; width: 19.6%; }
 #moves-box { left: 67.4%; width: 19.4%; }
@@ -46,15 +46,53 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .hit-shop { left: 29.58%; top: 48.3%; width: 28.55%; height: 51.7%; }
 .hit-pause { left: 58.79%; top: 48.3%; width: 28.59%; height: 51.7%; }
 .hit-down { position: absolute; left: 88.04%; width: 11.96%; top: 48.3%; height: 51.7%; cursor: pointer; z-index: 2; }
-.hit-jurist { position: absolute; left: 88.6%; width: 10.6%; top: 3%; height: 42%; z-index: 3; }
-.hit-jurist img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); width: 86%; height: 86%; object-fit: contain; pointer-events: none; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.hit-jurist { position: absolute; left: 88.6%; width: 10.6%; top: 3%; height: 42%; z-index: 3; overflow: visible; }
+.hit-jurist.cooling { cursor: default; }
+.hit-jurist img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); object-fit: contain; pointer-events: none; z-index: 1; filter: drop-shadow(0 2px 3px rgba(0,0,0,0.5)); }
+.jurist-ring { position: absolute; left: 50%; top: 50%; display: none; pointer-events: none; z-index: 0; overflow: visible; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.55)); }
+.jurist-ring.on { display: block; }
+.jurist-ring-track, .jurist-ring-fill { fill: none; stroke-linecap: round; }
+.jurist-ring-track { stroke: rgba(255,255,255,0.42); stroke-width: 5; }
+.jurist-ring-fill { stroke: #fff; stroke-width: 5; transform-origin: 50px 50px; transform: rotate(-90deg); }
+@keyframes juristSway {
+0% { transform: translate(-50%, -50%) rotate(0deg); }
+20% { transform: translate(-50%, -50%) rotate(-11deg); }
+50% { transform: translate(-50%, -50%) rotate(0deg); }
+78% { transform: translate(-50%, -50%) rotate(12deg); }
+100% { transform: translate(-50%, -50%) rotate(0deg); }
+}
+.hit-jurist img.sway { transform-origin: var(--sway-ox, 50%) var(--sway-oy, 84%); animation: juristSway 0.7s ease-in-out 2; }
 
-.num-container { display: flex; align-items: center; justify-content: flex-start; height: 100%; width: 100%; min-width: 0; }
-.num-container img { height: 100%; width: auto; margin: 0; object-fit: contain; flex: 0 0 auto; }
+/* Один размер на все три счётчика. Цифры табличные, белые, с тёмной обводкой. */
+.num-container {
+  display: flex; align-items: center; justify-content: flex-start;
+  height: 100%; width: 100%; min-width: 0;
+  font-family: Inter, "Liberation Sans", "Nimbus Sans", Arial, sans-serif;
+  font-weight: 800;
+  font-variant-numeric: tabular-nums lining-nums;
+  font-feature-settings: "tnum" 1, "lnum" 1;
+  font-size: calc(100cqw * 0.034);
+  line-height: 1;
+  letter-spacing: 0;
+  white-space: nowrap;
+  color: #fff;
+  -webkit-text-stroke: 1px #1a1006;
+  paint-order: stroke fill;
+  text-shadow:
+    0 1px 0 #140e06,
+    1px 0 0 #140e06,
+    -1px 0 0 #140e06,
+    0 -1px 0 #140e06,
+    1px 1px 0 #140e06,
+    -1px 1px 0 #140e06,
+    1px -1px 0 #140e06,
+    -1px -1px 0 #140e06,
+    0 2px 1px rgba(0,0,0,0.5);
+}
 
 /* ПОЛЕ. На всю ширину и на всю высоту от полоски травы под дорогой до нижней панели.
    Клетки выше, чем шире, когда вьюпорт это позволяет. Сверху и снизу одинаковый узкий зазор. */
-.playfield { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; padding: 4px 0; background: #557a32; position: relative; z-index: 3; }
+.playfield { flex: 1 1 auto; min-height: 0; width: 100%; display: flex; flex-direction: column; padding: 4px 0; background: linear-gradient(#557a32, #557a32) top / 100% 4px no-repeat; background-color: transparent; position: relative; z-index: 3; }
 #board { width: 100%; flex: 1 1 auto; min-height: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); gap: 0; background: url('img/board_bg.png') center / 100% 100% no-repeat; border: none; touch-action: none; position: relative; }
 .cell { background: transparent; display: flex; align-items: center; justify-content: center; position: relative; overflow: visible; z-index: 1; }
 #shades { position: absolute; inset: 0; display: grid; grid-template-columns: repeat(6, 1fr); grid-template-rows: repeat(6, 1fr); pointer-events: none; z-index: 0; }
@@ -84,22 +122,40 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЖНЯЯ ПАНЕЛЬ img/hud_bottom.jpg: решётка, слот следующей фигурки, «НАЖМИ МЕНЯ». Под картинкой только safe-area. */
+/* НИЗ. Тот же лес, что над шапкой, на всю нижнюю зону (включая 4px под полем и safe-area).
+   Три коробки лежат сверху без своей зелёной подложки — между ними виден лес. */
 .bottom-panel {
   position: relative;
   z-index: 2;
   width: 100%;
   height: calc(100cqw * 768 / 2544 + var(--ui-bottom));
   margin-top: 0;
-  overflow: hidden;
+  overflow: visible;
   flex-shrink: 0;
-  background-color: #5a7a34;
-  background-image: url('img/hud_bottom.jpg?v=47');
-  background-repeat: no-repeat;
-  background-size: 100% calc(100cqw * 768 / 2544);
-  background-position: top center;
+  background: transparent;
 }
-.bottom-art { position: relative; width: 100%; height: calc(100cqw * 768 / 2544); }
+.bottom-panel::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -4px;
+  bottom: 0;
+  z-index: 0;
+  pointer-events: none;
+  background-color: #57732b;
+  background-image: url('img/ui_top_forest.png');
+  background-repeat: no-repeat;
+  background-position: center 58%;
+  background-size: 100% auto;
+}
+.bottom-art {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: calc(100cqw * 768 / 2544);
+  background: url('img/hud_boxes.png?v=48') top center / 100% 100% no-repeat;
+}
 .jail-block { position: absolute; left: 2.36%; top: 3.78%; width: 22.25%; height: 83.85%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
 .next-block { position: absolute; left: 31.05%; top: 4.43%; width: 25.63%; height: 85.55%; cursor: grab; display: flex; align-items: center; justify-content: center; }
 .hint-block { position: absolute; left: 60.89%; top: 4.43%; width: 36.99%; height: 85.55%; cursor: pointer; display: flex; align-items: center; justify-content: center; }
@@ -427,12 +483,68 @@ cursor: pointer;
 #confirm-yes { background: #ffd700; color: #2b1a0e; }
 #confirm-no { background: #8b3a3a; color: #fff; }
 #confirm-text { text-align: center; font-weight: 800; font-size: 18px; line-height: 1.35; margin-bottom: 14px; }
+.gameover-card { align-items: stretch; }
+.gameover-card h2 { font-size: 20px; margin-bottom: 4px; }
+.go-btn {
+  width: 100%;
+  margin-top: 10px;
+  padding: 12px 14px;
+  border-radius: 12px;
+  border: 3px solid #3a2a10;
+  background: #ffd24a;
+  color: #2b1a0e;
+  font-weight: 900;
+  font-size: 17px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+.go-btn .go-price { font-variant-numeric: tabular-nums; white-space: nowrap; display: inline-flex; align-items: center; gap: 4px; }
+.go-btn .go-price img { width: 18px; height: 18px; object-fit: contain; }
+.go-btn.is-off, .go-btn:disabled {
+  background: #9a9a9a;
+  color: #f2f2f2;
+  border-color: #6a6a6a;
+  cursor: default;
+}
+.go-stars { background: #8fce57; }
+.go-restart {
+  margin-top: 14px;
+  background: none;
+  border: none;
+  color: #ffe7a3;
+  font-size: 14px;
+  font-weight: 700;
+  text-decoration: underline;
+  cursor: pointer;
+  align-self: center;
+}
+#toast {
+  position: fixed;
+  left: 50%;
+  top: 46%;
+  transform: translate(-50%, -50%);
+  background: rgba(28, 20, 10, 0.94);
+  color: #fff;
+  border: 2px solid #ffd24a;
+  border-radius: 12px;
+  padding: 10px 18px;
+  font-weight: 900;
+  font-size: 16px;
+  z-index: 6100;
+  opacity: 0;
+  pointer-events: none;
+  transition: opacity 0.2s ease;
+}
+#toast.show { opacity: 1; }
 @media (prefers-reduced-motion: reduce) {
 .cell.anim-walk > .piece,
 .cell.anim-hop > .piece,
 .cell.anim-shake > .piece,
 .piece.piece-pop, .piece.land-bounce, .merge-glow, .score-float,
-.cell.tut-target, #tut-arrow, .float-text, .saw-swipe { animation: none !important; }
+.cell.tut-target, #tut-arrow, .float-text, .saw-swipe, .hit-jurist img.sway { animation: none !important; }
 .shade, #boot { transition: none !important; }
 }
 </style>
@@ -443,15 +555,19 @@ cursor: pointer;
 <div class="top-panel">
 <div class="top-forest"></div>
 <div class="top-hud">
-<div class="val-box" id="score-box"><div class="num-container" id="score-num"></div></div>
-<div class="val-box" id="coins-box"><div class="num-container" id="coins-num"></div></div>
-<div class="val-box" id="moves-box"><div class="num-container" id="moves-num"></div></div>
+<div class="val-box" id="score-box"><div class="num-container" id="score-num">0</div></div>
+<div class="val-box" id="coins-box"><div class="num-container" id="coins-num">0</div></div>
+<div class="val-box" id="moves-box"><div class="num-container" id="moves-num">0</div></div>
 <div class="hitbox hit-rating" aria-label="Рейтинг"></div>
 <div class="hitbox hit-shop" onclick="openModal('shop-modal')" aria-label="Магазин"></div>
 <div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"></div>
 <div class="hitbox hit-down" id="hit-down" onclick="useJurist()" aria-label="Юрист"></div>
 <div class="hitbox hit-jurist" onclick="useJurist()" aria-label="Юрист">
-<img decoding="async" src="img/tool_jurist.png" onerror="this.style.display='none'">
+<svg id="jurist-ring" class="jurist-ring" viewBox="0 0 100 100" aria-hidden="true">
+<circle class="jurist-ring-track" cx="50" cy="50" r="42"></circle>
+<circle class="jurist-ring-fill" cx="50" cy="50" r="42"></circle>
+</svg>
+<img id="jurist-img" decoding="async" src="img/tool_jurist.png" alt="" onerror="this.style.display='none'">
 </div>
 <div id="log"></div>
 </div>
@@ -585,12 +701,20 @@ cursor: pointer;
 </div>
 
 <div class="modal" id="gameover-modal">
-<div class="modal-content">
-<h2>ПОЛЕ ЗАПОЛНЕНО</h2>
-<div style="text-align:center; padding: 8px 0 4px; font-weight: 700;">Свободных клеток не осталось — игру некуда продолжать.</div>
-<button class="close-btn" onclick="restartAfterOver()">Заново</button>
+<div class="modal-content gameover-card">
+<h2>Ходов больше нет</h2>
+<button type="button" id="go-undo" class="go-btn" onclick="undoFromGameOver()">
+<span class="go-title">Отменить ход</span>
+<span class="go-price"><img src="img/Coin_1.png" alt="">1500</span>
+</button>
+<button type="button" id="go-clear" class="go-btn go-stars" onclick="buyClearFieldStars()">
+<span class="go-title">Расчистить поле</span>
+<span class="go-price">50 ⭐</span>
+</button>
+<button type="button" class="go-restart" onclick="restartAfterOver()">Начать сначала</button>
 </div>
 </div>
+<div id="toast" role="status" aria-live="polite"></div>
 
 <div id="hint-gallery" aria-hidden="true">
 <div id="hint-track">
@@ -640,7 +764,59 @@ const CARE = ['🐻','🪙','🥇','🏛️','📜','💰','🏦','👑','🌍',
 const INCOME = ['💻','📺','🏦','🏢','🥚'];
 const INCOME_PER_TURN = [5, 15, 50, 150, 500];
 
+/* Награды исходной игры: очки и монеты получает фигурка, которая получилась при слиянии.
+   saw — монеты, если спилили именно эту фигурку (null: в таблице выплаты за пилу нет).
+   Нет строки у chain 20–23 (ёлка, ведущий, вышиванка, рокер), care 1 (медведь), дохода, ОМОНа и пионера —
+   для них остаётся прежняя формула: очки = уровень×15×группа, монеты = уровень×2×группа, пила = 0. */
+const PIECE_REWARDS = {
+  'chain:1':  { score: 0, coins: 0, saw: 0 },
+  'chain:2':  { score: 30, coins: 5, saw: 2 },
+  'chain:3':  { score: 100, coins: 10, saw: 5 },
+  'chain:4':  { score: 500, coins: 15, saw: 7 },
+  'chain:5':  { score: 1500, coins: 30, saw: 15 },
+  'chain:6':  { score: 4000, coins: 50, saw: 25 },
+  'chain:7':  { score: 8000, coins: 100, saw: 50 },
+  'chain:8':  { score: 16000, coins: 1500, saw: 750 },
+  'chain:9':  { score: 30000, coins: 5000, saw: 2500 },
+  'chain:10': { score: 100000, coins: 12000, saw: 6000 },
+  'chain:11': { score: 200000, coins: 20000, saw: 10000 },
+  'chain:12': { score: 300000, coins: 40000, saw: 20000 },
+  'chain:13': { score: 600000, coins: 60000, saw: 30000 },
+  'chain:14': { score: 1000000, coins: 1000, saw: 80000 },
+  'chain:15': { score: 1500000, coins: 1000, saw: null },
+  'chain:16': { score: 1500000, coins: 1000, saw: null },
+  'chain:17': { score: 1500000, coins: 1000, saw: null },
+  'chain:18': { score: 3000000, coins: 1000, saw: 80000 },
+  'chain:19': { score: 5000000, coins: 1000, saw: 200000 },
+  'chain:24': { score: 10000000, coins: 1000, saw: 400000 },
+  'chain:25': { score: 11000000, coins: 1000, saw: 450000 },
+  'chain:26': { score: 12000000, coins: 1000, saw: 500000 },
+  'chain:27': { score: 13000000, coins: 1000, saw: 600000 },
+  'chain:28': { score: 14000000, coins: 1000, saw: 700000 },
+  'care:2':  { score: 1500, coins: 30, saw: 15 },
+  'care:3':  { score: 4000, coins: 50, saw: 25 },
+  'care:4':  { score: 16000, coins: 250, saw: 125 },
+  'care:5':  { score: 50000, coins: 1000, saw: 10000 },
+  'care:6':  { score: 100000, coins: 1000, saw: 36000 },
+  'care:7':  { score: 260000, coins: 1000, saw: 70000 },
+  'care:8':  { score: 520000, coins: 1000, saw: 140000 },
+  'care:9':  { score: 1000000, coins: 1000, saw: 280000 },
+  'care:10': { score: 1500000, coins: 1000, saw: 300000 },
+  'care:11': { score: 2000000, coins: 1000, saw: 350000 },
+  'care:12': { score: 4000000, coins: 1000, saw: 400000 },
+  'care:13': { score: 8000000, coins: 1000, saw: 450000 },
+  'care:14': { score: 12000000, coins: 1000, saw: 500000 },
+  'care:15': { score: 14000000, coins: 1000, saw: 600000 },
+  'care:16': { score: 16000000, coins: 1000, saw: 700000 },
+  'care:17': { score: 18000000, coins: 1000, saw: 800000 },
+  'care:18': { score: 20000000, coins: 1000, saw: 900000 },
+  'care:19': { score: 22000000, coins: 1000, saw: 1000000 },
+  'care:20': { score: 24000000, coins: 1000, saw: 1100000 }
+};
+
 let grid = [], score = 0, coins = 0, moves = 0;
+let juristCooldown = 0;
+const JURIST_COOLDOWN = 123;
 let nextTile = null, jailTile = null, bufferedNext = null, drag = null, undoState = null;
 let isSawMode = false, isNanoboxMode = false;
 let testSpawnIndex = 0;
@@ -670,42 +846,108 @@ function loadDiscovered() { try { let r = localStorage.getItem(SEEN_KEY); if(r) 
 function saveDiscovered() { try { localStorage.setItem(SEEN_KEY, JSON.stringify(Array.from(discovered))); } catch(e){} }
 loadDiscovered();
 
-function renderNumber(num, containerId) {
-const el = document.getElementById(containerId);
-el.innerHTML = '';
-const str = num.toString();
-for (let i = 0; i < str.length; i++) {
-const digit = str[i];
-const img = document.createElement('img');
-img.src = `img/num_${digit}.png`;
-img.onload = fitNumbers;
-img.onerror = function() {
-this.style.display = 'none';
-const span = document.createElement('span');
-span.textContent = digit;
-span.style.fontSize = '16px';
-span.style.color = '#ffd700';
-span.style.fontWeight = 'bold';
-el.appendChild(span);
-fitNumbers();
-};
-el.appendChild(img);
+function pieceReward(tile) {
+if (!tile || tile.level == null) return null;
+if (tile.kind !== 'chain' && tile.kind !== 'care') return null;
+return PIECE_REWARDS[tile.kind + ':' + tile.level] || null;
+}
+function mergeGain(produced, sourceLevel, groupLen) {
+const row = pieceReward(produced);
+if (row) return { score: row.score, coins: row.coins };
+const n = groupLen || 1;
+const lvl = sourceLevel || 0;
+return { score: lvl * 15 * n, coins: lvl * 2 * n };
+}
+function grantSawCash(tile, r, c) {
+const row = pieceReward(tile);
+const cash = row && row.saw ? row.saw : 0;
+if (cash > 0) {
+coins += cash;
+showFloatText(r, c, cash);
 }
 }
-function fitNumbers() {
-document.querySelectorAll('.val-box').forEach(box => {
+
+let hudView = { score: 0, coins: 0 };
+let hudGoal = { score: 0, coins: 0 };
+let hudAnimToken = 0;
+let hudReady = false;
+function paintHud() {
+const scoreEl = document.getElementById('score-num');
+const coinsEl = document.getElementById('coins-num');
+const movesEl = document.getElementById('moves-num');
+if (scoreEl) scoreEl.textContent = String(hudView.score);
+if (coinsEl) coinsEl.textContent = String(hudView.coins);
+if (movesEl) movesEl.textContent = String(moves);
+}
+function hudDigitEm() {
+const probe = document.getElementById('score-num');
+if (!probe) return 0.62;
+const cs = getComputedStyle(probe);
+const s = document.createElement('span');
+s.textContent = '000000000';
+s.style.cssText = 'position:absolute;left:-9999px;top:0;visibility:hidden;font-weight:' + cs.fontWeight + ';font-family:' + cs.fontFamily + ';font-size:100px;font-variant-numeric:tabular-nums;letter-spacing:0;white-space:nowrap;';
+document.body.appendChild(s);
+const w = s.getBoundingClientRect().width;
+s.remove();
+return w > 0 ? w / 9 / 100 : 0.62;
+}
+function layoutHudDigits() {
+const boxes = ['score-box', 'coins-box', 'moves-box'].map(id => document.getElementById(id));
+if (boxes.some(b => !b || !b.clientWidth)) return;
+const em = hudDigitEm();
+const scoreBox = boxes[0], coinsBox = boxes[1];
+const byScore = (scoreBox.clientWidth - 2) / (9 * em);
+const byCoins = (coinsBox.clientWidth - 2) / (8 * em);
+const byH = scoreBox.clientHeight * 0.92;
+let size = Math.max(8, Math.min(byScore, byCoins, byH));
+boxes.forEach(box => { box.querySelector('.num-container').style.fontSize = size + 'px'; });
+let scale = 1;
+boxes.forEach(box => {
 const nums = box.querySelector('.num-container');
-if (!nums) return;
-const imgs = [...nums.querySelectorAll('img')].filter(img => img.style.display !== 'none');
-if (!imgs.length) return;
-const availW = Math.max(8, box.clientWidth);
-const availH = Math.max(8, box.clientHeight);
-let size = availH;
-imgs.forEach(img => { img.style.height = size + 'px'; img.style.width = 'auto'; });
-const need = nums.scrollWidth;
-if (need > availW) size = Math.max(6, size * availW / need);
-imgs.forEach(img => { img.style.height = size + 'px'; img.style.width = 'auto'; });
+if (nums.scrollWidth > box.clientWidth + 0.5) scale = Math.min(scale, box.clientWidth / nums.scrollWidth);
 });
+if (scale < 0.999) {
+const shrunk = Math.max(6, size * scale);
+boxes.forEach(box => { box.querySelector('.num-container').style.fontSize = shrunk + 'px'; });
+}
+}
+function syncHud() {
+const movesEl = document.getElementById('moves-num');
+if (movesEl) movesEl.textContent = String(moves);
+const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+if (!hudReady || reduce) {
+hudReady = true;
+hudView.score = score;
+hudView.coins = coins;
+hudGoal.score = score;
+hudGoal.coins = coins;
+hudAnimToken++;
+paintHud();
+layoutHudDigits();
+return;
+}
+if (hudGoal.score === score && hudGoal.coins === coins) {
+paintHud();
+layoutHudDigits();
+return;
+}
+const fromS = hudView.score, fromC = hudView.coins;
+const toS = score, toC = coins;
+hudGoal.score = toS;
+hudGoal.coins = toC;
+const t0 = performance.now();
+const token = ++hudAnimToken;
+function frame(now) {
+if (token !== hudAnimToken) return;
+const t = Math.min(1, (now - t0) / 350);
+hudView.score = Math.round(fromS + (toS - fromS) * t);
+hudView.coins = Math.round(fromC + (toC - fromC) * t);
+paintHud();
+layoutHudDigits();
+if (t < 1) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+layoutHudDigits();
 }
 
 function getTileImage(tile) {
@@ -780,7 +1022,7 @@ const srcs = new Set();
 for (let i = 1; i <= 28; i++) srcs.add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
 for (let i = 1; i <= 20; i++) srcs.add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) srcs.add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_nanobox.png'].forEach(s => srcs.add(s));
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png','img/tool_nanobox.png'].forEach(s => srcs.add(s));
 trimsPending = srcs.size;
 srcs.forEach(src => {
 const img = new Image();
@@ -790,7 +1032,7 @@ img.src = src;
 });
 }
 function onTrimsReady() {
-layoutJurist();
+updateJuristFace();
 const title = document.getElementById('title-screen');
 if (!title || title.classList.contains('hidden')) render();
 }
@@ -875,12 +1117,62 @@ if (moved) wrap.style.setProperty('--piece-dy', dy.toFixed(2) + 'px');
 
 function layoutJurist() {
 const box = document.querySelector('.hit-jurist');
-const img = box && box.querySelector('img');
-if (!box || !img || !box.clientWidth || !box.clientHeight) return;
-const size = Math.min(box.clientWidth, box.clientHeight);
-const disp = pieceDisplaySize(img.getAttribute('src'), size * 0.92, size * 0.92);
+const img = document.getElementById('jurist-img');
+const ring = document.getElementById('jurist-ring');
+if (!box || !img) return;
+const cs = cellSize();
+const src = (img.getAttribute('src') || '').split('?')[0];
+const disp = pieceDisplaySize(src, cs.w, cs.h);
 img.style.width = disp.w + 'px';
 img.style.height = disp.h + 'px';
+const trim = TRIM[src] || { l: 0, t: 0, r: 1, b: 1 };
+img.style.setProperty('--sway-ox', (((trim.l + trim.r) / 2) * 100).toFixed(2) + '%');
+img.style.setProperty('--sway-oy', (trim.b * 100).toFixed(2) + '%');
+if (!ring) return;
+const visW = Math.max(8, (trim.r - trim.l) * disp.w);
+const visH = Math.max(8, (trim.b - trim.t) * disp.h);
+const d = Math.max(visW * 1.62, visH * 0.78);
+ring.style.width = d + 'px';
+ring.style.height = d + 'px';
+const cx = ((trim.l + trim.r) / 2 - 0.5) * disp.w;
+const visTop = -disp.h / 2 + trim.t * disp.h;
+const cy = visTop + Math.min(visH * 0.34, visH - d / 2 - visH * 0.08);
+ring.style.transform = 'translate(calc(-50% + ' + cx.toFixed(1) + 'px), calc(-50% + ' + cy.toFixed(1) + 'px))';
+}
+let juristCelebrate = false;
+function setJuristProgress(p) {
+const fill = document.querySelector('.jurist-ring-fill');
+if (!fill) return;
+const circ = 2 * Math.PI * 42;
+const clamped = Math.max(0, Math.min(1, p));
+fill.style.strokeDasharray = circ.toFixed(2);
+fill.style.strokeDashoffset = (circ * (1 - clamped)).toFixed(2);
+}
+function updateJuristFace() {
+const img = document.getElementById('jurist-img');
+const ring = document.getElementById('jurist-ring');
+const box = document.querySelector('.hit-jurist');
+if (!img) return;
+const next = juristCooldown > 0 ? 'img/tool_jurist_bound.png?v=48' : 'img/tool_jurist.png';
+if (img.getAttribute('src') !== next) img.setAttribute('src', next);
+if (ring) ring.classList.toggle('on', juristCooldown > 0);
+if (box) {
+box.classList.toggle('cooling', juristCooldown > 0);
+box.setAttribute('aria-disabled', juristCooldown > 0 ? 'true' : 'false');
+}
+const progress = juristCooldown > 0 ? (JURIST_COOLDOWN - juristCooldown) / JURIST_COOLDOWN : 0;
+setJuristProgress(progress);
+layoutJurist();
+if (juristCelebrate && juristCooldown === 0) {
+juristCelebrate = false;
+img.classList.remove('sway');
+void img.offsetWidth;
+img.classList.add('sway');
+}
+}
+function onJuristReady() {
+juristCelebrate = true;
+sfx('juristFree');
 }
 
 function checkDiscovery(tile) {
@@ -952,7 +1244,7 @@ else badge.classList.remove('show');
 function init() {
 hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
-score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
+score = 0; coins = 1000000; moves = 0; juristCooldown = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
 isSawMode = false; isNanoboxMode = false;
 sawStreak = 0;
 gameOver = false;
@@ -1111,7 +1403,7 @@ if ((exp && exp.r === r && exp.c === c) || (sug && sug.r === r && sug.c === c)) 
 }
 moveAnims = [];
 syncShades();
-layoutJurist();
+updateJuristFace();
 
 // Проверка задания "В лесу"
 if (missions.forest.status === 'active' && bearsOnBoard >= 10) {
@@ -1120,10 +1412,7 @@ updateMailBadge();
 setStatus();
 }
 
-renderNumber(score, 'score-num');
-renderNumber(coins, 'coins-num');
-renderNumber(moves, 'moves-num');
-fitNumbers();
+syncHud();
 
 const nextCont = document.getElementById('next-content');
 nextCont.innerHTML = '';
@@ -1360,8 +1649,7 @@ if (!groupCanMerge(group, tile)) { finishMerge(anchorR, anchorC, isSackMerge, de
 const lvl = tile.level, kind = tile.kind;
 let newLevel = lvl + 1;
 if (kind === 'chain' && lvl === GAGARIN) newLevel = gagarinPartLevel();
-const points = lvl * 15 * group.length;
-const coinGain = lvl * 2 * group.length;
+const gain = mergeGain({ kind, level: newLevel }, lvl, group.length);
 const apply = () => {
 group.forEach(([r, c]) => { grid[r][c] = null; });
 if (kind === 'chain' && (newLevel === 5 || newLevel === 9)) {
@@ -1380,13 +1668,14 @@ grid[anchorR][anchorC] = { kind, level: newLevel, pop: true };
 checkDiscovery(grid[anchorR][anchorC]);
 sfx('merge');
 notifyTutorial({ type: 'merge', tile: grid[anchorR][anchorC], r: anchorR, c: anchorC });
-score += points;
-coins += coinGain;
+score += gain.score;
+coins += gain.coins;
 render();
+if (gain.coins) showFloatText(anchorR, anchorC, gain.coins);
 setTimeout(() => commitMerge(anchorR, anchorC, isSackMerge, done, depth + 1), 40);
 };
 animateMerge(group, anchorR, anchorC, (x, y) => {
-if (x != null) showScoreFloatAt(x, y, points);
+if (x != null && gain.score) showScoreFloatAt(x, y, gain.score);
 apply();
 });
 }
@@ -1396,18 +1685,19 @@ if (!found) { if (done) done(); return; }
 const r = found.r, c = found.c;
 const anchorR = r, anchorC = c + 2;
 const group = [[r, c], [r, c + 1], [r, c + 2]];
-const points = 17 * 15 * 3;
+const gain = mergeGain({ kind: 'chain', level: ROCKET_FULL }, 17, 3);
 animateMerge(group, anchorR, anchorC, (x, y) => {
-if (x != null) showScoreFloatAt(x, y, points);
+if (x != null && gain.score) showScoreFloatAt(x, y, gain.score);
 grid[r][c] = null;
 grid[r][c + 1] = null;
 grid[anchorR][anchorC] = { kind: 'chain', level: ROCKET_FULL, pop: true };
-score += points;
-coins += 17 * 2 * 3;
+score += gain.score;
+coins += gain.coins;
 sfx('merge');
 checkDiscovery(grid[anchorR][anchorC]);
 notifyTutorial({ type: 'merge', tile: grid[anchorR][anchorC], r: anchorR, c: anchorC });
 render();
+if (gain.coins) showFloatText(anchorR, anchorC, gain.coins);
 setTimeout(() => commitMerge(anchorR, anchorC, isSackMerge, done, (depth || 0) + 1), 40);
 });
 }
@@ -1540,6 +1830,10 @@ checkGameOver();
 
 function endMove() {
 moves++;
+if (juristCooldown > 0) {
+juristCooldown--;
+if (juristCooldown === 0) onJuristReady();
+}
 sawStreak = 0;
 
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
@@ -1691,7 +1985,7 @@ const r = +cell.dataset.r, c = +cell.dataset.c;
 
 if (jailTile.kind === 'tool') {
 // Применение инструмента из тюрьмы
-undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: {...jailTile}, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+undoState = takeSnapshot();
 let tool = jailTile;
 jailTile = null;
 
@@ -1706,6 +2000,7 @@ endMove();
 else if (tool.tool === 'saw') {
 if (grid[r][c]) {
 playSawFx(r, c);
+grantSawCash(grid[r][c], r, c);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
@@ -1753,7 +2048,7 @@ return;
 } else {
 // Обычная фишка из тюрьмы
 if (!grid[r][c]) {
-undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: {...jailTile}, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+undoState = takeSnapshot();
 grid[r][c] = jailTile;
 jailTile = null;
 noteBoardMoney(grid[r][c]);
@@ -1795,7 +2090,7 @@ drag = null;
 return;
 }
 
-undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: jailTile ? {...jailTile} : null, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+undoState = takeSnapshot();
 
 if (nextTile.tool === 'jurist') {
 nextTile = grid[r][c]; grid[r][c] = null;
@@ -1807,6 +2102,7 @@ return;
 }
 else if (nextTile.tool === 'saw') {
 playSawFx(r, c);
+grantSawCash(grid[r][c], r, c);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
@@ -1880,7 +2176,7 @@ return;
 }
 
 if (!grid[r][c]) {
-undoState = { grid: grid.map(row => row.map(t => t ? {...t} : null)), score, coins, moves, nextTile: {...nextTile}, jailTile: jailTile ? {...jailTile} : null, bufferedNext: bufferedNext ? {...bufferedNext} : null };
+undoState = takeSnapshot();
 grid[r][c] = nextTile;
 noteBoardMoney(nextTile);
 checkDiscovery(nextTile);
@@ -1960,13 +2256,19 @@ closeModal('pause-modal');
 openHintGallery();
 }
 
+function performUndo() {
+if (!undoState || coins < 1500) return false;
+gameOver = false;
+closeModal('gameover-modal');
+undoMove(1500);
+return true;
+}
 function buyUndo() {
-if (!undoState || coins < 1500) return;
-undoMove();
-coins = Math.max(0, coins - 1500);
-render();
-saveGame();
+if (!performUndo()) return;
 closeModal('pause-modal');
+}
+function undoFromGameOver() {
+performUndo();
 }
 
 function claimSocialBonus(amount) {
@@ -1977,21 +2279,34 @@ setStatus();
 
 function useJurist() {
 if (tutorial.active) { setStatus(); return; }
-if (gameOver) return;
+if (gameOver || juristCooldown > 0) return;
 if (nextTile && nextTile.kind === 'tool' && nextTile.tool === 'jurist') return;
 sfx('pop');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
+juristCooldown = JURIST_COOLDOWN;
 render(); saveGame();
 }
 
 function takeFromJail() { }
 
-function undoMove() {
+function takeSnapshot() {
+return {
+grid: grid.map(row => row.map(t => t ? { ...t } : null)),
+score, coins, moves,
+nextTile: nextTile ? { ...nextTile } : null,
+jailTile: jailTile ? { ...jailTile } : null,
+bufferedNext: bufferedNext ? { ...bufferedNext } : null,
+juristCooldown: juristCooldown || 0
+};
+}
+function undoMove(cost) {
 if (!undoState) return;
 grid = undoState.grid; score = undoState.score; coins = undoState.coins; moves = undoState.moves;
 nextTile = undoState.nextTile; jailTile = undoState.jailTile; bufferedNext = undoState.bufferedNext;
+juristCooldown = undoState.juristCooldown || 0;
 undoState = null;
+if (cost) coins = Math.max(0, coins - cost);
 render(); saveGame();
 }
 
@@ -2059,7 +2374,7 @@ setTimeout(function() { el.remove(); }, 2000);
 
 function saveGame() {
 try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags }));
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown }));
 } catch(e){}
 }
 
@@ -2300,7 +2615,7 @@ saveGame();
 function startTutorial() {
 hideTitle();
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
-score = 0; coins = 1000000; moves = 0; jailTile = null; bufferedNext = null; undoState = null;
+score = 0; coins = 1000000; moves = 0; juristCooldown = 0; jailTile = null; bufferedNext = null; undoState = null;
 gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
 moneyBags = 0;
 nextTile = chainTile(1);
@@ -2481,7 +2796,42 @@ sawDing(ctx, t + 1.02);
 } else if (name === 'weed') {
 weedStab(ctx, t);
 weedStab(ctx, t + 0.09);
+} else if (name === 'juristFree') {
+juristApplause(ctx, t);
 }
+}
+function juristApplause(ctx, t) {
+[0, 0.11, 0.22, 0.34, 0.47, 0.58, 0.72].forEach((dt, i) => {
+const g = 0.26 + (i % 2) * 0.07;
+noiseBurst(ctx, t + dt, 0.05, 2100, 640, g, 0.85);
+noiseBurst(ctx, t + dt + 0.01, 0.03, 1200, 380, g * 0.4, 1.5);
+});
+noiseBurst(ctx, t + 0.04, 0.8, 1600, 480, 0.045, 0.5);
+juristWow(ctx, t + 0.2);
+}
+function juristWow(ctx, t) {
+const osc = ctx.createOscillator();
+osc.type = 'sawtooth';
+osc.frequency.setValueAtTime(128, t);
+osc.frequency.linearRampToValueAtTime(206, t + 0.16);
+osc.frequency.linearRampToValueAtTime(146, t + 0.5);
+const master = ctx.createGain();
+master.gain.setValueAtTime(0.0001, t);
+master.gain.exponentialRampToValueAtTime(0.2, t + 0.05);
+master.gain.setValueAtTime(0.16, t + 0.24);
+master.gain.exponentialRampToValueAtTime(0.0001, t + 0.52);
+[[740, 420, 9, 0.55], [1280, 760, 8, 0.28], [2680, 2050, 7, 0.12]].forEach((spec) => {
+const f = ctx.createBiquadFilter();
+f.type = 'bandpass';
+f.Q.value = spec[2];
+f.frequency.setValueAtTime(spec[0], t);
+f.frequency.linearRampToValueAtTime(spec[1], t + 0.42);
+const g = ctx.createGain();
+g.gain.value = spec[3];
+osc.connect(f); f.connect(g); g.connect(master);
+});
+master.connect(audioBus(ctx));
+osc.start(t); osc.stop(t + 0.56);
 }
 
 function corkPop(ctx, t) {
@@ -2947,11 +3297,36 @@ if (tile.kind === 'tool') return tile.tool === 'sack';
 return true;
 }
 
+function refreshGameOverActions() {
+const btn = document.getElementById('go-undo');
+if (!btn) return;
+const ok = !!(undoState && coins >= 1500);
+btn.disabled = !ok;
+btn.classList.toggle('is-off', !ok);
+btn.setAttribute('aria-disabled', ok ? 'false' : 'true');
+}
+function openGameOver() {
+refreshGameOverActions();
+openModal('gameover-modal');
+}
+let toastTimer = null;
+function showToast(text) {
+const el = document.getElementById('toast');
+if (!el) return;
+el.textContent = text;
+el.classList.add('show');
+if (toastTimer) clearTimeout(toastTimer);
+toastTimer = setTimeout(() => el.classList.remove('show'), 1400);
+}
+function buyClearFieldStars() {
+/* Telegram Stars (50⭐, пять пил подряд) требуют серверный invoice. Пока только заглушка. */
+showToast('Скоро');
+}
 function checkGameOver() {
 if (tutorial.active || gameOver) return;
 if (emptyCells() === 0 && needsEmptyCell(nextTile)) {
 gameOver = true;
-openModal('gameover-modal');
+openGameOver();
 }
 }
 
@@ -3040,6 +3415,7 @@ if (grid.some(row => row.length !== SIZE)) return false;
 score = data.score || 0;
 coins = typeof data.coins === 'number' ? data.coins : 0;
 moves = data.moves || 0;
+juristCooldown = typeof data.juristCooldown === 'number' ? Math.max(0, data.juristCooldown) : 0;
 nextTile = data.nextTile || { kind: 'chain', level: 1 };
 jailTile = data.jailTile || null;
 bufferedNext = data.bufferedNext || null;
@@ -3195,7 +3571,7 @@ while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/hud_bottom.jpg?v=47','img/loading.jpg','img/play.png?v=47','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/hud_boxes.png?v=48','img/loading.jpg','img/play.png?v=47','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
