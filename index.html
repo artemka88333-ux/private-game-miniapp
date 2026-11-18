@@ -115,8 +115,8 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЗ. Тот же лес, что над шапкой, повторённый вертикально до самого низа экрана
-   (включая 4px под полем и safe-area). Нижняя полоска земли у спрайта обрезана, чтобы шов был травой.
+/* НИЗ. Лес под коробками — одна непрерывная картинка: ряды того же спрайта
+   перекрыты мягким градиентом, поэтому горизонтальных швов нет.
    Три прозрачные коробки лежат сверху — между ними и под ними виден лес. */
 .bottom-panel {
   position: relative;
@@ -137,17 +137,11 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background: #57732b;
-  display: flex;
-  flex-direction: column;
-}
-.bottom-forest i {
-  display: block;
-  flex: 0 0 auto;
-  width: 100%;
-  height: calc(100cqw * 108 / 877);
-  margin-bottom: -1px;
-  background: url('img/ui_top_forest.png') center top / 100% calc(100cqw * 137 / 877) no-repeat;
+  background-color: #5a7c34;
+  background-image: url('img/ui_bottom_forest.png?v=50');
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: 100% auto;
 }
 .bottom-art {
   position: relative;
@@ -275,6 +269,29 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .pause-fb { left: 9.76%; top: 7.45%; width: 21.06%; height: 72.29%; }
 .pause-like { left: 39.25%; top: 7.45%; width: 21.06%; height: 72.53%; }
 .pause-star { left: 68.07%; top: 7.45%; width: 20.95%; height: 72.04%; }
+#pause-modal {
+  --buttons-bottom: calc(max(var(--ui-top), 100cqw * 137 / 877) + 100cqw * 470 / 2400);
+  --panel-top: calc(var(--buttons-bottom) + 8px);
+  --bottom-panel-top: calc(100dvh - var(--ui-bottom) - 100cqw * 768 / 2544);
+  --panel-room: calc(var(--bottom-panel-top) - var(--panel-top) - 10px);
+  --pause-w: min(50vw, calc(var(--panel-room) * 570 / 1438));
+}
+.pause-leave {
+  position: absolute;
+  left: 50%;
+  z-index: 3;
+  transform: translateX(-50%);
+  top: calc(var(--panel-top) + var(--pause-w) * 1438 / 570 + 8px);
+  width: var(--pause-w);
+  padding: 10px 8px;
+  border-radius: 10px;
+  border: 2px solid #3e4a28;
+  background: #ffe08a;
+  color: #2b1a0e;
+  font-weight: 900;
+  font-size: 15px;
+  cursor: pointer;
+}
 .pause-missions {
   position: absolute;
   left: 4%;
@@ -515,6 +532,23 @@ cursor: pointer;
 #confirm-yes { background: #ffd700; color: #2b1a0e; }
 #confirm-no { background: #8b3a3a; color: #fff; }
 #confirm-text, #channel-text { text-align: center; font-weight: 800; font-size: 18px; line-height: 1.35; margin-bottom: 14px; }
+.confirm-extra { width: 100%; margin-top: 8px; padding: 10px; border-radius: 8px; border: 2px solid #4a2c14; background: #f4f0d8; color: #2b1a0e; font-weight: 900; font-size: 15px; cursor: pointer; }
+.confirm-extra[hidden] { display: none !important; }
+#char-pop { position: fixed; inset: 0; z-index: 4550; display: none; touch-action: none; }
+#char-pop.on { display: block; }
+#char-pop img {
+  position: absolute;
+  display: block;
+  pointer-events: none;
+  object-fit: fill;
+  transition: transform 0.35s ease-out;
+  will-change: transform;
+}
+#char-pop[data-side="left"] img { left: 0; right: auto; transform: translateX(-105%); }
+#char-pop[data-side="right"] img { left: auto; right: 0; transform: translateX(105%); }
+#char-pop.in img { transform: translateX(0); }
+#char-pop.out[data-side="left"] img { transform: translateX(-105%); }
+#char-pop.out[data-side="right"] img { transform: translateX(105%); }
 .gameover-card { align-items: stretch; }
 .gameover-card h2 { font-size: 20px; margin-bottom: 4px; }
 .go-btn {
@@ -609,21 +643,21 @@ cursor: pointer;
 <div class="playfield"><div id="board"></div></div>
 
 <div class="bottom-panel">
-<div class="bottom-forest" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i><i></i><i></i></div>
+<div class="bottom-forest" aria-hidden="true"></div>
 <div class="bottom-art">
 <div class="jail-block" id="jail" onclick="takeFromJail()">
 <div class="content" id="jail-content"></div>
-<img class="tray-frame" src="img/jail.png?v=49" alt="">
+<img class="tray-frame" src="img/jail.png?v=50" alt="">
 </div>
 <div class="next-block" id="next-tile">
 <div class="tray-fill"></div>
 <div class="content" id="next-content"></div>
-<img class="tray-frame" src="img/next.png?v=49" alt="">
+<img class="tray-frame" src="img/next.png?v=50" alt="">
 </div>
 <div class="hint-block" onclick="openHintGallery()" aria-label="Нажми меня">
 <div class="tray-fill"></div>
 <div id="hint-recipe"></div>
-<img class="tray-frame" src="img/hint.png?v=49" alt="">
+<img class="tray-frame" src="img/hint.png?v=50" alt="">
 </div>
 </div>
 </div>
@@ -692,6 +726,7 @@ cursor: pointer;
 <button type="button" class="shop-hitbox pause-star" aria-disabled="true" tabindex="-1" aria-label="Оценка"></button>
 </div>
 </div>
+<button type="button" class="pause-leave" onclick="askLeaveToMenu()">В меню</button>
 </div>
 
 <!-- ПОЧТА -->
@@ -738,6 +773,7 @@ cursor: pointer;
 <button type="button" id="confirm-yes">Да</button>
 <button type="button" id="confirm-no">Нет</button>
 </div>
+<button type="button" id="confirm-extra" class="confirm-extra" hidden>Меню паузы</button>
 </div>
 </div>
 
@@ -758,9 +794,12 @@ cursor: pointer;
 <div id="toast" role="status" aria-live="polite"></div>
 <div class="modal" id="channel-modal">
 <div class="modal-content">
-<p id="channel-text">Ёбаный в рот, ты хули тут накликал, нахуй ты телеканал переключил</p>
+<p id="channel-text"></p>
 <button type="button" class="close-btn" onclick="closeChannelEgg()">OK</button>
 </div>
+</div>
+<div id="char-pop" data-side="left" aria-hidden="true">
+<img id="char-pop-img" alt="" draggable="false">
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
@@ -883,6 +922,14 @@ const SFX_KEY = 'pasha_sfx_muted';
 let sfxMuted = false;
 try { sfxMuted = localStorage.getItem(SFX_KEY) === '1'; } catch (e) {}
 let audioCtx = null;
+let audioHeld = false;
+let unitSeq = 1;
+let lastDrop = null;
+let charShown = {};
+let charQueue = [];
+let charOpen = false;
+let charTimer = null;
+let charArmedAt = 0;
 let moneyBags = 0;
 
 // Статусы заданий: 'active' - висит в паузе, 'completed' - висит в почте, 'claimed' - исчезло
@@ -1034,8 +1081,8 @@ return !!(tile && tile.kind === 'chain' && tile.level === 3);
 function getTileImage(tile) {
 if (!tile) return null;
 if (tile.kind === 'chain') {
-if (tile.level === 2) return 'img/sheep-src.png?v=49';
-if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=49';
+if (tile.level === 2) return 'img/sheep-src.png?v=50';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=50';
 return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
 }
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
@@ -1305,8 +1352,24 @@ juristCelebrate = true;
 sfx('juristFree');
 }
 
+/* Первое появление фигурки в этой партии. Имена в коде не совпадают с репликами один в один:
+   Депутат — chain 6 (трое сливаются в здание Думы, chain 7). Обучение по-прежнему говорит
+   «Чиновник» на этом шаге, текст обучения не трогаем.
+   Чиновник — care 2, серебряная монета. Министр — care 3, золотая монета за столом.
+   Церковь — income 2 (три патриарха income 1; отдельной могилы нет, пионер становится care 1).
+   Госзаказ — care 5, табличка «ГОСЗАКАЗ». Ракета — chain 15, нос, первая деталь ракеты. */
+function notePieceCreated(tile) {
+if (!tile || tutorial.active) return;
+if (tile.kind === 'chain' && tile.level === 6) showCharacterPopup('deputy', 'img/popup_deputy.png?v=50', 'right');
+else if (tile.kind === 'care' && tile.level === 2) showCharacterPopup('official', 'img/popup_official.png?v=50', 'left');
+else if (tile.kind === 'care' && tile.level === 3) showCharacterPopup('minister', 'img/popup_minister.png?v=50', 'left');
+else if (tile.kind === 'income' && tile.level === 2) showCharacterPopup('church', 'img/popup_church.png?v=50', 'left');
+else if (tile.kind === 'care' && tile.level === 5) showCharacterPopup('goszakaz', 'img/popup_goszakaz.png?v=50', 'right');
+else if (tile.kind === 'chain' && tile.level === ROCKET_NOSE) showCharacterPopup('rocket1', 'img/popup_rocket1.png?v=50', 'left');
+}
 function checkDiscovery(tile) {
 if (!tile) return;
+notePieceCreated(tile);
 let key = tile.kind + '_' + (tile.level || '');
 if (tile.kind === 'tool') key = 'tool_' + tile.tool;
 if (discovered.has(key)) return;
@@ -1379,6 +1442,11 @@ isSawMode = false; isNanoboxMode = false;
 sawStreak = 0;
 gameOver = false;
 moneyBags = 0;
+charShown = {};
+charQueue = [];
+lastDrop = null;
+unitSeq = 1;
+closeCharPopup(true);
 hideTutorial();
 closeModal('gameover-modal');
 closeModal('channel-modal');
@@ -1870,7 +1938,7 @@ if (!pool.length) return;
 let move = pool[Math.floor(Math.random() * pool.length)];
 taken[move.r + ',' + move.c] = true;
 if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
-grid[move.r][move.c] = { kind: 'pioneer' };
+grid[move.r][move.c] = { kind: 'pioneer', movedSeq: ++unitSeq };
 grid[r][c] = null;
 moveAnims.push({ r: move.r, c: move.c, fromR: r, fromC: c, dx: (c - move.c) * px + 'px', dy: (r - move.r) * px + 'px', hop: false });
 moved = true;
@@ -1885,23 +1953,53 @@ if (grid[r][c] && grid[r][c].kind === 'pioneer' && pioneerOptions(r, c).blocked)
 }
 return trapped;
 }
-function convertTrapped(trapped) {
-const spots = [];
-trapped.forEach(([r, c]) => {
+function rememberDrop(r, c) {
+lastDrop = { r: r, c: c };
+const t = grid[r] && grid[r][c];
+if (t && t.kind === 'pioneer') t.movedSeq = ++unitSeq;
+}
+function orderedTrapped(list) {
+const ranked = list.map(([r, c]) => {
+const t = grid[r] && grid[r][c];
+const dist = lastDrop ? Math.abs(r - lastDrop.r) + Math.abs(c - lastDrop.c) : 0;
+const seq = (t && t.movedSeq) || 0;
+return { r: r, c: c, dist: dist, seq: seq };
+});
+ranked.sort((a, b) => (a.dist - b.dist) || (b.seq - a.seq));
+return ranked.map(x => [x.r, x.c]);
+}
+function shakeCells(list) {
+if (!list.length) return;
+sfx('trap');
+list.forEach(([r, c]) => {
+const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
+if (cell) cell.classList.add('anim-shake');
+});
+}
+function phaseDelay() {
+let wait = 420;
+if (document.querySelector('.cell.anim-hop')) wait = Math.max(wait, 780);
+if (document.querySelector('.cell.anim-walk')) wait = Math.max(wait, 580);
+return wait;
+}
+function convertTrapped(trapped, done) {
+const spots = orderedTrapped(trapped);
+spots.forEach(([r, c]) => {
 if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
 grid[r][c] = { kind: 'care', level: 1, pop: true };
 checkDiscovery(grid[r][c]);
-spots.push([r, c]);
 });
-if (trapped.length) notifyTutorial({ type: 'trap', n: trapped.length });
+if (spots.length) notifyTutorial({ type: 'trap', n: spots.length });
 render();
-function next() {
-if (!spots.length) { saveGame(); checkGameOver(); return; }
-const [r, c] = spots.shift();
-if (!grid[r] || !grid[r][c]) { next(); return; }
-processCascades(r, c, false, next);
+(function next() {
+while (spots.length) {
+const spot = spots.shift();
+const r = spot[0], c = spot[1];
+if (grid[r] && grid[r][c]) { processCascades(r, c, false, next); return; }
 }
-next();
+if (done) done();
+else { saveGame(); checkGameOver(); }
+})();
 }
 
 function omonJumpTargets(r, c, level) {
@@ -1939,25 +2037,39 @@ moveAnims.push({ r: p.r, c: p.c, fromR: r, fromC: c, hop: true });
 });
 }
 
-function finishUnits() {
-stepPioneers();
-if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
-const trapped = trappedPioneers();
-render();
-if (document.querySelector('.cell.anim-hop')) markBusy(860);
-else if (document.querySelector('.cell.anim-walk')) markBusy(660);
-if (trapped.length) {
-sfx('trap');
-trapped.forEach(([r, c]) => {
-const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
-if (cell) cell.classList.add('anim-shake');
-});
-markBusy(1100);
-setTimeout(() => convertTrapped(trapped), 420);
-} else {
+function finishTurn() {
 saveGame();
 checkGameOver();
 }
+function afterPioneerStep() {
+const second = trappedPioneers();
+render();
+if (document.querySelector('.cell.anim-hop')) markBusy(860);
+else if (document.querySelector('.cell.anim-walk')) markBusy(660);
+if (!second.length) { finishTurn(); return; }
+shakeCells(second);
+const wait = phaseDelay();
+markBusy(wait + 700);
+setTimeout(() => convertTrapped(second, finishTurn), wait);
+}
+function afterFirstTraps() {
+if (tutorial.active) {
+if (moveAnims.length) render();
+finishTurn();
+return;
+}
+stepPioneers();
+afterPioneerStep();
+}
+function finishUnits() {
+if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
+const first = trappedPioneers();
+if (!first.length) { afterFirstTraps(); return; }
+render();
+shakeCells(first);
+const wait = phaseDelay();
+markBusy(wait + 700);
+setTimeout(() => convertTrapped(first, afterFirstTraps), wait);
 }
 
 function updateShopVoter() {
@@ -1970,8 +2082,113 @@ function closeChannelEgg() {
 closeModal('channel-modal');
 }
 function openChannelEgg() {
-openModal('channel-modal');
+if (tutorial.active) return;
+showCharacterPopup('goat', 'img/popup_goat_tv.png?v=50', 'left');
 }
+function layoutCharPopup() {
+const root = document.getElementById('char-pop');
+const image = document.getElementById('char-pop-img');
+if (!root || !image) return;
+const nw = image.naturalWidth || 900;
+const nh = image.naturalHeight || 700;
+const vw = window.innerWidth || 390;
+const vh = window.innerHeight || 800;
+let w = Math.round(vw * 0.70);
+let h = Math.round(w * nh / nw);
+const maxH = Math.round(vh * 0.74);
+if (h > maxH) {
+h = maxH;
+w = Math.round(h * nw / nh);
+}
+if (w > vw - 4) {
+w = vw - 4;
+h = Math.round(w * nh / nw);
+}
+image.style.width = w + 'px';
+image.style.height = h + 'px';
+const board = document.getElementById('board');
+const br = board ? board.getBoundingClientRect() : { top: vh * 0.28, height: vh * 0.46 };
+let top = br.top + br.height / 2 - h / 2;
+if (top < 6) top = 6;
+if (top + h > vh - 6) top = Math.max(6, vh - 6 - h);
+image.style.top = Math.round(top) + 'px';
+if (root.dataset.side === 'right') {
+image.style.left = 'auto';
+image.style.right = '0px';
+} else {
+image.style.left = '0px';
+image.style.right = 'auto';
+}
+}
+function closeCharPopup(immediate) {
+const root = document.getElementById('char-pop');
+if (charTimer) { clearTimeout(charTimer); charTimer = null; }
+if (!root || !root.classList.contains('on')) {
+charOpen = false;
+if (!immediate) pumpCharPopup();
+return;
+}
+if (immediate) {
+root.classList.remove('on', 'in', 'out');
+root.setAttribute('aria-hidden', 'true');
+charOpen = false;
+return;
+}
+if (root.classList.contains('out')) return;
+root.classList.remove('in');
+root.classList.add('out');
+setTimeout(function () {
+if (!root.classList.contains('out')) return;
+root.classList.remove('on', 'in', 'out');
+root.setAttribute('aria-hidden', 'true');
+charOpen = false;
+pumpCharPopup();
+}, 360);
+}
+function pumpCharPopup() {
+if (charOpen || !charQueue.length) return;
+const item = charQueue.shift();
+const root = document.getElementById('char-pop');
+const image = document.getElementById('char-pop-img');
+if (!root || !image) return;
+charOpen = true;
+root.dataset.side = item.side;
+root.classList.remove('in', 'out');
+root.setAttribute('aria-hidden', 'false');
+image.onload = function () { if (charOpen) layoutCharPopup(); };
+if (image.getAttribute('src') !== item.img) image.src = item.img;
+else layoutCharPopup();
+root.classList.add('on');
+layoutCharPopup();
+charArmedAt = performance.now() + 450;
+requestAnimationFrame(function () {
+requestAnimationFrame(function () { if (charOpen) root.classList.add('in'); });
+});
+charTimer = setTimeout(function () { closeCharPopup(false); }, 10000);
+}
+function showCharacterPopup(key, img, side) {
+if (tutorial.active || !key || charShown[key]) return;
+charShown[key] = true;
+saveGame();
+charQueue.push({ key: key, img: img, side: side === 'right' ? 'right' : 'left' });
+setTimeout(pumpCharPopup, 0);
+}
+(function bindCharPopup() {
+const root = document.getElementById('char-pop');
+if (!root) return;
+function eat(e) {
+if (!root.classList.contains('on')) return;
+e.preventDefault();
+e.stopPropagation();
+}
+root.addEventListener('pointerdown', function (e) {
+eat(e);
+if (performance.now() < charArmedAt) return;
+closeCharPopup(false);
+});
+root.addEventListener('pointerup', eat);
+root.addEventListener('click', eat);
+})();
 function endMove() {
 voterTapStreak = 0;
 moves++;
@@ -2194,6 +2411,7 @@ const arm = juristPending && !tutorial.active;
 juristPending = false;
 if (arm) juristCooldown = JURIST_COOLDOWN + 1;
 sfx('pop');
+rememberDrop(r, c);
 endMove();
 } else { render(); }
 }
@@ -2206,6 +2424,7 @@ grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
 grid[r][c] = null;
 }
+rememberDrop(r, c);
 render();
 processCascades(r, c, false, () => endMove());
 } else { sfx('weed'); render(); }
@@ -2240,6 +2459,7 @@ if (grp && grp.length >= 3 && tk.level < maxL && groupCanMerge(grp, grid[r][c]))
 grid[r][c] = null;
 }
 if (!merged) grid[r][c] = { kind: 'income', level: 1 };
+rememberDrop(r, c);
 render();
 processCascades(r, c, false, () => endMove());
 } else { render(); }
@@ -2251,6 +2471,7 @@ if (!grid[r][c]) {
 undoState = takeSnapshot();
 grid[r][c] = jailTile;
 jailTile = null;
+rememberDrop(r, c);
 noteBoardMoney(grid[r][c]);
 checkDiscovery(grid[r][c]);
 if (grid[r][c].kind === 'omon') grid[r][c].skipMove = true;
@@ -2310,6 +2531,7 @@ grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
 grid[r][c] = null;
 }
+rememberDrop(r, c);
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 sawStreak++;
@@ -2363,6 +2585,7 @@ grid[r][c] = null;
 }
 
 if (!merged) grid[r][c] = { kind: 'income', level: 1 };
+rememberDrop(r, c);
 
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
@@ -2380,6 +2603,7 @@ return;
 if (!grid[r][c]) {
 undoState = takeSnapshot();
 grid[r][c] = nextTile;
+rememberDrop(r, c);
 noteBoardMoney(nextTile);
 checkDiscovery(nextTile);
 if (nextTile.kind === 'omon') grid[r][c].skipMove = true;
@@ -2435,9 +2659,29 @@ updateMailBadge();
 }
 }
 
+function leaveToTitle() {
+saveGame();
+closeModal('pause-modal');
+closeModal('shop-modal');
+closeModal('book-modal');
+closeModal('mail-modal');
+closeModal('gameover-modal');
+closeModal('confirm-modal');
+closeModal('channel-modal');
+charQueue = [];
+closeCharPopup(true);
+showTitle();
+}
+function askLeaveToMenu() {
+askConfirm('Выйти в главное меню?', leaveToTitle, function () {
+closeModal('pause-modal');
+});
+}
 function openPause() {
+askConfirm('Выйти в главное меню?', leaveToTitle, null, 'Меню паузы', function () {
 renderMissions();
 openModal('pause-modal');
+});
 }
 
 function renderMissions() {
@@ -2578,7 +2822,7 @@ setTimeout(function() { el.remove(); }, 2000);
 
 function saveGame() {
 try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown, juristPending, voterChannel }));
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown, juristPending, voterChannel, charShown }));
 } catch(e){}
 }
 
@@ -2818,6 +3062,11 @@ saveGame();
 
 function startTutorial() {
 hideTitle();
+charShown = {};
+charQueue = [];
+lastDrop = null;
+unitSeq = 1;
+closeCharPopup(true);
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; juristCooldown = 0; juristPending = false; voterChannel = false; voterTapStreak = 0; jailTile = null; bufferedNext = null; undoState = null;
 gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
@@ -2912,41 +3161,54 @@ startAudioLoops(ctx);
 return ctx;
 }
 
-function audioBroken(ctx) {
-if (!ctx) return true;
-const state = ctx.state;
-return state === 'closed' || state === 'interrupted';
+function restartMusic(ctx) {
+if (sfxMuted || !ctx || ctx.state !== 'running' || !masterGain) return;
+if (!audioLoopMakers.size) return;
+startAudioLoops(ctx);
 }
 
 function ensureAudio() {
-if (sfxMuted) return null;
-if (audioBroken(audioCtx)) createAudio();
-if (!audioCtx) return null;
-if (audioCtx.state !== 'running') {
-const pending = audioCtx;
-try {
-const p = pending.resume();
-if (p && typeof p.then === 'function') {
-p.then(function () {
-if (audioCtx !== pending) return;
-if (audioBroken(pending)) createAudio();
-}).catch(function () {
-if (audioCtx === pending) createAudio();
-});
-}
-} catch (e) {
-if (audioCtx === pending) createAudio();
-}
-}
-return audioCtx && !audioBroken(audioCtx) ? audioCtx : null;
+resumeAudio();
+if (sfxMuted || !audioCtx || audioCtx.state !== 'running') return null;
+return audioCtx;
 }
 
 function resumeAudio() {
 if (sfxMuted) return;
-ensureAudio();
+const ctx = audioCtx;
+if (!ctx || ctx.state === 'closed') {
+audioHeld = false;
+createAudio();
+return;
+}
+if (ctx.state === 'running') {
+if (audioHeld) restartMusic(ctx);
+audioHeld = false;
+return;
+}
+if (ctx.state !== 'suspended' && ctx.state !== 'interrupted') return;
+const pending = ctx;
+audioHeld = false;
+let p;
+try { p = pending.resume(); }
+catch (e) {
+if (pending.state === 'closed') createAudio();
+return;
+}
+const done = function () {
+if (audioCtx !== pending) return;
+if (!pending || pending.state === 'closed') { createAudio(); return; }
+if (pending.state === 'running') restartMusic(pending);
+};
+if (p && typeof p.then === 'function') {
+p.then(done).catch(function () {
+if (audioCtx === pending && pending.state === 'closed') createAudio();
+});
+} else done();
 }
 
 function suspendAudio() {
+audioHeld = true;
 const ctx = audioCtx;
 if (!ctx || ctx.state !== 'running') return;
 try {
@@ -3535,13 +3797,30 @@ openGameOver();
 }
 
 function closeModal(id) { document.getElementById(id).classList.remove('open'); }
-function askConfirm(text, onYes) {
+function askConfirm(text, onYes, onNo, extraLabel, extraFn) {
 document.getElementById('confirm-text').textContent = text;
 document.getElementById('confirm-yes').onclick = function() {
 closeModal('confirm-modal');
-onYes();
+if (onYes) onYes();
 };
-document.getElementById('confirm-no').onclick = function() { closeModal('confirm-modal'); };
+document.getElementById('confirm-no').onclick = function() {
+closeModal('confirm-modal');
+if (onNo) onNo();
+};
+const extra = document.getElementById('confirm-extra');
+if (extra) {
+if (extraLabel && extraFn) {
+extra.hidden = false;
+extra.textContent = extraLabel;
+extra.onclick = function() {
+closeModal('confirm-modal');
+extraFn();
+};
+} else {
+extra.hidden = true;
+extra.onclick = null;
+}
+}
 document.getElementById('confirm-modal').classList.add('open');
 sfx('ui');
 }
@@ -3554,15 +3833,7 @@ closeModal('pause-modal');
 });
 }
 function exitToMenu() {
-askConfirm('Вы уверены?', function() {
-saveGame();
-closeModal('pause-modal');
-closeModal('shop-modal');
-closeModal('book-modal');
-closeModal('mail-modal');
-closeModal('gameover-modal');
-showTitle();
-});
+askLeaveToMenu();
 }
 function clearSave() { localStorage.removeItem(SAVE_KEY); }
 function hasSave() {
@@ -3600,6 +3871,8 @@ play.style.left = ((cw - pw) / 2) + 'px';
 play.style.top = (cy - pw / 2) + 'px';
 }
 function showTitle() {
+charQueue = [];
+closeCharPopup(true);
 const el = document.getElementById('title-screen');
 if (el) el.classList.remove('hidden');
 requestAnimationFrame(layoutTitle);
@@ -3629,6 +3902,14 @@ juristPending = true;
 juristCooldown = 0;
 }
 voterChannel = !!data.voterChannel;
+charShown = (data.charShown && typeof data.charShown === 'object' && !Array.isArray(data.charShown)) ? data.charShown : {};
+charQueue = [];
+unitSeq = 1;
+lastDrop = null;
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+const t = grid[r][c];
+if (t && t.kind === 'pioneer' && t.movedSeq > unitSeq) unitSeq = t.movedSeq;
+}
 testSpawnIndex = data.testSpawnIndex || 0;
 moneyBags = data.moneyBags || 0;
 if (data.missions) missions = data.missions;
@@ -3754,6 +4035,7 @@ window.addEventListener('touchend', function () { ensureAudio(); }, { passive: t
 window.addEventListener('resize', function () {
 fingerSig = '';
 layoutTitle();
+if (charOpen) layoutCharPopup();
 const title = document.getElementById('title-screen');
 if (title && title.classList.contains('hidden')) render();
 });
@@ -3779,11 +4061,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
-add('img/sheep-src.png?v=49');
-add('img/voter-grandpa.png?v=49');
+add('img/sheep-src.png?v=50');
+add('img/voter-grandpa.png?v=50');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=49','img/next.png?v=49','img/hint.png?v=49','img/sheep-src.png?v=49','img/voter-grandpa.png?v=49','img/loading.jpg','img/play.png?v=47','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=50','img/next.png?v=50','img/hint.png?v=50','img/sheep-src.png?v=50','img/voter-grandpa.png?v=50','img/loading.jpg','img/play.png?v=47','img/ui_bottom_forest.png?v=50','img/popup_goat_tv.png?v=50','img/popup_deputy.png?v=50','img/popup_official.png?v=50','img/popup_minister.png?v=50','img/popup_church.png?v=50','img/popup_goszakaz.png?v=50','img/popup_rocket1.png?v=50','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
