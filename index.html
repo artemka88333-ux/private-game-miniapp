@@ -5,6 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
 <meta name="theme-color" content="#7e6829">
 <title>Демократия — Финал</title>
+<link rel="icon" href="data:,">
 <link rel="preload" as="image" href="img/loading.jpg" fetchpriority="high">
 <style id="boot-css">
 html, body { margin: 0; background: #6a7a72; }
@@ -138,7 +139,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   pointer-events: none;
   overflow: hidden;
   background-color: #5a7c34;
-  background-image: url('img/ui_bottom_forest.png?v=51');
+  background-image: url('img/ui_bottom_forest.png?v=52');
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% auto;
@@ -499,7 +500,7 @@ font-size: 15px;
 cursor: pointer;
 }
 .pause-extra.alt { background: #f4f0d8; }
-#title-screen { position: fixed; inset: 0; z-index: 2400; background: #1a140c url('img/title_bg.jpg?v=51') center / cover no-repeat; }
+#title-screen { position: fixed; inset: 0; z-index: 2400; background: #1a140c url('img/title_bg.jpg?v=52') center / cover no-repeat; }
 #title-screen.hidden { display: none; }
 #title-wordmark { position: absolute; left: 3%; width: 94%; height: auto; top: calc(var(--ui-top) + 8px); object-fit: contain; object-position: center top; pointer-events: none; z-index: 2; }
 #title-play { position: absolute; border: 0; background: transparent; padding: 0; cursor: pointer; z-index: 2; }
@@ -558,7 +559,7 @@ cursor: pointer;
 #rules-modal { z-index: 5600; }
 .rules-scroll { flex: 1; overflow-y: auto; padding-right: 4px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 .rules-scroll p { color: #fff6e4; font-weight: 700; font-size: 15px; line-height: 1.4; margin: 0 0 12px; }
-#cellar { position: fixed; inset: 0; z-index: 5300; display: none; background: #77552c url('img/cellar_wood.jpg?v=51') center / 28px auto repeat; touch-action: none; }
+#cellar { position: fixed; inset: 0; z-index: 5300; display: none; background: #77552c url('img/cellar_wood.jpg?v=52') center / 28px auto repeat; touch-action: none; }
 #cellar.open { display: block; }
 #cellar-fit { position: absolute; left: 0; right: 0; top: var(--ui-top); bottom: 0; display: flex; align-items: flex-start; justify-content: center; }
 #cellar-stage { position: relative; width: min(100%, calc((100dvh - var(--ui-top)) * 944 / 1728)); aspect-ratio: 944 / 1728; container-type: size; }
@@ -589,16 +590,28 @@ cursor: pointer;
 #sizo-bribe { left: 42.58%; top: 82.48%; width: 38.15%; height: 12.58%; }
 #sizo-x { left: 89.98%; top: 1.96%; width: 8.86%; height: 12.02%; }
 #ach-pop { position: fixed; inset: 0; z-index: 5800; display: none; background: rgba(0,0,0,0.45); }
-#ach-pop.on, #ach-pop.out { display: block; }
-#ach-pop.out { animation: achFade 0.35s ease forwards; }
+#ach-pop.play, #ach-pop.out { display: block; }
+#ach-pop.play { animation: achLife 4.5s linear forwards; }
+#ach-pop.out { animation: achFade 0.28s ease forwards; }
+@keyframes achLife { 0%, 82% { opacity: 1; } 100% { opacity: 0; } }
 @keyframes achFade { to { opacity: 0; } }
-.ach-stage { position: absolute; left: 50%; top: 42%; width: min(68vw, 320px); aspect-ratio: 1; transform: translate(-50%, -50%); }
-.ach-rays { position: absolute; inset: -18%; background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0) 0deg 10deg, rgba(255,248,220,0.72) 10deg 16deg); -webkit-mask: radial-gradient(circle, #000 0 22%, transparent 68%); mask: radial-gradient(circle, #000 0 22%, transparent 68%); animation: achSpin 9s linear infinite; }
+.ach-stage { position: absolute; left: 50%; top: 50%; width: min(72vw, 340px); aspect-ratio: 1; transform: translate(-50%, -56%); }
+.ach-rays { position: absolute; inset: -22%; opacity: 0; background: repeating-conic-gradient(from 0deg, rgba(255,255,255,0) 0deg 8deg, rgba(255,248,220,0.78) 8deg 14deg); -webkit-mask: radial-gradient(circle, #000 0 18%, transparent 70%); mask: radial-gradient(circle, #000 0 18%, transparent 70%); }
+#ach-pop.play .ach-rays { animation: achRaysIn 0.55s ease-out 1.2s forwards, achSpin 8s linear 1.2s infinite; }
+@keyframes achRaysIn { from { opacity: 0; } to { opacity: 1; } }
 @keyframes achSpin { to { transform: rotate(360deg); } }
-.ach-glow { position: absolute; inset: 8%; border-radius: 50%; background: radial-gradient(circle, rgba(255,255,255,0.95) 0%, rgba(255,244,200,0.45) 38%, rgba(255,244,200,0) 70%); }
-#ach-jar { position: absolute; left: 12%; top: 8%; width: 76%; height: auto; filter: drop-shadow(0 8px 16px rgba(0,0,0,0.45)); animation: achJar 0.45s ease-out both; }
-@keyframes achJar { from { opacity: 0; transform: scale(0.45); } to { opacity: 1; transform: scale(1); } }
-.ach-banner { position: absolute; left: 8%; right: 8%; bottom: max(28px, calc(var(--ui-bottom) + 18px)); background: linear-gradient(#fff6d2, #f0d48a); color: #2b1a0e; border: 3px solid #6a4a18; border-radius: 16px; text-align: center; font-weight: 900; font-size: 22px; padding: 14px 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); animation: achBanner 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) both; }
+.ach-glow { position: absolute; inset: 6%; border-radius: 50%; opacity: 0; transform: scale(0.25); background: radial-gradient(circle, rgba(255,255,255,0.98) 0%, rgba(255,244,200,0.55) 36%, rgba(255,244,200,0) 70%); }
+#ach-pop.play .ach-glow { animation: achBurst 0.75s ease-out 1.15s forwards; }
+@keyframes achBurst { 0% { opacity: 0; transform: scale(0.2); } 45% { opacity: 1; transform: scale(1.28); } 100% { opacity: 0.8; transform: scale(1); } }
+.ach-core { position: absolute; left: 50%; top: 46%; width: 16px; height: 16px; margin: -8px 0 0 -8px; border-radius: 50%; background: #fff; box-shadow: 0 0 16px 8px rgba(255,255,255,0.95), 0 0 42px 18px rgba(255,236,180,0.75); transform: scale(0.08); opacity: 0; }
+#ach-pop.play .ach-core { animation: achCore 1.2s cubic-bezier(0.16, 0.84, 0.24, 1.16) forwards; }
+@keyframes achCore { 0% { transform: scale(0.08); opacity: 1; } 72% { transform: scale(1.18); opacity: 1; } 100% { transform: scale(1.45); opacity: 0; } }
+#ach-jar { position: absolute; left: 10%; top: 4%; width: 80%; height: auto; opacity: 0; transform: scale(0.08); transform-origin: 50% 46%; filter: drop-shadow(0 10px 18px rgba(0,0,0,0.45)); }
+#ach-pop.play #ach-jar { animation: achJarIn 1.2s cubic-bezier(0.16, 0.84, 0.24, 1.18) forwards; }
+@keyframes achJarIn { 0% { opacity: 0; transform: scale(0.08); } 42% { opacity: 0; transform: scale(0.42); } 78% { opacity: 1; transform: scale(1.08); } 100% { opacity: 1; transform: scale(1); } }
+#ach-spark { position: absolute; inset: -30%; width: 160%; height: 160%; pointer-events: none; }
+.ach-banner { position: absolute; left: 8%; right: 8%; bottom: max(28px, calc(var(--ui-bottom) + 18px)); background: linear-gradient(#fff6d2, #f0d48a); color: #2b1a0e; border: 3px solid #6a4a18; border-radius: 16px; text-align: center; font-weight: 900; font-size: 22px; padding: 14px 12px; box-shadow: 0 10px 24px rgba(0,0,0,0.35); transform: translateY(120%); opacity: 0; }
+#ach-pop.play .ach-banner { animation: achBanner 0.45s cubic-bezier(0.2, 0.8, 0.2, 1) 1.45s forwards; }
 @keyframes achBanner { from { transform: translateY(120%); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 .hit-jurist.cooling, #hit-down.cooling { cursor: pointer; }
 .gameover-card { align-items: stretch; }
@@ -663,7 +676,8 @@ cursor: pointer;
 .cell.anim-shake > .piece,
 .piece.piece-pop, .piece.land-bounce, .merge-glow, .score-float,
 .cell.tut-target, #tut-arrow, .float-text, .saw-swipe, .hit-jurist img.sway,
-.ach-rays, #ach-jar, .ach-banner, #ach-pop.out { animation: none !important; }
+.ach-rays, .ach-glow, .ach-core, #ach-jar, .ach-banner, #ach-pop.play, #ach-pop.out { animation: none !important; }
+#ach-pop.play #ach-jar, #ach-pop.play .ach-banner, #ach-pop.play .ach-glow, #ach-pop.play .ach-rays { opacity: 1; transform: none; }
 .shade, #boot { transition: none !important; }
 }
 </style>
@@ -700,17 +714,17 @@ cursor: pointer;
 <div class="bottom-art">
 <div class="jail-block" id="jail" onclick="takeFromJail()">
 <div class="content" id="jail-content"></div>
-<img class="tray-frame" src="img/jail.png?v=51" alt="">
+<img class="tray-frame" src="img/jail.png?v=52" alt="">
 </div>
 <div class="next-block" id="next-tile">
 <div class="tray-fill"></div>
 <div class="content" id="next-content"></div>
-<img class="tray-frame" src="img/next.png?v=51" alt="">
+<img class="tray-frame" src="img/next.png?v=52" alt="">
 </div>
 <div class="hint-block" onclick="openHintGallery()" aria-label="Нажми меня">
 <div class="tray-fill"></div>
 <div id="hint-recipe"></div>
-<img class="tray-frame" src="img/hint.png?v=51" alt="">
+<img class="tray-frame" src="img/hint.png?v=52" alt="">
 </div>
 </div>
 </div>
@@ -860,7 +874,7 @@ cursor: pointer;
 <div id="toast" role="status" aria-live="polite"></div>
 <div id="cellar" aria-hidden="true">
 <div id="cellar-fit"><div id="cellar-stage">
-<img id="cellar-bg" src="img/cellar_bg.jpg?v=51" alt="">
+<img id="cellar-bg" src="img/cellar_bg.jpg?v=52" alt="">
 <div id="cellar-slots"></div>
 </div></div>
 <button type="button" id="cellar-x" aria-label="Закрыть"></button>
@@ -868,7 +882,7 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="blogger-modal" role="dialog" aria-label="Помощь блогера">
 <div class="art-panel" id="blogger-panel">
-<img src="img/blogger_help.png?v=51" alt="">
+<img src="img/blogger_help.png?v=52" alt="">
 <div class="art-num" id="blogger-count">5</div>
 <button type="button" class="art-hit" id="blogger-use" aria-label="Использовать"></button>
 <button type="button" class="art-hit" id="blogger-cancel" aria-label="Отмена"></button>
@@ -878,7 +892,7 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="sizo-modal" role="dialog" aria-label="Юрист в СИЗО">
 <div class="art-panel" id="sizo-panel">
-<img src="img/jurist_sizo.jpg?v=51" alt="">
+<img src="img/jurist_sizo.jpg?v=52" alt="">
 <div class="art-num" id="sizo-count"></div>
 <button type="button" class="art-hit" id="sizo-think" aria-label="Подумать"></button>
 <button type="button" class="art-hit" id="sizo-bribe" aria-label="Взятка"></button>
@@ -889,7 +903,9 @@ cursor: pointer;
 <div class="ach-stage">
 <div class="ach-rays"></div>
 <div class="ach-glow"></div>
+<div class="ach-core"></div>
 <img id="ach-jar" alt="">
+<canvas id="ach-spark"></canvas>
 </div>
 <div class="ach-banner" id="ach-banner"></div>
 </div>
@@ -1012,6 +1028,9 @@ let isSawMode = false, isNanoboxMode = false;
 let testSpawnIndex = 0;
 let discovered = new Set();
 let sawStreak = 0;
+let sheepSawStreak = 0;
+let urnaBuilt = 0;
+let moveTrapCount = 0;
 let gameOver = false;
 let moveAnims = [];
 let busyUntil = 0;
@@ -1185,8 +1204,8 @@ return !!(tile && tile.kind === 'chain' && tile.level === 3);
 function getTileImage(tile) {
 if (!tile) return null;
 if (tile.kind === 'chain') {
-if (tile.level === 2) return 'img/sheep-src.png?v=51';
-if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=51';
+if (tile.level === 2) return 'img/sheep-src.png?v=52';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=52';
 return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
 }
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
@@ -1363,9 +1382,13 @@ return !!(t && t.kind === 'tool' && t.tool === 'jurist');
 function juristIsHeld() {
 return isJuristTile(nextTile) || isJuristTile(bufferedNext) || isJuristTile(jailTile);
 }
+function juristCooldownSpan() {
+/* Нанятый в штат юрист остывает 123 хода. Пробные консультации используют тот же запас. */
+return juristHired ? 123 : JURIST_COOLDOWN;
+}
 function armJuristCooldown() {
 juristPending = false;
-juristCooldown = JURIST_COOLDOWN;
+juristCooldown = juristCooldownSpan();
 }
 function layoutJurist() {
 const box = document.querySelector('.hit-jurist');
@@ -1443,7 +1466,8 @@ return;
 const next = bound ? 'img/tool_jurist_bound.png?v=48' : 'img/tool_jurist.png';
 if (img.getAttribute('src') !== next) img.setAttribute('src', next);
 img.style.visibility = '';
-const progress = bound ? (JURIST_COOLDOWN - juristCooldown) / JURIST_COOLDOWN : 0;
+const span = Math.max(1, juristCooldownSpan());
+const progress = bound ? (span - juristCooldown) / span : 0;
 setJuristProgress(progress);
 layoutJurist();
 if (juristCelebrate && juristCooldown === 0) {
@@ -1467,13 +1491,13 @@ sfx('juristFree');
 function notePieceCreated(tile) {
 if (!tile) return;
 const during = { allowTutorial: true };
-if (tile.kind === 'care' && tile.level === 2) { showCharacterPopup('official', 'img/popup_official.png?v=51', 'left', during); return; }
-if (tile.kind === 'care' && tile.level === 3) { showCharacterPopup('minister', 'img/popup_minister.png?v=51', 'left', during); return; }
+if (tile.kind === 'care' && tile.level === 2) { showCharacterPopup('official', 'img/popup_official.png?v=52', 'left', during); return; }
+if (tile.kind === 'care' && tile.level === 3) { showCharacterPopup('minister', 'img/popup_minister.png?v=52', 'left', during); return; }
 if (tutorial.active) return;
-if (tile.kind === 'chain' && tile.level === 6) showCharacterPopup('deputy', 'img/popup_deputy.png?v=51', 'right');
-else if (tile.kind === 'income' && tile.level === 2) showCharacterPopup('church', 'img/popup_church.png?v=51', 'left');
-else if (tile.kind === 'care' && tile.level === 5) showCharacterPopup('goszakaz', 'img/popup_goszakaz.png?v=51', 'right');
-else if (tile.kind === 'chain' && tile.level === ROCKET_NOSE) showCharacterPopup('rocket1', 'img/popup_rocket1.png?v=51', 'left');
+if (tile.kind === 'chain' && tile.level === 6) showCharacterPopup('deputy', 'img/popup_deputy.png?v=52', 'right');
+else if (tile.kind === 'income' && tile.level === 2) showCharacterPopup('church', 'img/popup_church.png?v=52', 'left');
+else if (tile.kind === 'care' && tile.level === 5) showCharacterPopup('goszakaz', 'img/popup_goszakaz.png?v=52', 'right');
+else if (tile.kind === 'chain' && tile.level === ROCKET_NOSE) showCharacterPopup('rocket1', 'img/popup_rocket1.png?v=52', 'left');
 }
 function checkDiscovery(tile) {
 if (!tile) return;
@@ -1564,6 +1588,9 @@ grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; juristCooldown = 0; juristPending = false; voterChannel = false; voterTapStreak = 0; jailTile = null; bufferedNext = null; testSpawnIndex = 0; undoState = null;
 isSawMode = false; isNanoboxMode = false;
 sawStreak = 0;
+sheepSawStreak = 0;
+urnaBuilt = 0;
+moveTrapCount = 0;
 gameOver = false;
 moneyBags = 0;
 charShown = {};
@@ -1684,6 +1711,7 @@ ensureBoard();
 const b = document.getElementById('board');
 const cells = b.querySelectorAll('.cell');
 let bearsOnBoard = 0;
+let schoolsOnBoard = 0;
 
 for (let r = 0; r < SIZE; r++) {
 for (let c = 0; c < SIZE; c++) {
@@ -1716,6 +1744,7 @@ const popped = d;
 setTimeout(() => { if (popped.pop) delete popped.pop; }, 0);
 }
 if (d.kind === 'care' && d.level === 1) bearsOnBoard++;
+if (d.kind === 'chain' && d.level === 4) schoolsOnBoard++;
 applyMoveAnim(cell, r, c);
 }
 if (tutorial.active && tutorial.step) {
@@ -1737,6 +1766,8 @@ updateMailBadge();
 setStatus();
 }
 if (bearsOnBoard >= 9) unlockAchievement('v_lesu');
+if (schoolsOnBoard >= 7) unlockAchievement('sept1');
+paintBlogger();
 
 syncHud();
 
@@ -1981,7 +2012,7 @@ const apply = () => {
 group.forEach(([r, c]) => { grid[r][c] = null; });
 if (kind === 'chain' && (newLevel === 5 || newLevel === 9)) {
 const memeKey = 'meme_chain_' + newLevel;
-const memeSrc = newLevel === 5 ? 'img/popup_urna.png?v=51' : 'img/popup_president.png?v=51';
+const memeSrc = newLevel === 5 ? 'img/popup_urna.png?v=52' : 'img/popup_president.png?v=52';
 if (!discovered.has(memeKey)) { discovered.add(memeKey); saveDiscovered(); showMeme(memeSrc); }
 }
 if (kind === 'care' && lvl === 3 && newLevel === 4) showDiscoveryOnce('disc_building', 'img/discovery-building.jpg');
@@ -1992,8 +2023,9 @@ updateMailBadge();
 }
 }
 grid[anchorR][anchorC] = { kind, level: newLevel, pop: true };
-if (kind === 'chain' && newLevel === 2) showCharacterPopup('sheep', 'img/popup_first_sheep.png?v=51', 'left', { allowTutorial: true });
-if (kind === 'care' && lvl === 3 && newLevel === 4) showCharacterPopup('goszakaz_tank', 'img/popup_goszakaz_tank.png?v=51', 'right', { allowTutorial: true });
+if (kind === 'chain' && newLevel === 5) noteUrnaBuilt();
+if (kind === 'chain' && newLevel === 2) showCharacterPopup('sheep', 'img/popup_first_sheep.png?v=52', 'left', { allowTutorial: true });
+if (kind === 'care' && lvl === 3 && newLevel === 4) showCharacterPopup('goszakaz_tank', 'img/popup_goszakaz_tank.png?v=52', 'right', { allowTutorial: true });
 checkDiscovery(grid[anchorR][anchorC]);
 sfx('merge');
 notifyTutorial({ type: 'merge', tile: grid[anchorR][anchorC], r: anchorR, c: anchorC });
@@ -2046,7 +2078,7 @@ let nr = r + d[0], nc = c + d[1];
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return;
 const t = grid[nr][nc];
 if (!t) empty.push({ r: nr, c: nc, type: 'empty' });
-else if (t.kind === 'chain' && t.level === 1) money.push({ r: nr, c: nc, type: 'money' });
+else if (!tutorial.active && t.kind === 'chain' && t.level === 1) money.push({ r: nr, c: nc, type: 'money' });
 });
 return { empty, money, blocked: empty.length + money.length === 0 };
 }
@@ -2177,7 +2209,11 @@ const spot = spots.shift();
 const r = spot[0], c = spot[1];
 if (grid[r] && grid[r][c]) { processCascades(r, c, false, next); return; }
 }
-if (trappedN) notifyTutorial({ type: 'trap', n: trappedN });
+if (trappedN) {
+moveTrapCount += trappedN;
+if (moveTrapCount >= 20) unlockAchievement('seliger');
+notifyTutorial({ type: 'trap', n: trappedN });
+}
 if (done) done();
 else { saveGame(); checkGameOver(); }
 })();
@@ -2264,7 +2300,7 @@ closeModal('channel-modal');
 }
 function openChannelEgg() {
 if (tutorial.active) return;
-showCharacterPopup('goat', 'img/popup_goat_tv.png?v=51', 'left');
+showCharacterPopup('goat', 'img/popup_goat_tv.png?v=52', 'left');
 }
 function layoutCharPopup() {
 const root = document.getElementById('char-pop');
@@ -2401,14 +2437,38 @@ closeCharPopup(false);
 root.addEventListener('pointerup', eat);
 root.addEventListener('click', eat);
 })();
+function noteUrnaBuilt() {
+urnaBuilt++;
+if (urnaBuilt >= 3) unlockAchievement('karusel');
+}
+function checkMoveAchievements() {
+if (moves >= 500) unlockAchievement('sprinter');
+if (moves >= 1500) unlockAchievement('stayer');
+}
+function noteSawUse(tile) {
+sawStreak++;
+if (tile && tile.kind === 'chain' && tile.level === 2) sheepSawStreak++;
+else sheepSawStreak = 0;
+if (sawStreak >= 2 && missions.saw && missions.saw.status === 'active') {
+missions.saw.status = 'completed';
+updateMailBadge();
+}
+if (sheepSawStreak >= 2) unlockAchievement('kurban');
+if (sawStreak >= 4) unlockAchievement('pila');
+}
+function breakToolStreak() {
+sawStreak = 0;
+sheepSawStreak = 0;
+}
 function endMove() {
 voterTapStreak = 0;
+moveTrapCount = 0;
 moves++;
+checkMoveAchievements();
 if (juristCooldown > 0) {
 juristCooldown--;
 if (juristCooldown === 0) onJuristReady();
 }
-sawStreak = 0;
 
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
 if (grid[r][c] && grid[r][c].kind === 'income') {
@@ -2616,12 +2676,13 @@ let tool = jailTile;
 jailTile = null;
 
 if (tool.tool === 'jurist') {
+breakToolStreak();
 if (grid[r][c] && grid[r][c].kind !== 'omon') {
 let taken = grid[r][c]; grid[r][c] = null;
 nextTile = taken;
 const arm = juristPending && !tutorial.active;
 juristPending = false;
-if (arm) juristCooldown = JURIST_COOLDOWN + 1;
+if (arm) juristCooldown = juristCooldownSpan() + 1;
 sfx('pop');
 rememberDrop(r, c);
 endMove();
@@ -2631,6 +2692,7 @@ else if (tool.tool === 'saw') {
 if (grid[r][c]) {
 playSawFx(r, c);
 grantSawCash(grid[r][c], r, c);
+noteSawUse(grid[r][c]);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
@@ -2642,10 +2704,12 @@ processCascades(r, c, false, () => endMove());
 } else { sfx('weed'); render(); }
 }
 else if (tool.tool === 'nanobox') {
+breakToolStreak();
 if (grid[r][c]) playNanobox(r, c, true);
 else render();
 }
 else if (tool.tool === 'sack') {
+breakToolStreak();
 if (!grid[r][c]) {
 let neighbors = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]], tryKinds = [];
 for (let i = 0; i < neighbors.length; i++) {
@@ -2678,6 +2742,7 @@ processCascades(r, c, false, () => endMove());
 }
 return;
 } else {
+breakToolStreak();
 // Обычная фишка из тюрьмы
 if (!grid[r][c]) {
 undoState = takeSnapshot();
@@ -2699,6 +2764,7 @@ return;
 // В ТЮРЬМУ
 if (el && el.closest('#jail')) {
 if (drag.type === 'fromNext') {
+breakToolStreak();
 if (jailTile) bufferedNext = jailTile;
 jailTile = nextTile;
 nextTile = bufferedNext || dealNext();
@@ -2726,6 +2792,7 @@ return;
 undoState = takeSnapshot();
 
 if (nextTile.tool === 'jurist') {
+breakToolStreak();
 nextTile = grid[r][c]; grid[r][c] = null;
 if (juristPending && !tutorial.active) armJuristCooldown();
 else juristPending = false;
@@ -2738,6 +2805,7 @@ return;
 else if (nextTile.tool === 'saw') {
 playSawFx(r, c);
 grantSawCash(grid[r][c], r, c);
+noteSawUse(grid[r][c]);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
@@ -2746,17 +2814,13 @@ grid[r][c] = null;
 rememberDrop(r, c);
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
-sawStreak++;
-if (sawStreak >= 2 && missions.saw.status === 'active') {
-missions.saw.status = 'completed';
-updateMailBadge();
-}
 render();
 processCascades(r, c, false, () => saveGame());
 drag = null;
 return;
 }
 else if (nextTile.tool === 'nanobox') {
+breakToolStreak();
 playNanobox(r, c, false);
 drag = null;
 return;
@@ -2766,6 +2830,7 @@ if (grid[r][c]) {
 setStatus();
 drag = null; return;
 }
+breakToolStreak();
 
 let neighbors = [[r-1,c],[r+1,c],[r,c-1],[r,c+1]], tryKinds = [];
 for (let i = 0; i < neighbors.length; i++) {
@@ -2816,6 +2881,7 @@ return;
 
 if (!grid[r][c]) {
 undoState = takeSnapshot();
+breakToolStreak();
 grid[r][c] = nextTile;
 rememberDrop(r, c);
 noteBoardMoney(nextTile);
@@ -2892,10 +2958,8 @@ closeModal('pause-modal');
 });
 }
 function openPause() {
-askConfirm('Выйти в главное меню?', leaveToTitle, null, 'Меню паузы', function () {
 renderMissions();
 openModal('pause-modal');
-});
 }
 
 function renderMissions() {
@@ -2971,7 +3035,10 @@ nextTile: nextTile ? { ...nextTile } : null,
 jailTile: jailTile ? { ...jailTile } : null,
 bufferedNext: bufferedNext ? { ...bufferedNext } : null,
 juristCooldown: juristCooldown || 0,
-juristPending: !!juristPending
+juristPending: !!juristPending,
+sawStreak: sawStreak || 0,
+sheepSawStreak: sheepSawStreak || 0,
+urnaBuilt: urnaBuilt || 0
 };
 }
 function undoMove(cost) {
@@ -2980,6 +3047,9 @@ grid = undoState.grid; score = undoState.score; coins = undoState.coins; moves =
 nextTile = undoState.nextTile; jailTile = undoState.jailTile; bufferedNext = undoState.bufferedNext;
 juristCooldown = undoState.juristCooldown || 0;
 juristPending = !!undoState.juristPending;
+sawStreak = undoState.sawStreak || 0;
+sheepSawStreak = undoState.sheepSawStreak || 0;
+urnaBuilt = undoState.urnaBuilt || 0;
 undoState = null;
 if (cost) coins = Math.max(0, coins - cost);
 render(); saveGame();
@@ -3049,7 +3119,7 @@ setTimeout(function() { el.remove(); }, 2000);
 
 function saveGame() {
 try {
-localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown, juristPending, voterChannel, charShown }));
+localStorage.setItem(SAVE_KEY, JSON.stringify({ grid, score, coins, moves, nextTile, jailTile, bufferedNext, testSpawnIndex, missions, moneyBags, juristCooldown, juristPending, voterChannel, charShown, urnaBuilt, sawStreak, sheepSawStreak }));
 } catch(e){}
 }
 
@@ -3096,75 +3166,126 @@ return s ? ['#next-tile', '.cell[data-r="' + s[0] + '"][data-c="' + s[1] + '"]']
 function clearBoard() {
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) grid[r][c] = null;
 }
-const TUT_STEPS = [
-{ key: 'welcome', mode: 'info', intro: true, art: 'img/tut_welcome_goat.png?v=51', side: 'left', text: 'Добро пожаловать в игру Демократия!' },
-{ key: 'task', mode: 'info', intro: true, art: 'img/tut_task_goat.png?v=51', side: 'left', text: 'Задача игрока — соединять одинаковые фигурки.' },
-{ key: 'drag', mode: 'action', success: 'merge2', art: 'img/tut_drag.png?v=51', side: 'right', expect: { r: 2, c: 2 }, text: 'Перетяни фигурку в свободную клетку.',
-enter() {
+function tutGrass() { return chainTile(1); }
+function tutSheep() { return chainTile(2); }
+function tutVoter() { return chainTile(3); }
+function tutSchool() { return chainTile(4); }
+function tutPioneer() { return { kind: 'pioneer' }; }
+function tutOfficial() { return { kind: 'care', level: 2 }; }
+function tutBear() { return { kind: 'care', level: 1 }; }
+function tutMinister() { return { kind: 'care', level: 3 }; }
+function tutJurist() { return { kind: 'tool', tool: 'jurist' }; }
+function tutSack() { return { kind: 'tool', tool: 'sack' }; }
+/* Rows are top-to-bottom, cells left-to-right. null is an empty cell.
+   Layouts are the reference clip at each step (see the PR). The welcome/task
+   lines and the first merge are before the clip starts. */
+function stageTut(rows, next) {
 clearBoard();
-putTile(2, 0, chainTile(1)); putTile(2, 1, chainTile(1));
-nextTile = chainTile(1); jailTile = null;
-},
+for (let r = 0; r < SIZE; r++) {
+const row = rows[r] || [];
+for (let c = 0; c < SIZE; c++) if (row[c]) putTile(r, c, row[c]);
+}
+nextTile = next || null;
+jailTile = null;
+juristPending = false;
+bufferedNext = null;
+}
+const TUT_DRAG = [
+[null, null, null, null, null, null],
+[null, null, null, null, null, null],
+[tutGrass, tutGrass, null, null, null, null],
+[null, null, null, null, null, null],
+[null, null, null, null, null, null],
+[null, null, null, null, null, null]
+];
+const TUT_TRAP = [
+[tutPioneer, tutGrass, tutPioneer, tutVoter, tutGrass, null],
+[null, tutSheep, tutPioneer, null, tutSheep, null],
+[tutSheep, null, tutVoter, tutVoter, null, tutOfficial],
+[null, null, null, null, null, null],
+[null, tutSheep, null, null, null, tutVoter],
+[null, null, null, null, null, null]
+];
+const TUT_STUCK = [
+[null, tutGrass, null, null, tutGrass, null],
+[tutPioneer, tutSheep, tutOfficial, tutSchool, tutSheep, null],
+[tutSheep, null, null, null, null, tutOfficial],
+[null, null, null, null, null, null],
+[null, tutSheep, null, null, null, tutVoter],
+[null, null, null, null, null, null]
+];
+const TUT_BLOGGER = [
+[tutGrass, tutGrass, null, null, null, tutGrass],
+[tutBear, tutSheep, tutOfficial, tutSchool, tutSheep, null],
+[tutSheep, null, null, null, null, tutOfficial],
+[null, null, null, null, null, null],
+[null, tutSheep, null, null, null, tutVoter],
+[null, null, null, null, null, null]
+];
+const TUT_PLACE = [
+[tutGrass, tutGrass, null, null, null, tutGrass],
+[tutBear, tutSheep, null, tutSchool, tutSheep, null],
+[tutSheep, null, null, null, null, tutOfficial],
+[null, null, null, null, null, null],
+[null, tutSheep, null, null, null, tutVoter],
+[null, null, null, null, null, null]
+];
+const TUT_SHOP = [
+[tutGrass, tutGrass, null, null, null, tutGrass],
+[tutBear, tutSheep, null, tutSchool, tutSheep, tutOfficial],
+[tutSheep, null, null, null, null, tutOfficial],
+[null, null, null, null, null, null],
+[null, tutSheep, null, null, null, tutVoter],
+[null, null, null, null, null, null]
+];
+const TUT_JAIL = [
+[null, null, null, null, tutVoter, tutMinister],
+[tutBear, null, tutVoter, tutSchool, null, null],
+[tutSheep, null, tutVoter, null, null, null],
+[null, null, null, null, null, null],
+[null, tutSheep, null, null, null, tutVoter],
+[null, null, null, null, null, null]
+];
+function stageRows(spec) {
+return spec.map(row => row.map(cell => (typeof cell === 'function' ? cell() : null)));
+}
+const TUT_STEPS = [
+{ key: 'welcome', mode: 'info', intro: true, art: 'img/tut_welcome_goat.png?v=52', side: 'left', text: 'Добро пожаловать в игру Демократия!' },
+{ key: 'task', mode: 'info', intro: true, art: 'img/tut_task_goat.png?v=52', side: 'left', text: 'Задача игрока — соединять одинаковые фигурки.' },
+{ key: 'drag', mode: 'action', success: 'merge2', art: 'img/tut_drag.png?v=52', side: 'right', expect: { r: 2, c: 2 }, text: 'Перетяни фигурку в свободную клетку.',
+enter() { stageTut(stageRows(TUT_DRAG), tutGrass()); },
 finger() { return ['#next-tile', '.cell[data-r="2"][data-c="2"]']; }
 },
-{ key: 'trap3', mode: 'action', success: 'trap', art: 'img/tut_trap_pioneers.png?v=51', side: 'left', expect: { r: 2, c: 5 }, text: 'Отлично! Теперь попробуй замкнуть трех пионеров.',
-enter() {
-clearBoard();
-const wall = chainTile(2);
-[[1, 2], [1, 3], [1, 4], [3, 2], [3, 3], [3, 4], [2, 1]].forEach(p => putTile(p[0], p[1], wall));
-putTile(2, 2, { kind: 'pioneer' });
-putTile(2, 3, { kind: 'pioneer' });
-putTile(2, 4, { kind: 'pioneer' });
-nextTile = chainTile(1); jailTile = null;
+{ key: 'trap3', mode: 'action', success: 'trap', art: 'img/tut_trap_pioneers.png?v=52', side: 'left', expect: { r: 1, c: 3 }, text: 'Отлично! Теперь попробуй замкнуть трех пионеров.',
+enter() { stageTut(stageRows(TUT_TRAP), tutPioneer()); },
+finger() { return ['#next-tile', '.cell[data-r="1"][data-c="3"]']; }
 },
-finger() { return ['#next-tile', '.cell[data-r="2"][data-c="5"]']; }
+{ key: 'stuck', mode: 'action', success: 'trap', art: 'img/tut_pioneer_stuck.png?v=52', side: 'left', expect: { r: 0, c: 0 }, text: 'Если пионер путается под ногами — замкни его другой фигуркой!',
+enter() { stageTut(stageRows(TUT_STUCK), tutGrass()); },
+finger() { return ['#next-tile', '.cell[data-r="0"][data-c="0"]']; }
 },
-{ key: 'stuck', mode: 'action', success: 'trap', art: 'img/tut_pioneer_stuck.png?v=51', side: 'left', expect: { r: 4, c: 5 }, text: 'Если пионер путается под ногами — замкни его другой фигуркой!',
-enter() {
-clearBoard();
-const wall = chainTile(2);
-putTile(3, 4, wall); putTile(5, 4, wall); putTile(4, 3, wall);
-putTile(4, 4, { kind: 'pioneer' });
-nextTile = chainTile(1); jailTile = null;
-},
-finger() { return ['#next-tile', '.cell[data-r="4"][data-c="5"]']; }
-},
-{ key: 'juristTap', mode: 'action', success: 'juristTap', art: 'img/tut_use_jurist.png?v=51', side: 'left', expect: { juristBtn: true }, text: 'Используй Блогера, чтобы перемещать фигурки.',
-enter() {},
+{ key: 'juristTap', mode: 'action', success: 'juristTap', art: 'img/tut_use_jurist.png?v=52', side: 'left', expect: { juristBtn: true }, text: 'Используй Блогера, чтобы перемещать фигурки.',
+enter() { stageTut(stageRows(TUT_BLOGGER), null); },
 arrow() { return ['.hit-jurist', '⬆', 'shop']; }
 },
-{ key: 'dragOff', mode: 'action', success: 'jurist', art: 'img/tut_drag_to_official.png?v=51', side: 'left', expect: { r: 2, c: 4 }, text: 'Перетяни его на Чиновника.',
-enter() {
-clearBoard();
-putTile(2, 4, { kind: 'care', level: 2 });
-nextTile = { kind: 'tool', tool: 'jurist' };
-juristPending = false;
+{ key: 'dragOff', mode: 'action', success: 'jurist', art: 'img/tut_drag_to_official.png?v=52', side: 'left', expect: { r: 1, c: 2 }, text: 'Перетяни его на Чиновника.',
+enter() { stageTut(stageRows(TUT_BLOGGER), tutJurist()); },
+finger() { return ['#next-tile', '.cell[data-r="1"][data-c="2"]']; }
 },
-finger() { return ['#next-tile', '.cell[data-r="2"][data-c="4"]']; }
+{ key: 'placeOff', mode: 'action', success: 'place', art: 'img/tut_next_to_official.png?v=52', side: 'left', expect: { r: 1, c: 5 }, text: 'Поставь его рядом с другим Чиновником.',
+enter() { stageTut(stageRows(TUT_PLACE), tutOfficial()); },
+finger() { return ['#next-tile', '.cell[data-r="1"][data-c="5"]']; }
 },
-{ key: 'placeOff', mode: 'action', success: 'place', art: 'img/tut_next_to_official.png?v=51', side: 'left', expect: { r: 2, c: 4 }, text: 'Поставь его рядом с другим Чиновником.',
-enter() {
-clearBoard();
-putTile(2, 5, { kind: 'care', level: 2 });
-nextTile = { kind: 'care', level: 2 };
-},
-finger() { return ['#next-tile', '.cell[data-r="2"][data-c="4"]']; }
-},
-{ key: 'shop', mode: 'action', success: 'shop', art: 'img/tut_shop.png?v=51', side: 'left', expect: { shop: true }, text: 'Покупай недостающие фигурки в магазинчике',
-enter() {},
+{ key: 'shop', mode: 'action', success: 'shop', art: 'img/tut_shop.png?v=52', side: 'left', expect: { shop: true }, text: 'Покупай недостающие фигурки в магазинчике',
+enter() { stageTut(stageRows(TUT_SHOP), tutGrass()); },
 arrow() { return ['.hit-shop', '⬆', 'shop']; }
 },
-{ key: 'sack', mode: 'action', success: 'sack', art: 'img/tut_sack.png?v=51', side: 'left', expect: { r: 2, c: 4 }, text: 'С помощью мешка бабла можно легко соединить две одинаковые фигурки!',
-enter() {
-clearBoard();
-putTile(2, 3, { kind: 'care', level: 2 });
-putTile(2, 5, { kind: 'care', level: 2 });
-nextTile = { kind: 'tool', tool: 'sack' };
+{ key: 'sack', mode: 'action', success: 'sack', art: 'img/tut_sack.png?v=52', side: 'left', expect: { r: 0, c: 5 }, text: 'С помощью мешка бабла можно легко соединить две одинаковые фигурки!',
+enter() { stageTut(stageRows(TUT_SHOP), tutSack()); },
+finger() { return ['#next-tile', '.cell[data-r="0"][data-c="5"]']; }
 },
-finger() { return ['#next-tile', '.cell[data-r="2"][data-c="4"]']; }
-},
-{ key: 'jail', mode: 'action', success: 'jail', art: 'img/tut_jail.png?v=51', side: 'left', expect: { jail: true }, text: 'Неподходящие фигурки можно временно отложить в тюрьму.',
-enter() { nextTile = chainTile(1); },
+{ key: 'jail', mode: 'action', success: 'jail', art: 'img/tut_jail.png?v=52', side: 'left', expect: { jail: true }, text: 'Неподходящие фигурки можно временно отложить в тюрьму.',
+enter() { stageTut(stageRows(TUT_JAIL), tutGrass()); },
 finger() { return ['#next-tile', '#jail']; },
 arrow() { return ['#jail', '⬇', 'above']; }
 }
@@ -3375,7 +3496,7 @@ unitSeq = 1;
 closeCharPopup(true);
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
 score = 0; coins = 1000000; moves = 0; juristCooldown = 0; juristPending = false; voterChannel = false; voterTapStreak = 0; jailTile = null; bufferedNext = null; undoState = null;
-gameOver = false; sawStreak = 0; isSawMode = false; isNanoboxMode = false;
+gameOver = false; sawStreak = 0; sheepSawStreak = 0; urnaBuilt = 0; moveTrapCount = 0; isSawMode = false; isNanoboxMode = false;
 moneyBags = 0;
 nextTile = chainTile(1);
 closeModal('pause-modal');
@@ -4113,6 +4234,7 @@ function checkGameOver() {
 if (tutorial.active || gameOver) return;
 if (emptyCells() === 0 && needsEmptyCell(nextTile)) {
 gameOver = true;
+if (moves < 50) unlockAchievement('idiot');
 openGameOver();
 }
 }
@@ -4241,12 +4363,16 @@ gameOver = false;
 isSawMode = false;
 isNanoboxMode = false;
 sawStreak = 0;
+sheepSawStreak = typeof data.sheepSawStreak === 'number' ? Math.max(0, data.sheepSawStreak) : 0;
+urnaBuilt = typeof data.urnaBuilt === 'number' ? Math.max(0, data.urnaBuilt) : 0;
+if (typeof data.sawStreak === 'number') sawStreak = Math.max(0, data.sawStreak);
 hideTutorial();
 hideTitle();
 closeModal('gameover-modal');
 updateMailBadge();
 render();
 setStatus();
+checkMoveAchievements();
 tryAssembleRocket(false, 0, function() { saveGame(); });
 return true;
 } catch (e) { return false; }
@@ -4368,8 +4494,17 @@ setTimeout(function () { boot.style.display = 'none'; }, 320);
 }
 const ACH_KEY = 'pasha_achievements_v1';
 const CONSULT_KEY = 'pasha_blogger_consults_v1';
+const JAR_EMPTY = 'img/jar_empty.png?v=52';
 const ACHIEVEMENTS = [
-{ id: 'v_lesu', name: 'В лесу', jar: 'img/jar_v_lesu.png?v=51' }
+{ id: 'seliger', name: 'Селигер', jar: 'img/jar_seliger.png?v=52' },
+{ id: 'kurban', name: 'Курбан-байрам', jar: 'img/jar_kurban.png?v=52' },
+{ id: 'sprinter', name: 'Спринтер', jar: 'img/jar_sprinter.png?v=52' },
+{ id: 'karusel', name: 'Карусель', jar: 'img/jar_karusel.png?v=52' },
+{ id: 'sept1', name: '1-е сентября', jar: 'img/jar_1sept.png?v=52' },
+{ id: 'v_lesu', name: 'В лесу', jar: 'img/jar_v_lesu.png?v=52' },
+{ id: 'idiot', name: 'Идиот', jar: 'img/jar_idiot.png?v=52' },
+{ id: 'stayer', name: 'Стайер', jar: 'img/jar_stayer.png?v=52' },
+{ id: 'pila', name: 'Пила', jar: 'img/jar_pila.png?v=52' }
 ];
 const CELLAR_PLATES = [
 { x: 62, y: 670, w: 212, h: 52 },
@@ -4385,6 +4520,7 @@ const CELLAR_PLATES = [
 const CELLAR_W = 944, CELLAR_H = 1728;
 let achievements = {};
 let consultsLeft = 5;
+let juristHired = false;
 let cellarPage = 0;
 let cellarBackBound = false;
 let achTimer = null;
@@ -4401,16 +4537,30 @@ try { localStorage.setItem(ACH_KEY, JSON.stringify(achievements)); } catch (e) {
 function loadConsults() {
 try {
 const raw = localStorage.getItem(CONSULT_KEY);
-if (raw == null || raw === '') return 5;
-const n = parseInt(raw, 10);
-return isFinite(n) ? Math.max(0, n) : 5;
-} catch (e) { return 5; }
+if (raw == null || raw === '') return { n: 5, hired: false };
+const text = String(raw).trim();
+if (text.charAt(0) === '{') {
+const o = JSON.parse(text);
+const n = parseInt(o.n, 10);
+return { n: isFinite(n) ? Math.max(0, n) : 5, hired: !!o.hired };
+}
+const n = parseInt(text, 10);
+return { n: isFinite(n) ? Math.max(0, n) : 5, hired: false };
+} catch (e) { return { n: 5, hired: false }; }
 }
 function saveConsults() {
-try { localStorage.setItem(CONSULT_KEY, String(consultsLeft)); } catch (e) {}
+try { localStorage.setItem(CONSULT_KEY, JSON.stringify({ n: consultsLeft, hired: !!juristHired })); } catch (e) {}
 }
 loadAchievements();
-consultsLeft = loadConsults();
+(function applyConsults() {
+const state = loadConsults();
+consultsLeft = state.n;
+juristHired = state.hired;
+})();
+let achQueue = [];
+let achPlaying = false;
+let achSpark = null;
+const ACH_MS = 4500;
 function unlockAchievement(id) {
 if (!id || achievements[id]) return;
 const def = ACHIEVEMENTS.find(a => a.id === id);
@@ -4419,29 +4569,143 @@ achievements[id] = { at: Date.now() };
 saveAchievements();
 showAchievementUnlock(def);
 }
+function achReduced() {
+return !!(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
+}
+function stopAchSpark() {
+if (achSpark) { achSpark.stop = true; achSpark = null; }
+const canvas = document.getElementById('ach-spark');
+if (!canvas) return;
+const ctx = canvas.getContext('2d');
+if (ctx) ctx.clearRect(0, 0, canvas.width, canvas.height);
+}
+function startAchSpark() {
+const canvas = document.getElementById('ach-spark');
+if (!canvas || achReduced()) return;
+const stage = canvas.parentElement;
+const w = (stage && stage.clientWidth) || 280;
+const h = (stage && stage.clientHeight) || 280;
+const dpr = Math.min(2, window.devicePixelRatio || 1);
+canvas.width = Math.round(w * 1.6 * dpr);
+canvas.height = Math.round(h * 1.6 * dpr);
+const ctx = canvas.getContext('2d');
+if (!ctx) return;
+ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+const W = canvas.width / dpr, H = canvas.height / dpr;
+const cx = W / 2, cy = H / 2;
+const colors = ['#fff', '#ffe28a', '#fff6d2', '#ffd24a', '#fff'];
+const bits = [];
+for (let i = 0; i < 72; i++) {
+const ang = Math.random() * Math.PI * 2;
+const speed = 70 + Math.random() * 220;
+bits.push({
+x: cx, y: cy,
+vx: Math.cos(ang) * speed,
+vy: Math.sin(ang) * speed,
+g: 40 + Math.random() * 80,
+life: 0.9 + Math.random() * 1.5,
+age: 0,
+size: 2 + Math.random() * 3.4,
+rot: Math.random() * Math.PI,
+spin: (Math.random() - 0.5) * 8,
+color: colors[i % colors.length],
+tw: Math.random() * Math.PI * 2
+});
+}
+const state = { stop: false };
+achSpark = state;
+let last = performance.now();
+function frame(now) {
+if (state.stop) return;
+const dt = Math.min(0.05, (now - last) / 1000);
+last = now;
+ctx.clearRect(0, 0, W, H);
+let alive = false;
+bits.forEach(p => {
+p.age += dt;
+if (p.age > p.life) return;
+alive = true;
+p.vy += p.g * dt;
+p.x += p.vx * dt;
+p.y += p.vy * dt;
+p.rot += p.spin * dt;
+const k = 1 - p.age / p.life;
+const tw = 0.45 + 0.55 * Math.abs(Math.sin(p.tw + p.age * 14));
+ctx.save();
+ctx.translate(p.x, p.y);
+ctx.rotate(p.rot);
+ctx.globalAlpha = Math.max(0, k) * tw;
+ctx.fillStyle = p.color;
+ctx.fillRect(-p.size, -p.size * 0.4, p.size * 2, p.size * 0.8);
+ctx.restore();
+});
+if (alive) requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+}
 function showAchievementUnlock(def) {
+if (!def) return;
+achQueue.push(def);
+if (!achPlaying) playAchievement();
+}
+function playAchievement() {
+const def = achQueue.shift();
 const root = document.getElementById('ach-pop');
 const jar = document.getElementById('ach-jar');
 const banner = document.getElementById('ach-banner');
-if (!root || !jar || !banner || !def) return;
-jar.src = def.jar;
+if (!def || !root || !jar || !banner) { achPlaying = false; return; }
+achPlaying = true;
+stopAchSpark();
+jar.src = def.jar || JAR_EMPTY;
 banner.textContent = def.name;
 root.classList.remove('out');
-root.classList.add('on');
+root.classList.remove('play');
+void root.offsetWidth;
+root.classList.add('play');
 root.setAttribute('aria-hidden', 'false');
 if (achTimer) clearTimeout(achTimer);
-achTimer = setTimeout(hideAchievementUnlock, 3000);
+const hold = achReduced() ? 1800 : ACH_MS;
+if (!achReduced()) setTimeout(startAchSpark, 1150);
+achTimer = setTimeout(finishAchievement, hold);
 }
-function hideAchievementUnlock() {
+function finishAchievement() {
 const root = document.getElementById('ach-pop');
-if (!root || !root.classList.contains('on')) return;
 if (achTimer) { clearTimeout(achTimer); achTimer = null; }
-root.classList.remove('on');
+stopAchSpark();
+if (!root) { achPlaying = false; return; }
+root.classList.remove('play');
 root.classList.add('out');
 setTimeout(function () {
 root.classList.remove('out');
 root.setAttribute('aria-hidden', 'true');
-}, 380);
+if (achQueue.length) playAchievement();
+else achPlaying = false;
+}, achReduced() ? 0 : 280);
+}
+function hideAchievementUnlock() {
+achQueue.length = 0;
+const root = document.getElementById('ach-pop');
+if (achTimer) { clearTimeout(achTimer); achTimer = null; }
+stopAchSpark();
+achPlaying = false;
+if (!root) return;
+root.classList.remove('play');
+root.classList.add('out');
+setTimeout(function () {
+root.classList.remove('out');
+root.setAttribute('aria-hidden', 'true');
+}, 280);
+}
+function skipAchievementUnlock() {
+if (achTimer) { clearTimeout(achTimer); achTimer = null; }
+stopAchSpark();
+const root = document.getElementById('ach-pop');
+if (root) {
+root.classList.remove('play', 'out');
+root.setAttribute('aria-hidden', 'true');
+}
+if (achQueue.length) playAchievement();
+else achPlaying = false;
 }
 window.debugUnlockAchievement = function (id) {
 const def = ACHIEVEMENTS.find(a => a.id === (id || 'v_lesu')) || ACHIEVEMENTS[0];
@@ -4453,6 +4717,11 @@ window.debugResetAchievement = function (id) {
 delete achievements[id || 'v_lesu'];
 saveAchievements();
 };
+window.debugResetAchievements = function () {
+achievements = {};
+saveAchievements();
+hideAchievementUnlock();
+};
 function renderCellar() {
 const host = document.getElementById('cellar-slots');
 const dots = document.getElementById('cellar-dots');
@@ -4461,22 +4730,28 @@ host.replaceChildren();
 const pages = Math.max(1, Math.ceil(ACHIEVEMENTS.length / 9));
 if (cellarPage >= pages) cellarPage = pages - 1;
 if (cellarPage < 0) cellarPage = 0;
+const jarH = 392;
+const jarW = jarH * (650 / 980);
 for (let i = 0; i < 9; i++) {
 const ach = ACHIEVEMENTS[cellarPage * 9 + i];
-if (!ach) continue;
 const p = CELLAR_PLATES[i];
-const jarW = p.w * 1.5;
+const hasArt = !!(ach && ach.jar);
 const jar = document.createElement('img');
-jar.className = 'cellar-jar' + (achievements[ach.id] ? '' : ' locked');
-jar.src = ach.jar;
-jar.alt = ach.name;
+jar.className = 'cellar-jar' + (ach && !achievements[ach.id] ? ' locked' : '');
+jar.src = hasArt ? ach.jar : JAR_EMPTY;
+jar.alt = ach ? ach.name : '';
+jar.style.objectFit = 'contain';
+jar.style.objectPosition = 'center bottom';
 jar.style.width = (jarW / CELLAR_W * 100) + '%';
+jar.style.height = (jarH / CELLAR_H * 100) + '%';
 jar.style.left = ((p.x + p.w / 2 - jarW / 2) / CELLAR_W * 100) + '%';
-jar.style.top = ((p.y + 8 - jarW) / CELLAR_H * 100) + '%';
+jar.style.top = ((p.y - jarH + 22) / CELLAR_H * 100) + '%';
 host.appendChild(jar);
+if (!ach) continue;
 const name = document.createElement('div');
 name.className = 'cellar-name';
 name.textContent = ach.name;
+if (ach.name.length > 12) name.style.fontSize = '1.35cqh';
 name.style.left = (p.x / CELLAR_W * 100) + '%';
 name.style.top = (p.y / CELLAR_H * 100) + '%';
 name.style.width = (p.w / CELLAR_W * 100) + '%';
@@ -4556,12 +4831,22 @@ box.appendChild(p);
 }
 openModal('rules-modal');
 }
+function juristWaiting() {
+return !!(juristPending || isJuristTile(nextTile));
+}
+function bloggerUseBlocked() {
+return juristCooldown > 0 || juristWaiting();
+}
+function showBloggerBlockedToast() {
+if (juristCooldown > 0) showToast('Юрист в СИЗО ещё ' + (juristCooldown | 0) + ' ходов');
+else showToast('Юрист уже ждёт');
+}
 function paintBlogger() {
 const n = document.getElementById('blogger-count');
 const use = document.getElementById('blogger-use');
-if (n) n.textContent = '\u00a0' + consultsLeft;
+if (n) n.textContent = '\u00a0' + (juristHired ? '∞' : consultsLeft);
 if (use) {
-const off = consultsLeft <= 0;
+const off = bloggerUseBlocked() || (!juristHired && consultsLeft <= 0);
 use.classList.toggle('is-off', off);
 use.setAttribute('aria-disabled', off ? 'true' : 'false');
 }
@@ -4577,18 +4862,25 @@ const el = document.getElementById('blogger-modal');
 if (el) el.classList.remove('open');
 }
 function useBloggerConsult() {
-if (consultsLeft <= 0) return;
-if (isJuristTile(nextTile)) { closeBloggerHelp(); return; }
+if (bloggerUseBlocked()) { showBloggerBlockedToast(); return; }
+if (!juristHired && consultsLeft <= 0) return;
+if (!juristHired) {
 consultsLeft--;
 saveConsults();
+}
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
-juristPending = true;
+armJuristCooldown();
 render();
 saveGame();
 closeBloggerHelp();
 closeModal('shop-modal');
 }
+window.debugHireJurist = function () {
+juristHired = true;
+saveConsults();
+paintBlogger();
+};
 function openSizo() {
 const n = document.getElementById('sizo-count');
 if (n) n.textContent = '\u00a0' + Math.max(0, juristCooldown | 0);
@@ -4621,9 +4913,9 @@ swipe = null;
 cellar.addEventListener('pointercancel', function () { swipe = null; });
 }
 const ach = document.getElementById('ach-pop');
-if (ach) ach.addEventListener('pointerdown', function (e) { e.preventDefault(); hideAchievementUnlock(); });
+if (ach) ach.addEventListener('pointerdown', function (e) { e.preventDefault(); skipAchievementUnlock(); });
 const use = document.getElementById('blogger-use');
-if (use) use.addEventListener('click', function () { if (consultsLeft > 0) useBloggerConsult(); });
+if (use) use.addEventListener('click', function () { useBloggerConsult(); });
 const cancel = document.getElementById('blogger-cancel');
 if (cancel) cancel.addEventListener('click', closeBloggerHelp);
 const bx2 = document.getElementById('blogger-x');
@@ -4659,11 +4951,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
-add('img/sheep-src.png?v=51');
-add('img/voter-grandpa.png?v=51');
+add('img/sheep-src.png?v=52');
+add('img/voter-grandpa.png?v=52');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=51','img/next.png?v=51','img/hint.png?v=51','img/sheep-src.png?v=51','img/voter-grandpa.png?v=51','img/loading.jpg','img/play.png?v=47','img/ui_bottom_forest.png?v=51','img/popup_goat_tv.png?v=51','img/popup_deputy.png?v=51','img/popup_official.png?v=51','img/popup_minister.png?v=51','img/popup_church.png?v=51','img/popup_goszakaz.png?v=51','img/popup_rocket1.png?v=51','img/popup_president.png?v=51','img/popup_urna.png?v=51','img/popup_first_sheep.png?v=51','img/popup_goszakaz_tank.png?v=51','img/tut_welcome_goat.png?v=51','img/tut_task_goat.png?v=51','img/tut_drag.png?v=51','img/tut_trap_pioneers.png?v=51','img/tut_pioneer_stuck.png?v=51','img/tut_use_jurist.png?v=51','img/tut_drag_to_official.png?v=51','img/tut_next_to_official.png?v=51','img/tut_shop.png?v=51','img/tut_sack.png?v=51','img/tut_jail.png?v=51','img/blogger_help.png?v=51','img/jurist_sizo.jpg?v=51','img/cellar_bg.jpg?v=51','img/jar_v_lesu.png?v=51','img/title_bg.jpg?v=51','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/ui_bottom_forest.png?v=52','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
