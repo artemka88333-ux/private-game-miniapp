@@ -139,7 +139,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   pointer-events: none;
   overflow: hidden;
   background-color: #5a7c34;
-  background-image: url('img/ui_bottom_forest.png?v=52');
+  background-image: url('img/ui_bottom_forest_A.png?v=53');
   background-repeat: no-repeat;
   background-position: center top;
   background-size: 100% auto;
@@ -234,6 +234,20 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .slot-9 { top: 81.64%; left: 7.19%; width: 38.42%; height: 15.65%; }
 .slot-10 { top: 81.64%; left: 55.09%; width: 37.89%; height: 15.65%; }
 .slot-close { top: 1.53%; left: 84.21%; width: 12.81%; height: 4.87%; border-radius: 10px; }
+/* Красный штамп «ПРОПЛАЧЕНО» поверх слова «КУПИТЬ». Ширина ~118% слота, центр на слове. */
+.shop-paid {
+  display: none;
+  position: absolute;
+  z-index: 4;
+  pointer-events: none;
+  width: calc(38.42% * 1.18);
+  height: auto;
+  left: calc(7.19% + 38.42% / 2);
+  transform: translate(-50%, -50%);
+}
+.shop-paid.on { display: block; }
+.shop-paid.for-jurist { top: 76.6%; }
+.shop-paid.for-statue { top: 95%; }
 .shop-voter-art {
   display: none;
   position: absolute;
@@ -259,6 +273,17 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   overflow: hidden;
   background: #c5c6a0;
 }
+/* Размер как на референсе: ~78% ширины экрана, сверху 17% до 83% высоты, по центру.
+   Верх и низ держат пропорции исходных картинок (902×430 и 902×390), тянется середина. */
+#pause-modal .pause-window {
+  top: 17dvh;
+  width: 78vw;
+  height: 66dvh;
+  aspect-ratio: auto;
+  max-height: none;
+}
+#pause-modal .pause-top { height: calc(78vw * 430 / 902); flex-basis: auto; }
+#pause-modal .pause-bot { height: calc(78vw * 390 / 902); flex-basis: auto; }
 .pause-top, .pause-mid, .pause-bot { position: relative; width: 100%; background-repeat: no-repeat; }
 .pause-top { flex: 0 0 auto; height: calc(100% * 430 / 902 * 570 / 1438); background-image: url('img/pause_top.png?v=47'); background-size: 100% 100%; }
 .pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=47'); background-size: 100% 100%; }
@@ -501,6 +526,7 @@ cursor: pointer;
 }
 .pause-extra.alt { background: #f4f0d8; }
 #title-screen { position: fixed; inset: 0; z-index: 2400; background: #1a140c url('img/title_bg.jpg?v=52') center / cover no-repeat; }
+#title-info { display: none !important; }
 #title-screen.hidden { display: none; }
 #title-wordmark { position: absolute; left: 3%; width: 94%; height: auto; top: calc(var(--ui-top) + 8px); object-fit: contain; object-position: center top; pointer-events: none; z-index: 2; }
 #title-play { position: absolute; border: 0; background: transparent; padding: 0; cursor: pointer; z-index: 2; }
@@ -516,15 +542,64 @@ cursor: pointer;
 74% { transform: translate(48%, 36%) rotate(-22deg); }
 100% { transform: translate(20%, 8%) rotate(-36deg); opacity: 0; }
 }
-#hint-gallery { position: fixed; inset: 0; z-index: 5200; display: none; background: #14200e; touch-action: none; }
-#hint-gallery.open { display: block; }
-#hint-track { height: 100%; display: flex; width: 300%; transition: transform 0.28s ease; will-change: transform; }
+#hint-gallery {
+  --book-top-inset: calc(var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)) + var(--tg-content-safe-area-inset-top, 56px));
+  --card-gap: 5px;
+  position: fixed; inset: 0; z-index: 5200; display: none; background: #57732b; touch-action: none;
+  flex-direction: column;
+  padding: calc(var(--book-top-inset) + 6px) 8px 8px;
+  box-sizing: border-box;
+}
+#hint-gallery.open { display: flex; }
+.book-forest { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
+.book-forest-fill { position: absolute; inset: 0; background: linear-gradient(180deg, #5d7a32 0%, #57732b 45%, #4a6828 100%); }
+.book-forest-top { position: absolute; left: 0; right: 0; top: 0; height: calc(100vw * 137 / 877 * 1.85); max-height: 130px; background: url('img/ui_top_forest.png') center bottom / 100% auto no-repeat; }
+.book-forest-far { position: absolute; left: -20%; right: -20%; top: 6%; height: 58%; background: url('img/ui_bottom_forest_A.png?v=53') center top / 100% auto no-repeat; opacity: 0.85; }
+.book-forest-near { position: absolute; left: -8%; right: -8%; bottom: 0; height: 64%; background: url('img/ui_bottom_forest_A.png?v=53') center top / 115% auto no-repeat; }
+.book-forest-dim { position: absolute; inset: 0; background: rgba(8, 14, 4, 0.36); }
+.book-header { position: relative; z-index: 2; flex: 0 0 auto; height: 36px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; }
+#hint-viewport { position: relative; z-index: 2; flex: 1 1 auto; min-height: 0; overflow: hidden; }
+#hint-track { height: 100%; display: flex; width: max-content; transition: transform 0.28s ease; will-change: transform; }
 #hint-track.dragging { transition: none; }
-#hint-track img { width: 33.333%; height: 100%; object-fit: cover; object-position: center; flex: 0 0 33.333%; background: #14200e; pointer-events: none; user-select: none; }
-#hint-close { position: absolute; top: calc(var(--ui-top) + 8px); right: calc(var(--ui-right) + 8px); width: 48px; height: 48px; border-radius: 12px; border: 3px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 30px; font-weight: 900; line-height: 1; cursor: pointer; z-index: 2; padding: 0; }
-.hint-dots { position: absolute; left: 0; right: 0; bottom: max(14px, env(safe-area-inset-bottom)); display: flex; justify-content: center; gap: 8px; z-index: 2; pointer-events: auto; }
-.hint-dot { width: 10px; height: 10px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,.45); cursor: pointer; }
-.hint-dot.on { background: #ffd24a; }
+.pb-page { flex: 0 0 var(--page-w, 100%); width: var(--page-w, 100%); height: 100%; display: flex; flex-direction: column; gap: var(--card-gap); overflow: hidden; box-sizing: border-box; }
+.pb-page.last-page { justify-content: flex-start; }
+.pb-card {
+  flex: 1 1 0; min-height: 0; display: flex; align-items: center; gap: 6px;
+  padding: 5px 8px 5px 4px; border-radius: 8px;
+  background: rgba(114, 120, 78, 0.58); border: 1.5px solid rgba(255, 255, 255, 0.46);
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.16), 0 2px 5px rgba(0,0,0,0.24);
+  overflow: hidden;
+}
+.pb-card.locked, .pb-card.placeholder { background: rgba(22, 29, 13, 0.72); border-color: rgba(145, 162, 102, 0.36); }
+.pb-page.last-page .pb-card { flex: 0 0 calc((100% - 6 * var(--card-gap)) / 7); }
+.pb-icon { flex: 0 0 80px; width: 80px; align-self: stretch; position: relative; }
+.pb-card:not(.locked) .pb-icon::before {
+  content: ''; position: absolute; inset: 0; border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 250, 215, 0.38) 0%, rgba(255, 250, 215, 0.12) 52%, rgba(255, 250, 215, 0) 74%);
+  pointer-events: none;
+}
+.pb-icon canvas, .pb-icon img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
+.pb-icon img.q-icon { width: 46%; height: auto; max-width: 70%; max-height: 82%; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
+.pb-body { flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-self: stretch; padding: 2px 0; }
+.pb-quote { font-size: 13px; line-height: 1.16; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.65); overflow: hidden; }
+.pb-stats { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; margin-top: 4px; }
+.pb-stat { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.7); font-variant-numeric: tabular-nums; white-space: nowrap; }
+.pb-stat img { height: 15px; width: auto; display: block; filter: drop-shadow(0 1px 1px rgba(0,0,0,0.45)); }
+#hint-close { position: absolute; right: 2px; top: 50%; transform: translateY(-50%); width: 36px; height: 36px; border-radius: 9px; border: 2.5px solid #3a2a10; background: #ffd24a; color: #2b1a0e; font-size: 24px; font-weight: 900; line-height: 1; cursor: pointer; z-index: 3; padding: 0; display: flex; align-items: center; justify-content: center; box-shadow: 0 2px 6px rgba(0,0,0,0.45); }
+.hint-dots { position: relative; z-index: 2; display: flex; align-items: center; justify-content: center; gap: 7px; pointer-events: auto; }
+.hint-dot { width: 8px; height: 8px; border-radius: 50%; border: 0; padding: 0; background: rgba(255,255,255,0.36); cursor: pointer; }
+.hint-dot.on { background: #fff; transform: scale(1.12); }
+@media (max-width: 370px) {
+  #hint-gallery { --card-gap: 4px; padding: calc(var(--book-top-inset) + 4px) 6px 6px; }
+  .book-header { height: 32px; margin-bottom: 4px; }
+  #hint-close { width: 32px; height: 32px; font-size: 21px; border-radius: 8px; }
+  .pb-card { padding: 4px 6px 4px 3px; gap: 5px; border-radius: 7px; }
+  .pb-icon { flex: 0 0 68px; width: 68px; }
+  .pb-quote { line-height: 1.14; }
+  .pb-stats { margin-top: 3px; gap: 7px; }
+  .pb-stat { font-size: 11.5px; }
+  .pb-stat img { height: 13px; }
+}
 #start-choice { z-index: 4700; }
 #confirm-modal { z-index: 4800; }
 .confirm-actions { display: flex; gap: 8px; }
@@ -732,7 +807,7 @@ cursor: pointer;
 <div id="title-screen">
 <img id="title-wordmark" src="img/title.png" alt="Демократия">
 <button type="button" id="title-play" onclick="onPlay()" aria-label="Играть"><img src="img/play.png?v=47" alt=""></button>
-<button type="button" id="title-info" class="title-hot" onclick="openRules()" aria-label="Правила"></button>
+<button type="button" id="title-info" class="title-hot" aria-hidden="true" tabindex="-1"></button>
 <button type="button" id="title-gear" class="title-hot" onclick="toggleSfx(event)" aria-label="Звук"></button>
 <button type="button" id="title-trophy" class="title-hot" onclick="openCellar()" aria-label="Погреб славы"></button>
 </div>
@@ -764,8 +839,10 @@ cursor: pointer;
 <button type="button" class="shop-hitbox slot-5" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })" aria-label="Пила 3000"></button>
 <button type="button" class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })" aria-label="Мешок 4500"></button>
 <button type="button" class="shop-hitbox slot-7" onclick="openBloggerHelp()" aria-label="Блогер"></button>
+<img id="stamp-jurist" class="shop-paid for-jurist" src="img/paid_trim.png?v=53" alt="">
 <button type="button" class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })" aria-label="Нанокоробка"></button>
-<button type="button" class="shop-hitbox slot-9" aria-disabled="true" aria-label="Купить"></button>
+<button type="button" class="shop-hitbox slot-9" onclick="buyStarsPlaceholder('statue')" aria-label="Статуя свободы"></button>
+<img id="stamp-statue" class="shop-paid for-statue" src="img/paid_trim.png?v=53" alt="">
 <button type="button" class="shop-hitbox slot-10" aria-disabled="true" aria-label="Нужны деньги"></button>
 </div>
 </div>
@@ -795,7 +872,7 @@ cursor: pointer;
 <div class="pause-window" role="dialog" aria-label="Пауза">
 <div class="pause-top">
 <button type="button" class="shop-hitbox pause-undo" onclick="buyUndo()" aria-label="Отмена за 1500"></button>
-<button type="button" class="shop-hitbox pause-list" onclick="openPauseList()" aria-label="Подсказки"></button>
+<button type="button" class="shop-hitbox pause-list" onclick="openPauseList()" aria-label="Главное меню"></button>
 <button type="button" class="shop-hitbox pause-restart" onclick="newGame()" aria-label="Заново"></button>
 <button type="button" class="shop-hitbox pause-play" onclick="closeModal('pause-modal')" aria-label="Играть"></button>
 </div>
@@ -806,7 +883,6 @@ cursor: pointer;
 <button type="button" class="shop-hitbox pause-star" aria-disabled="true" tabindex="-1" aria-label="Оценка"></button>
 </div>
 </div>
-<button type="button" class="pause-leave" onclick="askLeaveToMenu()">В меню</button>
 </div>
 
 <!-- ПОЧТА -->
@@ -815,18 +891,6 @@ cursor: pointer;
 <h2 style="color:#fff; text-shadow:1px 1px 0 #000;">ПОЧТА (Награды)</h2>
 <div id="mail-area" style="flex:1; overflow-y:auto; padding:4px;"></div>
 <button class="close-btn" onclick="closeModal('mail-modal')">Закрыть</button>
-</div>
-</div>
-
-<div class="modal" id="book-modal">
-<div class="modal-content">
-<div class="book-tabs">
-<div class="book-tab active" data-branch="chain" onclick="switchTab('chain', this)">Паша</div>
-<div class="book-tab" data-branch="care" onclick="switchTab('care', this)">Забота</div>
-<div class="book-tab" data-branch="income" onclick="switchTab('income', this)">Доход</div>
-</div>
-<div class="book-scroll" id="book-scroll"></div>
-<button class="close-btn" onclick="closeModal('book-modal')">Закрыть</button>
 </div>
 </div>
 
@@ -920,17 +984,18 @@ cursor: pointer;
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
-<div id="hint-track">
-<img src="img/hint-1.jpg" alt="Подсказка 1">
-<img src="img/hint-2.jpg" alt="Подсказка 2">
-<img src="img/hint-3.jpg" alt="Подсказка 3">
+<div class="book-forest" aria-hidden="true">
+<div class="book-forest-fill"></div>
+<div class="book-forest-far"></div>
+<div class="book-forest-near"></div>
+<div class="book-forest-top"></div>
+<div class="book-forest-dim"></div>
 </div>
+<div class="book-header">
+<div class="hint-dots" id="book-dots"></div>
 <button type="button" id="hint-close" onclick="closeHintGallery()" aria-label="Закрыть">×</button>
-<div class="hint-dots">
-<button type="button" class="hint-dot on" onclick="setHintPage(0)" aria-label="Страница 1"></button>
-<button type="button" class="hint-dot" onclick="setHintPage(1)" aria-label="Страница 2"></button>
-<button type="button" class="hint-dot" onclick="setHintPage(2)" aria-label="Страница 3"></button>
 </div>
+<div id="hint-viewport"><div id="hint-track"></div></div>
 </div>
 
 <div class="discovery-popup" id="disc-popup">
@@ -956,6 +1021,7 @@ const LIVE_HINT_PREVIEW = false;
    drop / lift are fractions of the cell height (positive drop moves the piece down). */
 const PIECE_LAYOUT = {
   'img/pasha_01.png': { scale: 0.85 },
+  'img/pasha_04.png': { scale: 0.9 },
   'img/pasha_07.png': { scale: 1.2, drop: 0.05 },
   'img/bear_8.png': { scale: 1.2, z: 4 },
   'img/bear_9.png': { scale: 1.21, floor: true, lift: 0.05, z: 4 },
@@ -969,8 +1035,9 @@ const INCOME_PER_TURN = [5, 15, 50, 150, 500];
 
 /* Награды исходной игры: очки и монеты получает фигурка, которая получилась при слиянии.
    saw — монеты, если спилили именно эту фигурку (null: в таблице выплаты за пилу нет).
-   Нет строки у chain 20–23 (ёлка, ведущий, вышиванка, рокер), care 1 (медведь), дохода, ОМОНа и пионера —
-   для них остаётся прежняя формула: очки = уровень×15×группа, монеты = уровень×2×группа, пила = 0. */
+   Нет строки у care 1 (медведь), ОМОНа и пионера —
+   для них остаётся прежняя формула: очки = уровень×15×группа, монеты = уровень×2×группа, пила = 0.
+   chain 20–23 и доход 1–5 взяты со скринов книги фигурок. У дохода 1 кубка нет (score 0). */
 const PIECE_REWARDS = {
   'chain:1':  { score: 0, coins: 0, saw: 0 },
   'chain:2':  { score: 30, coins: 5, saw: 2 },
@@ -991,6 +1058,10 @@ const PIECE_REWARDS = {
   'chain:17': { score: 1500000, coins: 1000, saw: null },
   'chain:18': { score: 3000000, coins: 1000, saw: 80000 },
   'chain:19': { score: 5000000, coins: 1000, saw: 200000 },
+  'chain:20': { score: 6000000, coins: 1000, saw: 200000 },
+  'chain:21': { score: 7000000, coins: 1000, saw: 250000 },
+  'chain:22': { score: 8000000, coins: 1000, saw: 300000 },
+  'chain:23': { score: 9000000, coins: 1000, saw: 350000 },
   'chain:24': { score: 10000000, coins: 1000, saw: 400000 },
   'chain:25': { score: 11000000, coins: 1000, saw: 450000 },
   'chain:26': { score: 12000000, coins: 1000, saw: 500000 },
@@ -1014,7 +1085,12 @@ const PIECE_REWARDS = {
   'care:17': { score: 18000000, coins: 1000, saw: 800000 },
   'care:18': { score: 20000000, coins: 1000, saw: 900000 },
   'care:19': { score: 22000000, coins: 1000, saw: 1000000 },
-  'care:20': { score: 24000000, coins: 1000, saw: 1100000 }
+  'care:20': { score: 24000000, coins: 1000, saw: 1100000 },
+  'income:1': { score: 0, coins: 7, saw: 100 },
+  'income:2': { score: 4000, coins: 500, saw: 250 },
+  'income:3': { score: 26000, coins: 1000, saw: 10000 },
+  'income:4': { score: 50000, coins: 1000, saw: 15000 },
+  'income:5': { score: 100000, coins: 1000, saw: 20000 }
 };
 
 let grid = [], score = 0, coins = 0, moves = 0;
@@ -1023,6 +1099,9 @@ let juristPending = false;
 let voterChannel = false;
 let voterTapStreak = 0;
 const JURIST_COOLDOWN = 123;
+/* Тестовый режим: юрист без пробных 5 использований и без отката в 123 хода.
+   Верните false, чтобы снова включить лимит, счётчик и кольцо отката. */
+const JURIST_TEST_UNLIMITED = true;
 let nextTile = null, jailTile = null, bufferedNext = null, drag = null, undoState = null;
 let isSawMode = false, isNanoboxMode = false;
 let testSpawnIndex = 0;
@@ -1068,7 +1147,7 @@ loadDiscovered();
 
 function pieceReward(tile) {
 if (!tile || tile.level == null) return null;
-if (tile.kind !== 'chain' && tile.kind !== 'care') return null;
+if (tile.kind !== 'chain' && tile.kind !== 'care' && tile.kind !== 'income') return null;
 return PIECE_REWARDS[tile.kind + ':' + tile.level] || null;
 }
 function mergeGain(produced, sourceLevel, groupLen) {
@@ -1147,9 +1226,13 @@ setDigits(document.getElementById('score-num'), hudView.score);
 setDigits(document.getElementById('coins-num'), hudView.coins);
 setDigits(document.getElementById('moves-num'), moves);
 }
+let hudLayoutKey = '';
 function layoutHudDigits() {
 const boxes = ['score-box', 'coins-box', 'moves-box'].map(id => document.getElementById(id));
 if (boxes.some(b => !b || !b.clientWidth)) return;
+const key = boxes.map(b => b.clientWidth + 'x' + b.clientHeight).join('|');
+if (key === hudLayoutKey) return;
+hudLayoutKey = key;
 const counts = [9, 8, 6];
 let h = Infinity;
 boxes.forEach((box, i) => {
@@ -1294,11 +1377,37 @@ const title = document.getElementById('title-screen');
 if (!title || title.classList.contains('hidden')) render();
 }
 
+let cellBoxCache = null;
 function cellSize() {
+if (cellBoxCache) return cellBoxCache;
 const board = document.getElementById('board');
 const w = board && board.clientWidth ? board.clientWidth / SIZE : 64;
 const h = board && board.clientHeight ? board.clientHeight / SIZE : w;
 return { w, h };
+}
+function visualCenterOffset(src) {
+const trim = TRIM[bareSrc(src)];
+const box = cellSize();
+if (!trim) return { x: 0, y: 0 };
+const limit = 0.92 * Math.min(box.w, box.h);
+const cW = Math.max(1, (trim.r - trim.l) * trim.natW);
+const cH = Math.max(1, (trim.b - trim.t) * trim.natH);
+const s = limit / Math.max(cW, cH);
+const dispW = trim.natW * s;
+const dispH = trim.natH * s;
+return {
+x: ((trim.l + trim.r) / 2 - 0.5) * dispW,
+y: ((trim.t + trim.b) / 2 - 0.5) * dispH
+};
+}
+/* Баран садится так, чтобы центр его непрозрачного силуэта совпал с избирателем. */
+function alignSheep(wrap) {
+const voterSrc = voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png';
+if (!TRIM['img/sheep-src.png'] || !TRIM[voterSrc]) return;
+const sheep = visualCenterOffset('img/sheep-src.png');
+const voter = visualCenterOffset(voterSrc);
+wrap.style.setProperty('--piece-dx', (voter.x - sheep.x).toFixed(2) + 'px');
+wrap.style.setProperty('--piece-dy', (voter.y - sheep.y).toFixed(2) + 'px');
 }
 
 function bareSrc(src) {
@@ -1324,6 +1433,7 @@ const img = document.createElement('img');
 img.src = src;
 img.alt = '';
 img.draggable = false;
+img.decoding = 'async';
 const size = pieceDisplaySize(src, cs.w, cs.h);
 wrap.style.width = size.w + 'px';
 wrap.style.height = size.h + 'px';
@@ -1388,6 +1498,7 @@ return juristHired ? 123 : JURIST_COOLDOWN;
 }
 function armJuristCooldown() {
 juristPending = false;
+if (JURIST_TEST_UNLIMITED) { juristCooldown = 0; return; }
 juristCooldown = juristCooldownSpan();
 }
 function layoutJurist() {
@@ -1450,7 +1561,7 @@ const box = document.querySelector('.hit-jurist');
 if (!img) return;
 if (juristPending && !juristIsHeld() && juristCooldown === 0) juristPending = false;
 const empty = juristPending && juristCooldown === 0;
-const bound = juristCooldown > 0;
+const bound = !JURIST_TEST_UNLIMITED && juristCooldown > 0;
 const down = document.getElementById('hit-down');
 if (box) {
 box.classList.toggle('empty', empty);
@@ -1501,6 +1612,7 @@ else if (tile.kind === 'chain' && tile.level === ROCKET_NOSE) showCharacterPopup
 }
 function checkDiscovery(tile) {
 if (!tile) return;
+unlockBookKey(tile);
 notePieceCreated(tile);
 let key = tile.kind + '_' + (tile.level || '');
 if (tile.kind === 'tool') key = 'tool_' + tile.tool;
@@ -1705,33 +1817,62 @@ shadesReady = true;
 }
 }
 
+function tileSig(d) {
+if (!d) return '';
+let s = d.kind + ':' + (d.level || 0) + ':' + (d.tool || '');
+if (d.kind === 'chain' && d.level === 3 && voterChannel) s += ':v';
+return s;
+}
+function mountTray(cont, tile) {
+if (!cont) return;
+const sig = tileSig(tile);
+if (cont.dataset.sig === sig && (sig === '' ? !cont.firstChild : cont.querySelector('.piece'))) {
+if (tile && tile.pop) {
+const visual = cont.querySelector('.piece');
+if (visual && !visual.classList.contains('piece-pop')) visual.classList.add('piece-pop');
+}
+return;
+}
+cont.dataset.sig = sig;
+cont.replaceChildren();
+if (!tile) return;
+const el = makeTileContent(tile);
+if (tile.pop) el.classList.add('piece-pop');
+cont.appendChild(el);
+}
 function render() {
 try {
 ensureBoard();
 const b = document.getElementById('board');
 const cells = b.querySelectorAll('.cell');
+cellBoxCache = null;
+const box = cellSize();
+cellBoxCache = box;
+const sizeKey = box.w.toFixed(1) + 'x' + box.h.toFixed(1) + (trimsPending ? ':t' : '') + (voterChannel ? ':v' : '');
 let bearsOnBoard = 0;
 let schoolsOnBoard = 0;
 
 for (let r = 0; r < SIZE; r++) {
 for (let c = 0; c < SIZE; c++) {
 const cell = cells[r * SIZE + c];
+const d = grid[r][c];
+const side = d ? (rocketJoinSide(d, r, c) || '') : '';
+const sig = tileSig(d) + '|' + side + '|' + sizeKey;
+const same = cell.dataset.sig === sig && (d ? !!cell.querySelector('.piece') : !cell.querySelector('.piece'));
+if (!same) {
 cell.className = 'cell';
 cell.style.zIndex = '';
-const d = grid[r][c];
 cell.replaceChildren();
+cell.dataset.sig = sig;
 if (d) {
 const pieceEl = makeTileContent(d);
 cell.appendChild(pieceEl);
 seatPiece(pieceEl, getTileImage(d), cell);
+if (d.kind === 'chain' && d.level === 2) alignSheep(pieceEl);
 applyRocketJoin(cell, d, r, c);
-if (d.justSpawned || d.pop) {
-const spawnedVisual = cell.querySelector('.piece');
-if (spawnedVisual) spawnedVisual.classList.add('piece-pop');
-}
+if (d.justSpawned || d.pop) pieceEl.classList.add('piece-pop');
 if (d.bounce) {
-const bounced = cell.querySelector('.piece');
-if (bounced) bounced.classList.add('land-bounce');
+pieceEl.classList.add('land-bounce');
 const flag = d;
 setTimeout(() => { if (flag.bounce) delete flag.bounce; }, 0);
 }
@@ -1743,17 +1884,26 @@ if (d.pop) {
 const popped = d;
 setTimeout(() => { if (popped.pop) delete popped.pop; }, 0);
 }
-if (d.kind === 'care' && d.level === 1) bearsOnBoard++;
-if (d.kind === 'chain' && d.level === 4) schoolsOnBoard++;
-applyMoveAnim(cell, r, c);
 }
+} else if (d && (d.pop || d.bounce || d.justSpawned)) {
+const pieceEl = cell.querySelector('.piece');
+if (pieceEl && (d.pop || d.justSpawned)) pieceEl.classList.add('piece-pop');
+if (d.bounce && pieceEl) pieceEl.classList.add('land-bounce');
+if (d.justSpawned) { cell.classList.add('anim-omon'); delete d.justSpawned; }
+if (d.pop) { const popped = d; setTimeout(() => { if (popped.pop) delete popped.pop; }, 0); }
+if (d.bounce) { const flag = d; setTimeout(() => { if (flag.bounce) delete flag.bounce; }, 0); }
+}
+if (d && d.kind === 'care' && d.level === 1) bearsOnBoard++;
+if (d && d.kind === 'chain' && d.level === 4) schoolsOnBoard++;
+if (d) applyMoveAnim(cell, r, c);
 if (tutorial.active && tutorial.step) {
 const exp = tutorial.step.expect;
 const sug = tutorial.step.suggest;
-if ((exp && exp.r === r && exp.c === c) || (sug && sug.r === r && sug.c === c)) cell.classList.add('tut-target');
+cell.classList.toggle('tut-target', !!((exp && exp.r === r && exp.c === c) || (sug && sug.r === r && sug.c === c)));
+} else if (cell.classList.contains('tut-target')) cell.classList.remove('tut-target');
 }
 }
-}
+cellBoxCache = null;
 moveAnims = [];
 syncShades();
 updateJuristFace();
@@ -1772,21 +1922,13 @@ paintBlogger();
 syncHud();
 
 const nextCont = document.getElementById('next-content');
-nextCont.innerHTML = '';
-if (nextTile) {
-nextCont.appendChild(makeTileContent(nextTile));
-if (nextTile.pop) {
-const nextVisual = nextCont.querySelector('.piece');
-if (nextVisual) nextVisual.classList.add('piece-pop');
+mountTray(nextCont, nextTile);
+if (nextTile && nextTile.pop) {
 const poppedNext = nextTile;
 setTimeout(() => { if (poppedNext.pop) delete poppedNext.pop; }, 0);
 }
-} else nextCont.replaceChildren();
-
 const jailCont = document.getElementById('jail-content');
-jailCont.innerHTML = '';
-if (jailTile) jailCont.appendChild(makeTileContent(jailTile));
-else jailCont.replaceChildren();
+mountTray(jailCont, jailTile);
 renderHint();
 unifyTrayPieces();
 if (tutorial.active) layoutTutorial();
@@ -1873,25 +2015,28 @@ const tail = ROCKET_EDGE.tail;
 const noseDisp = pieceDisplaySize('img/pasha_15.png', cellW, cellH);
 const noseScale = noseDisp.h / nose.natH;
 if (!noseScale) return;
+/* The nose back is a curve and the body's mouth is an ellipse, so a fixed
+   6px overlap leaves a tan gap. Tuck scales with the sprite. */
+const overlap = 6 + noseScale * 150;
 const noseH = nose.bot - nose.top;
 const bodyH = body.bot - body.top;
 const bodyJoined = noseScale * noseH / bodyH;
 const noseTop = (cellH - noseDisp.h) / 2 + nose.top * noseScale;
 if (tile.level === ROCKET_NOSE) {
 const dispW = noseDisp.w;
-const dx = (cellW + ROCKET_OVERLAP / 2) - cellW / 2 - (nose.x * noseScale - dispW / 2);
+const dx = (cellW + overlap / 2) - cellW / 2 - (nose.x * noseScale - dispW / 2);
 piece.style.setProperty('--piece-dx', dx.toFixed(2) + 'px');
 return;
 }
 if (tile.level === ROCKET_BODY && (side === 'left' || side === 'both')) {
-rocketShift(piece, cellW, cellH, body.natW, body.natH, bodyJoined, body.x, -ROCKET_OVERLAP / 2, body.top, noseTop);
+rocketShift(piece, cellW, cellH, body.natW, body.natH, bodyJoined, body.x, -overlap / 2, body.top, noseTop);
 return;
 }
 if (tile.level === ROCKET_BODY) {
 const bDisp = pieceDisplaySize('img/pasha_16.png', cellW, cellH);
 const bs = bDisp.h / body.natH;
 const dispW = bDisp.w;
-const dx = (cellW + ROCKET_OVERLAP / 2) - cellW / 2 - (body.rx * bs - dispW / 2);
+const dx = (cellW + overlap / 2) - cellW / 2 - (body.rx * bs - dispW / 2);
 piece.style.setProperty('--piece-dx', dx.toFixed(2) + 'px');
 return;
 }
@@ -1901,17 +2046,18 @@ let capTop, capX, capScale;
 if (bodyHasNose) {
 capScale = bodyJoined;
 capTop = noseTop + (body.rTop - body.top) * capScale;
-capX = -ROCKET_OVERLAP / 2 + (body.rx - body.x) * capScale;
+capX = -overlap / 2 + (body.rx - body.x) * capScale;
 } else {
 const bDisp = pieceDisplaySize('img/pasha_16.png', cellW, cellH);
 capScale = bDisp.h / body.natH;
 capTop = (cellH - bDisp.h) / 2 + body.rTop * capScale;
-capX = cellW + ROCKET_OVERLAP / 2;
+capX = cellW + overlap / 2;
 }
 const capH = (body.rBot - body.rTop) * capScale;
 const tailH = tail.bot - tail.top;
 const ts = capH / tailH;
-const tailX = (capX - cellW) - ROCKET_OVERLAP - ROCKET_TAIL_TUCK;
+const tailTuck = 8 + ts * 60;
+const tailX = (capX - cellW) - overlap - tailTuck;
 rocketShift(piece, cellW, cellH, tail.natW, tail.natH, ts, tail.x, tailX, tail.top, capTop);
 }
 }
@@ -1966,6 +2112,7 @@ g.style.position = 'fixed';
 g.style.margin = '0';
 g.style.zIndex = '2100';
 g.style.pointerEvents = 'none';
+g.style.animation = 'none';
 g.style.transformOrigin = 'center center';
 const sx = rect.left + rect.width / 2;
 const sy = rect.top + rect.height / 2;
@@ -1973,14 +2120,17 @@ g.style.left = sx + 'px';
 g.style.top = sy + 'px';
 g.style.width = rect.width + 'px';
 g.style.height = rect.height + 'px';
-g.style.marginLeft = (-rect.width / 2) + 'px';
-g.style.marginTop = (-rect.height / 2) + 'px';
+g.style.setProperty('--piece-dx', '0px');
+g.style.setProperty('--piece-dy', '0px');
 document.body.appendChild(g);
-const ang = Math.atan2(ay - sy, ax - sx);
+const dx = ax - sx;
+const dy = ay - sy;
+/* Rigid slide. The resting piece is translate(-50%, -50%) around the cell centre,
+   so the flight ends on that same transform — the result does not snap. */
 g.animate([
-{ transform: 'rotate(' + ang + 'rad) scale(1.85, 0.62)', opacity: 0.5, offset: 0 },
-{ transform: 'translate(' + ((ax - sx) * 0.45) + 'px,' + ((ay - sy) * 0.45) + 'px) rotate(' + ang + 'rad) scale(1.05, 0.4)', opacity: 0.5, offset: 0.55 },
-{ transform: 'translate(' + (ax - sx) + 'px,' + (ay - sy) + 'px) rotate(' + ang + 'rad) scale(0.18, 0.14)', opacity: 0.5, offset: 1 }
+{ transform: 'translate(-50%, -50%) translate(0px, 0px)', offset: 0 },
+{ transform: 'translate(-50%, -50%) translate(' + (dx * 0.45) + 'px,' + (dy * 0.45) + 'px)', offset: 0.55 },
+{ transform: 'translate(-50%, -50%) translate(' + dx + 'px,' + dy + 'px)', offset: 1 }
 ], { duration: 300, easing: 'ease-in', fill: 'forwards' });
 piece.style.visibility = 'hidden';
 ghosts.push(g);
@@ -2070,6 +2220,22 @@ function cellPx() {
 const board = document.getElementById('board');
 return (board && board.clientWidth ? board.clientWidth : 240) / SIZE;
 }
+/* Vector from the destination cell centre to the source cell centre.
+   Width and height are measured separately — cells are taller than they are wide. */
+function slideDelta(fromR, fromC, toR, toC) {
+const from = document.querySelector('.cell[data-r="' + fromR + '"][data-c="' + fromC + '"]');
+const to = document.querySelector('.cell[data-r="' + toR + '"][data-c="' + toC + '"]');
+if (from && to && from.clientWidth && to.clientWidth) {
+const a = from.getBoundingClientRect();
+const b = to.getBoundingClientRect();
+return {
+dx: (a.left + a.width / 2) - (b.left + b.width / 2),
+dy: (a.top + a.height / 2) - (b.top + b.height / 2)
+};
+}
+const box = cellSize();
+return { dx: (fromC - toC) * box.w, dy: (fromR - toR) * box.h };
+}
 
 function pioneerOptions(r, c) {
 let empty = [], money = [];
@@ -2085,7 +2251,6 @@ return { empty, money, blocked: empty.length + money.length === 0 };
 
 function stepPioneers() {
 let moved = false;
-const px = cellPx();
 let guard = 0;
 let progress = true;
 while (progress && guard < SIZE * SIZE + 1) {
@@ -2115,7 +2280,8 @@ taken[move.r + ',' + move.c] = true;
 if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
 grid[move.r][move.c] = { kind: 'pioneer', movedSeq: ++unitSeq, _stepped: true };
 grid[item.r][item.c] = null;
-moveAnims.push({ r: move.r, c: move.c, fromR: item.r, fromC: item.c, dx: (item.c - move.c) * px + 'px', dy: (item.r - move.r) * px + 'px', hop: false });
+const delta = slideDelta(item.r, item.c, move.r, move.c);
+moveAnims.push({ r: move.r, c: move.c, fromR: item.r, fromC: item.c, dx: delta.dx + 'px', dy: delta.dy + 'px', hop: false });
 moved = true;
 progress = true;
 });
@@ -2195,6 +2361,9 @@ return wait;
 }
 function convertTrapped(trapped, done) {
 const spots = orderedTrapped(trapped);
+const converting = {};
+spots.forEach(([r, c]) => { converting[r + ',' + c] = true; });
+moveAnims = moveAnims.filter(a => !converting[a.r + ',' + a.c]);
 let trappedN = 0;
 spots.forEach(([r, c]) => {
 if (!grid[r][c] || grid[r][c].kind !== 'pioneer') return;
@@ -2260,14 +2429,14 @@ checkGameOver();
 }
 function afterPioneerStep() {
 const second = trappedPioneers();
-render();
+if (!second.length) {
+if (moveAnims.length) render();
 if (document.querySelector('.cell.anim-hop')) markBusy(860);
 else if (document.querySelector('.cell.anim-walk')) markBusy(660);
-if (!second.length) { finishTurn(); return; }
-shakeCells(second);
-const wait = phaseDelay();
-markBusy(wait + 700);
-setTimeout(() => convertTrapped(second, finishTurn), wait);
+finishTurn();
+return;
+}
+convertTrapped(second, finishTurn);
 }
 function afterFirstTraps() {
 if (tutorial.active) {
@@ -2282,11 +2451,7 @@ function finishUnits() {
 if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 const first = trappedPioneers();
 if (!first.length) { afterFirstTraps(); return; }
-render();
-shakeCells(first);
-const wait = phaseDelay();
-markBusy(wait + 700);
-setTimeout(() => convertTrapped(first, afterFirstTraps), wait);
+convertTrapped(first, afterFirstTraps);
 }
 
 function updateShopVoter() {
@@ -2516,6 +2681,7 @@ holdShade(anim.fromR, anim.fromC, true, reduce ? 0 : ms);
 holdShade(r, c, false, reduce ? 0 : ms);
 }
 if (reduce) return;
+cell.classList.remove('anim-walk', 'anim-hop');
 if (anim.hop) cell.classList.add('anim-hop');
 else if (piece) {
 const origin = pioneerFeetOrigin();
@@ -2523,6 +2689,7 @@ piece.style.setProperty('--dx', anim.dx || '0px');
 piece.style.setProperty('--dy', anim.dy || '0px');
 piece.style.setProperty('--walk-ox', origin[0]);
 piece.style.setProperty('--walk-oy', origin[1]);
+void piece.offsetWidth;
 cell.classList.add('anim-walk');
 }
 const done = () => { cell.classList.remove('anim-walk', 'anim-hop'); };
@@ -2794,7 +2961,7 @@ undoState = takeSnapshot();
 if (nextTile.tool === 'jurist') {
 breakToolStreak();
 nextTile = grid[r][c]; grid[r][c] = null;
-if (juristPending && !tutorial.active) armJuristCooldown();
+if (juristPending && !tutorial.active && !JURIST_TEST_UNLIMITED) armJuristCooldown();
 else juristPending = false;
 sfx('pop');
 render(); saveGame();
@@ -2976,8 +3143,7 @@ c.appendChild(img);
 }
 
 function openPauseList() {
-closeModal('pause-modal');
-openHintGallery();
+leaveToTitle();
 }
 
 function performUndo() {
@@ -3015,7 +3181,7 @@ notifyTutorial({ type: 'juristTap' });
 }
 return;
 }
-if (juristCooldown > 0) { openSizo(); return; }
+if (!JURIST_TEST_UNLIMITED && juristCooldown > 0) { openSizo(); return; }
 if (juristPending) return;
 if (isJuristTile(nextTile)) return;
 sfx('pop');
@@ -3061,12 +3227,16 @@ if (coins < item.price) { setStatus(); return; }
 coins -= item.price;
 if (nextTile) bufferedNext = nextTile;
 nextTile = item.tile;
+unlockBookKey(item.tile);
 render(); closeModal('shop-modal');
+}
+function buyStarsPlaceholder() {
+showToast('Скоро: оплата звёздами');
 }
 
 function openModal(id) {
 document.getElementById(id).classList.add('open');
-if (id === 'shop-modal') notifyTutorial({ type: 'shop' });
+if (id === 'shop-modal') { paintShopStamps(); notifyTutorial({ type: 'shop' }); }
 sfx('ui');
 }
 
@@ -3087,6 +3257,7 @@ document.getElementById('book-modal').classList.add('open');
 function renderBook() {
 let names = currentBranch === 'chain' ? CHAIN : (currentBranch === 'care' ? CARE : INCOME);
 let scroll = document.getElementById('book-scroll');
+if (!scroll) return;
 scroll.innerHTML = '';
 for (let i = 0; i < names.length; i++) {
 let key = currentBranch + '_' + (i + 1);
@@ -3857,30 +4028,264 @@ sfx('ui');
 updateSfxButton();
 }
 
+const BOOK_KEY = 'pasha_book_v1';
+const PURCHASE_KEY = 'pasha_purchases_v1';
+const BOOK_PER_PAGE = 7;
+/* kind, level, quote, cup, coins, saw. null means that icon is omitted. Chain 1-3 start unlocked. */
+const BOOK = [
+['chain',1,"Зеленые просторы и зелень - вот за что мы любим нашу Родину.",null,null,null],
+['chain',2,"А это мы с вами, друзья. Электорат. Гордый и довольный.",30,5,2],
+['chain',3,"Когда мы решаем исполнить гражданский долг, мы становимся избирателями.",100,10,5],
+['chain',4,"По воскресеньям некоторые школы превращаются в избирательные участки.",500,15,7],
+['chain',5,"Явка избирателей делает выборы. Ну, или наказ сверху. Или инициатива снизу и перегибы на местах.",1500,30,15],
+['chain',6,"Мигалка, квартира, значок на груди и встречная полоса. Кандидат пришел к успеху и стал депутатом.",4000,50,25],
+['chain',7,"Если депутаты собираются вместе, они много ДУМАют. Или играют в Демократию на своих планшетах.",8000,100,50],
+['chain',8,"Дума утверждает Премьера. Бывает, для этого требуется три Думы.",16000,1500,750],
+['chain',9,"Не каждый Премьер становится Президентом. Это и от вас зависит!",30000,5000,2500],
+['chain',10,"Свет-батюшка. Красно солнышко. Отец народов. Он знает, что нам есть, великий диетолог! Ещё немного и можно короновать!",100000,12000,6000],
+['chain',11,"Наивный, сильный и весь в белом - Ганди привел к свободе сразу две страны. Он надеялся на лучшее, и даже умер от пули безумца.",200000,20000,10000],
+['chain',12,"Великий нравственник, справедливец и талант думал о том, как обустроить Россию, как вытащить ее из лап КГБ. Какая ирония!",300000,40000,20000],
+['chain',13,"Ум, честь и совесть русского народа. Французский негр. По сути - наше все, и тоже не любил царя.",600000,60000,30000],
+['chain',14,"Вознесся в небеса, вернулся, улыбался навеки первый русский космонавт. А на Youtube, с DVD и с книжкой это был не он.",1000000,1000,80000],
+['chain',15,"Твердосплавный, мощный, сочный. Простите, дамы, это просто модуль носовой.",1500000,1000,null],
+['chain',16,"Каморка Папы Карло с массажным креслом класса люкс.",1500000,1000,null],
+['chain',17,"Мощный двигатель 1.6, коробка-автомат, доступная цена. Сгорает в атмосфере, останки, как обычно - в Казахстан.",1500000,1000,null],
+['chain',18,"Красота и мощь космической программы. Последняя надежда русского народа. Зависть NASA.",3000000,1000,80000],
+['chain',19,"Плачь, смейся, голосуй правильно. Контроль за телезрителем - космический перст, который смотрит в небо с улицы Королева.",5000000,1000,200000],
+['chain',20,"На главной елке и звезды ярче и бюджет полнее. Говорят, если долго смотреть на звезды, можно увидеть честные выборы и удивленное лицо Сергея Шойгу.",6000000,1000,200000],
+['chain',21,"Член секретного правительства, верховный манипулятор, владеющий умами зомби-избирателей. Увидел его и продолжать не страшно.",7000000,1000,250000],
+['chain',22,"Получил российский паспорт - сразу выросли сборы кассовые!",8000000,1000,300000],
+['chain',23,"Госдума принимает закон о запрете мата, и Никита Борода отправляется за французским паспортом. Трепещи, пятая республика!",9000000,1000,350000],
+['chain',24,"Ради свободы убегу из Америки. Ради демократии - приеду в Россию.",10000000,1000,400000],
+['chain',25,"Следы таинственных агентов везде, куда не глянь. Кто в здравом уме потребует себе свобод? Какой-то неправильный попался нам народ.",11000000,1000,450000],
+['chain',26,"Пример того, как воля миллионов может сменить власть и прогнать заворовавшегося президента. А уж покрышки старые найдем!",12000000,1000,500000],
+['chain',27,"Верните Крым, он наш по праву! Финляндия и Польша, готовимся к визиту вежливых людей. Что там по списку дальше?",13000000,1000,600000],
+['chain',28,"Это не Крым вернулся. Это мы все возвращаемся в СССР. Не страшно?",14000000,1000,700000],
+['care',1,"ЕДросы сидят смирно и взрослым сильно не мешают: то детей сиротами оставят, то айпады запретят. Зовите санитаров!",null,null,null],
+['care',2,"Чиновник пришел сюда надолго, лет на 5. А если повезет - то условно и без конфискации.",1500,30,15],
+['care',3,"Карьерный пик чиновника - кресло Министра.",4000,50,25],
+['care',4,"Министры вместе составляют Правительство.",16000,250,125],
+['care',5,"Ура, ты у руля! Распили Госзаказ и получи бабло на оффшорный счет. Или дождись куша потолще.",50000,1000,10000],
+['care',6,"Врачи, учителя, дороги? Что за глупости! Куршавель, спорткар, икра, башня до неба! Пили бабло или берись кроить законы.",100000,1000,36000],
+['care',7,"Книжка-раскраска правящей элиты. Когда-то - основной закон страны. Права на митинги и честные выборы - все было здесь.",260000,1000,70000],
+['care',8,"Великая страна великих людей. Людей среднего роста. Людей мелочных. А, пропади оно пропадом! Пилите!",520000,1000,140000],
+['care',9,"Приют для беглых олигархов, стоянка яхт и школы для чиновничьих детей. Три часа лету - и остров свободы вас хорошим чаем напоит.",1000000,1000,280000],
+['care',10,"Жаркие подряды. Зимние распилы. Твои доходы. Это так мило.",1500000,1000,300000],
+['care',11,"Пора кормить Кавказ! Щедрые трансферы поддержат и страну вахаббитов и родину мамалыги. Знай, обналичивай авизо.",2000000,1000,350000],
+['care',12,"Бессердечные дяди и тети из Госдумы променяли будущее российских сироток на партбилет Партии власти. Ну, и кто теперь торгует детьми?",4000000,1000,400000],
+['care',13,"Средства от продажи нефти - это такая сумма, которая жгла бы карман и аравийскому эмиру. Что уж тут говорить о шаловливых депутатах!",8000000,1000,450000],
+['care',14,"На зарплату депутата только элитные апартаменты в Майями и купишь. В Москве-то дорого, пробки и декларации заполнять заставляют.",12000000,1000,500000],
+['care',15,"Мы спрячем ваши денежки по банкам и углам. А если пропадет немного - парам-парам-пам-пам.",14000000,1000,600000],
+['care',16,"Инновации выходят на новый виток: отбираем и сдаем лаборатории под офисы. Эффективные менеджеры идут!",16000000,1000,700000],
+['care',17,"Этот город - самый лучший город на земле. Пожалуй, распилю его два раза.",18000000,1000,800000],
+['care',18,"Зачем пилить какие-то проекты, когда огромная копилка под рукой. Берите смело, с нашими властями до пенсии никто не доживет.",20000000,1000,900000],
+['care',19,"Министр мебели и обороны, чей-то зять. Женской поэзии ценитель и бюджетов трубадур.",22000000,1000,1000000],
+['care',20,"Газеты, блоги под запретом, завтра начинаем книги жечь. И только Министерство Правды вещает без ограничений.",24000000,1000,1100000],
+['income',1,"Отпеть, крестить и освятить распил? Куда там - импорт алкоголя, сигарет, баварских газенвагенов. Стучите и откроют вам.",null,7,100],
+['income',2,"Фонд, храм или бизнес-центр - кто уж разберет. Но можно офис снять в аренду, локейшен супер и стабильно каждый ход вам ХХС дает доход.",4000,500,250],
+['income',3,"\"Бог поругаем не бывает. Что посеет человек, то и пожнет.\" Проявил неуважение к иконе - просиди два года в зоне.",26000,1000,10000],
+['income',4,"Поет Мадонна гораздо лучше Pussy Riot, знает толк в свободе, отличное белье. Прогнать пыталась, встретила отпор.",50000,1000,15000],
+['income',5,"Светская львица, казначей оппозиции. Работает на дому, сортирует почту. Стабильный доход.",100000,1000,20000]
+];
+let bookUnlocked = new Set(['chain_1', 'chain_2', 'chain_3']);
+let purchases = { jurist: false, statue: false };
+function bookId(tile) {
+if (!tile || tile.level == null) return null;
+if (tile.kind !== 'chain' && tile.kind !== 'care' && tile.kind !== 'income') return null;
+return tile.kind + '_' + tile.level;
+}
+function loadBook() {
+try {
+const raw = localStorage.getItem(BOOK_KEY);
+const arr = raw ? JSON.parse(raw) : [];
+if (Array.isArray(arr)) arr.forEach(k => { if (typeof k === 'string') bookUnlocked.add(k); });
+} catch (e) {}
+bookUnlocked.add('chain_1');
+bookUnlocked.add('chain_2');
+bookUnlocked.add('chain_3');
+}
+function saveBook() {
+try { localStorage.setItem(BOOK_KEY, JSON.stringify(Array.from(bookUnlocked))); } catch (e) {}
+}
+function unlockBookKey(tileOrKey) {
+const key = typeof tileOrKey === 'string' ? tileOrKey : bookId(tileOrKey);
+if (!key || bookUnlocked.has(key)) return;
+bookUnlocked.add(key);
+saveBook();
+}
+function unlockVisiblePieces() {
+if (!grid || !grid.length) return;
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) unlockBookKey(grid[r][c]);
+unlockBookKey(nextTile);
+unlockBookKey(jailTile);
+unlockBookKey(bufferedNext);
+}
+loadBook();
+function loadPurchases() {
+try {
+const o = JSON.parse(localStorage.getItem(PURCHASE_KEY) || '{}');
+purchases.jurist = !!(o && o.jurist);
+purchases.statue = !!(o && o.statue);
+} catch (e) {}
+}
+function savePurchases() {
+try { localStorage.setItem(PURCHASE_KEY, JSON.stringify({ jurist: !!purchases.jurist, statue: !!purchases.statue })); } catch (e) {}
+}
+function markPurchase(id) {
+if (id !== 'jurist' && id !== 'statue') return;
+purchases[id] = true;
+savePurchases();
+paintShopStamps();
+}
+function paintShopStamps() {
+const j = document.getElementById('stamp-jurist');
+const s = document.getElementById('stamp-statue');
+if (j) j.classList.toggle('on', !!purchases.jurist);
+if (s) s.classList.toggle('on', !!purchases.statue);
+}
+loadPurchases();
+paintShopStamps();
+window.markPurchase = markPurchase;
+
 let hintPage = 0;
+let hintPages = 1;
 let hintPointer = null;
+const bookSrcImg = {};
+function paintBookIcon(holder, image) {
+if (!holder.parentNode || !image.naturalWidth) return;
+const key = holder.dataset.src;
+const trim = TRIM[key] || measureTrim(image);
+const natW = trim.natW || image.naturalWidth;
+const natH = trim.natH || image.naturalHeight;
+const ow = Math.max(1, (trim.r - trim.l) * natW);
+const oh = Math.max(1, (trim.b - trim.t) * natH);
+const sc = 180 / Math.max(ow, oh);
+const c = document.createElement('canvas');
+c.width = Math.max(1, Math.round(ow * sc));
+c.height = Math.max(1, Math.round(oh * sc));
+c.getContext('2d').drawImage(image, (trim.l || 0) * natW, (trim.t || 0) * natH, ow, oh, 0, 0, c.width, c.height);
+holder.replaceWith(c);
+}
+function trimmedBookIcon(src) {
+const key = bareSrc(src);
+const holder = document.createElement('img');
+holder.alt = '';
+holder.draggable = false;
+holder.dataset.src = key;
+holder.src = src;
+let image = bookSrcImg[key];
+if (!image) {
+image = new Image();
+image.src = src;
+bookSrcImg[key] = image;
+}
+const go = function () { paintBookIcon(holder, image); };
+if (image.decode) image.decode().then(go, function () { image.onload = go; });
+else if (image.complete && image.naturalWidth) queueMicrotask(go);
+else image.onload = go;
+return holder;
+}
+function bookStat(src, value) {
+const s = document.createElement('span');
+s.className = 'pb-stat';
+const img = document.createElement('img');
+img.src = src;
+img.alt = '';
+s.appendChild(img);
+s.appendChild(document.createTextNode(String(value)));
+return s;
+}
+function makeBookCard(item, placeholder) {
+const card = document.createElement('div');
+const open = !!(item && bookUnlocked.has(item.kind + '_' + item.level));
+card.className = 'pb-card' + (open ? '' : ' locked') + (placeholder ? ' placeholder' : '');
+const icon = document.createElement('div');
+icon.className = 'pb-icon';
+if (open) {
+icon.appendChild(trimmedBookIcon(getTileImage({ kind: item.kind, level: item.level })));
+} else {
+const q = document.createElement('img');
+q.className = 'q-icon';
+q.src = 'img/question_mark.png?v=53';
+q.alt = '?';
+icon.appendChild(q);
+}
+card.appendChild(icon);
+const body = document.createElement('div');
+body.className = 'pb-body';
+if (open) {
+const quote = document.createElement('div');
+quote.className = 'pb-quote';
+quote.textContent = item.quote;
+body.appendChild(quote);
+if (item.cup != null || item.coin != null || item.saw != null) {
+const stats = document.createElement('div');
+stats.className = 'pb-stats';
+if (item.cup != null) stats.appendChild(bookStat('img/cup_trim.png?v=53', item.cup));
+if (item.coin != null) stats.appendChild(bookStat('img/coin_trim.png?v=53', item.coin));
+if (item.saw != null) stats.appendChild(bookStat('img/saw_trim.png?v=53', item.saw));
+body.appendChild(stats);
+}
+}
+card.appendChild(body);
+return card;
+}
+function bookPageWidth() {
+const view = document.getElementById('hint-viewport');
+return (view && view.clientWidth) || 1;
+}
+function layoutBookPages() {
+const w = bookPageWidth();
+document.querySelectorAll('#hint-track .pb-page').forEach(p => {
+p.style.flexBasis = w + 'px';
+p.style.width = w + 'px';
+});
+}
 function hintTrackShift(page, dx) {
-const g = document.getElementById('hint-gallery');
-const width = (g && g.clientWidth) || 1;
-const drag = dx ? (dx / width) * (100 / 3) : 0;
-return (-page * (100 / 3)) + drag;
+return -(page * bookPageWidth()) + (dx || 0);
 }
 function setHintPage(n) {
-hintPage = Math.max(0, Math.min(2, n));
+hintPage = Math.max(0, Math.min(hintPages - 1, n));
 const track = document.getElementById('hint-track');
 if (!track) return;
-track.style.transform = 'translateX(' + hintTrackShift(hintPage, 0) + '%)';
-document.querySelectorAll('.hint-dot').forEach((dot, i) => dot.classList.toggle('on', i === hintPage));
+layoutBookPages();
+track.style.transform = 'translateX(' + hintTrackShift(hintPage, 0) + 'px)';
+document.querySelectorAll('#book-dots .hint-dot').forEach((dot, i) => dot.classList.toggle('on', i === hintPage));
+}
+function renderPieceBook() {
+const track = document.getElementById('hint-track');
+const dots = document.getElementById('book-dots');
+if (!track || !dots) return;
+const items = BOOK.map(row => ({ kind: row[0], level: row[1], quote: row[2], cup: row[3], coin: row[4], saw: row[5] }));
+hintPages = Math.ceil(items.length / BOOK_PER_PAGE);
+track.replaceChildren();
+dots.replaceChildren();
+for (let p = 0; p < hintPages; p++) {
+const page = document.createElement('div');
+const last = p === hintPages - 1;
+page.className = 'pb-page' + (last ? ' last-page' : '');
+items.slice(p * BOOK_PER_PAGE, p * BOOK_PER_PAGE + BOOK_PER_PAGE).forEach(item => page.appendChild(makeBookCard(item, false)));
+if (last) while (page.children.length < BOOK_PER_PAGE) page.appendChild(makeBookCard(null, true));
+track.appendChild(page);
+const dot = document.createElement('button');
+dot.type = 'button';
+dot.className = 'hint-dot' + (p === 0 ? ' on' : '');
+dot.setAttribute('aria-label', 'Страница ' + (p + 1));
+dot.onclick = function () { setHintPage(p); };
+dots.appendChild(dot);
+}
+setHintPage(0);
 }
 function openHintGallery() {
 sfx('ui');
-setHintPage(0);
 const g = document.getElementById('hint-gallery');
 g.classList.add('open');
 g.setAttribute('aria-hidden', 'false');
+renderPieceBook();
 }
 function closeHintGallery() {
 const g = document.getElementById('hint-gallery');
+if (!g) return;
 g.classList.remove('open');
 g.setAttribute('aria-hidden', 'true');
 }
@@ -3889,14 +4294,14 @@ const g = document.getElementById('hint-gallery');
 const track = document.getElementById('hint-track');
 if (!g || !track) return;
 g.addEventListener('pointerdown', (e) => {
+if (!g.classList.contains('open')) return;
 if (e.target.closest('#hint-close, .hint-dot')) return;
 hintPointer = { id: e.pointerId, x: e.clientX, y: e.clientY, page: hintPage };
 track.classList.add('dragging');
 });
 g.addEventListener('pointermove', (e) => {
 if (!hintPointer || e.pointerId !== hintPointer.id) return;
-const dx = e.clientX - hintPointer.x;
-track.style.transform = 'translateX(' + hintTrackShift(hintPointer.page, dx) + '%)';
+track.style.transform = 'translateX(' + hintTrackShift(hintPointer.page, e.clientX - hintPointer.x) + 'px)';
 });
 function endHint(e) {
 if (!hintPointer || (e && e.pointerId !== hintPointer.id)) return;
@@ -4239,7 +4644,10 @@ openGameOver();
 }
 }
 
-function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+function closeModal(id) {
+const el = document.getElementById(id);
+if (el) el.classList.remove('open');
+}
 function askConfirm(text, onYes, onNo, extraLabel, extraFn) {
 document.getElementById('confirm-text').textContent = text;
 document.getElementById('confirm-yes').onclick = function() {
@@ -4338,6 +4746,7 @@ score = data.score || 0;
 coins = typeof data.coins === 'number' ? data.coins : 0;
 moves = data.moves || 0;
 juristCooldown = typeof data.juristCooldown === 'number' ? Math.max(0, data.juristCooldown) : 0;
+if (JURIST_TEST_UNLIMITED) juristCooldown = 0;
 juristPending = !!data.juristPending;
 nextTile = data.nextTile || { kind: 'chain', level: 1 };
 jailTile = data.jailTile || null;
@@ -4374,6 +4783,7 @@ render();
 setStatus();
 checkMoveAchievements();
 tryAssembleRocket(false, 0, function() { saveGame(); });
+unlockVisiblePieces();
 return true;
 } catch (e) { return false; }
 }
@@ -4479,10 +4889,13 @@ window.addEventListener('pointerdown', function () { onAudioGesture(); bootTeleg
 window.addEventListener('touchend', onAudioGesture, { capture: true, passive: true });
 window.addEventListener('resize', function () {
 fingerSig = '';
+hudLayoutKey = '';
 layoutTitle();
 if (charOpen) layoutCharPopup();
 const title = document.getElementById('title-screen');
 if (title && title.classList.contains('hidden')) render();
+const book = document.getElementById('hint-gallery');
+if (book && book.classList.contains('open')) { layoutBookPages(); setHintPage(hintPage); }
 });
 
 function finishBoot() {
@@ -4524,8 +4937,13 @@ let juristHired = false;
 let cellarPage = 0;
 let cellarBackBound = false;
 let achTimer = null;
+const ACH_RESET_FLAG = 'pasha_achievements_reset_b14';
 function loadAchievements() {
 try {
+if (!localStorage.getItem(ACH_RESET_FLAG)) {
+localStorage.removeItem(ACH_KEY);
+localStorage.setItem(ACH_RESET_FLAG, '1');
+}
 const raw = localStorage.getItem(ACH_KEY);
 achievements = raw ? JSON.parse(raw) || {} : {};
 if (!achievements || typeof achievements !== 'object') achievements = {};
@@ -4723,53 +5141,11 @@ saveAchievements();
 hideAchievementUnlock();
 };
 function renderCellar() {
+/* Jars are removed until new art arrives. The wooden screen stays, with no broken images. */
 const host = document.getElementById('cellar-slots');
 const dots = document.getElementById('cellar-dots');
-if (!host) return;
-host.replaceChildren();
-const pages = Math.max(1, Math.ceil(ACHIEVEMENTS.length / 9));
-if (cellarPage >= pages) cellarPage = pages - 1;
-if (cellarPage < 0) cellarPage = 0;
-const jarH = 392;
-const jarW = jarH * (650 / 980);
-for (let i = 0; i < 9; i++) {
-const ach = ACHIEVEMENTS[cellarPage * 9 + i];
-const p = CELLAR_PLATES[i];
-const hasArt = !!(ach && ach.jar);
-const jar = document.createElement('img');
-jar.className = 'cellar-jar' + (ach && !achievements[ach.id] ? ' locked' : '');
-jar.src = hasArt ? ach.jar : JAR_EMPTY;
-jar.alt = ach ? ach.name : '';
-jar.style.objectFit = 'contain';
-jar.style.objectPosition = 'center bottom';
-jar.style.width = (jarW / CELLAR_W * 100) + '%';
-jar.style.height = (jarH / CELLAR_H * 100) + '%';
-jar.style.left = ((p.x + p.w / 2 - jarW / 2) / CELLAR_W * 100) + '%';
-jar.style.top = ((p.y - jarH + 22) / CELLAR_H * 100) + '%';
-host.appendChild(jar);
-if (!ach) continue;
-const name = document.createElement('div');
-name.className = 'cellar-name';
-name.textContent = ach.name;
-if (ach.name.length > 12) name.style.fontSize = '1.35cqh';
-name.style.left = (p.x / CELLAR_W * 100) + '%';
-name.style.top = (p.y / CELLAR_H * 100) + '%';
-name.style.width = (p.w / CELLAR_W * 100) + '%';
-name.style.height = (p.h / CELLAR_H * 100) + '%';
-host.appendChild(name);
-}
-if (dots) {
-dots.classList.toggle('show', pages > 1);
-dots.replaceChildren();
-for (let i = 0; i < pages; i++) {
-const b = document.createElement('button');
-b.type = 'button';
-b.className = 'cellar-dot' + (i === cellarPage ? ' on' : '');
-b.setAttribute('aria-label', 'Страница ' + (i + 1));
-b.onclick = function () { cellarPage = i; renderCellar(); };
-dots.appendChild(b);
-}
-}
+if (host) host.replaceChildren();
+if (dots) { dots.classList.remove('show'); dots.replaceChildren(); }
 }
 function layoutCellarX() {
 const stage = document.getElementById('cellar-stage');
@@ -4844,9 +5220,12 @@ else showToast('Юрист уже ждёт');
 function paintBlogger() {
 const n = document.getElementById('blogger-count');
 const use = document.getElementById('blogger-use');
-if (n) n.textContent = '\u00a0' + (juristHired ? '∞' : consultsLeft);
+if (n) {
+if (JURIST_TEST_UNLIMITED) { n.textContent = ''; n.style.visibility = 'hidden'; }
+else { n.style.visibility = ''; n.textContent = '\u00a0' + (juristHired ? '∞' : consultsLeft); }
+}
 if (use) {
-const off = bloggerUseBlocked() || (!juristHired && consultsLeft <= 0);
+const off = JURIST_TEST_UNLIMITED ? juristWaiting() : (bloggerUseBlocked() || (!juristHired && consultsLeft <= 0));
 use.classList.toggle('is-off', off);
 use.setAttribute('aria-disabled', off ? 'true' : 'false');
 }
@@ -4862,15 +5241,20 @@ const el = document.getElementById('blogger-modal');
 if (el) el.classList.remove('open');
 }
 function useBloggerConsult() {
+if (JURIST_TEST_UNLIMITED) {
+if (juristWaiting()) { showBloggerBlockedToast(); return; }
+} else {
 if (bloggerUseBlocked()) { showBloggerBlockedToast(); return; }
 if (!juristHired && consultsLeft <= 0) return;
 if (!juristHired) {
 consultsLeft--;
 saveConsults();
 }
+}
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
-armJuristCooldown();
+if (JURIST_TEST_UNLIMITED) { juristPending = false; juristCooldown = 0; }
+else armJuristCooldown();
 render();
 saveGame();
 closeBloggerHelp();
@@ -4955,7 +5339,7 @@ add('img/sheep-src.png?v=52');
 add('img/voter-grandpa.png?v=52');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/ui_bottom_forest.png?v=52','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/ui_bottom_forest_A.png?v=53','img/paid_trim.png?v=53','img/question_mark.png?v=53','img/cup_trim.png?v=53','img/coin_trim.png?v=53','img/saw_trim.png?v=53','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
