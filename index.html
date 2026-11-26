@@ -26,14 +26,14 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   --ui-bottom: calc(max(env(safe-area-inset-bottom, 0px), var(--tg-safe-area-inset-bottom, 0px)) + var(--tg-content-safe-area-inset-bottom, 0px));
   --ui-left: calc(max(env(safe-area-inset-left, 0px), var(--tg-safe-area-inset-left, 0px)) + var(--tg-content-safe-area-inset-left, 0px));
 }
-#app { --forest-lift: max(0px, calc(var(--ui-top) - 100cqw * 137 / 877)); width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: #7e6829; container-type: inline-size; padding-top: 0; padding-right: var(--ui-right); padding-bottom: 0; padding-left: var(--ui-left); }
+#app { --forest-lift: max(0px, calc(var(--ui-top) - 100cqw * 137 / 877)); width: 100%; max-width: 480px; height: 100vh; height: 100dvh; max-height: 100dvh; display: flex; flex-direction: column; position: relative; overflow: hidden; background: linear-gradient(rgba(8, 14, 4, 0.30), rgba(8, 14, 4, 0.30)) center top / cover no-repeat, #3e5c22 url('img/forest_full.jpg?v=54') center top / cover no-repeat; container-type: inline-size; padding-top: 0; padding-right: var(--ui-right); padding-bottom: 0; padding-left: var(--ui-left); }
 
 #board { contain: layout paint; transform: translateZ(0); }
 .bottom-panel { transform: translateZ(0); }
 
-/* ВЕРХ. Лес тянется под шапку Telegram и не кликается. Под ним img/hud_top.png (кубок, монета, часы, аватар; подиум, магазин, пауза, стрелка). Дорога под панелью целиком: оба бордюра и полоска травы. */
+/* ВЕРХ. Один лес img/forest_full.jpg на весь #app (cover, верх по центру, затемнение). Полоса над HUD прозрачная — сквозь неё виден тот же фон, без шва с низом. Под ней img/hud_top.png. Дорога под панелью целиком. */
 .top-panel { position: relative; z-index: 2; width: 100%; flex-shrink: 0; margin-top: var(--forest-lift); display: flex; flex-direction: column; }
-.top-forest { position: absolute; left: 0; right: 0; top: calc(-1 * var(--forest-lift)); height: calc(100cqw * 137 / 877 + var(--forest-lift)); background: #57732b url('img/ui_top_forest.png') center bottom / 100% calc(100cqw * 137 / 877) no-repeat; pointer-events: none; }
+.top-forest { position: absolute; left: 0; right: 0; top: calc(-1 * var(--forest-lift)); height: calc(100cqw * 137 / 877 + var(--forest-lift)); background: none; pointer-events: none; }
 .top-hud { position: relative; width: 100%; margin-top: calc(100cqw * 137 / 877); aspect-ratio: 2400 / 470; flex-shrink: 0; background: #4f3b18 url('img/hud_top.png?v=47') center / 100% 100% no-repeat; z-index: 1; }
 .top-road { width: 100%; aspect-ratio: 877 / 118; flex-shrink: 0; background: #557a32 url('img/ui_top_road.png') center / 100% 100% no-repeat; pointer-events: none; }
 /* Счётчики стоят сразу справа от иконки на картинке и не заходят в соседнюю секцию. */
@@ -43,7 +43,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 #moves-box { left: 67.4%; width: 19.4%; }
 
 .hitbox { position: absolute; cursor: pointer; border-radius: 12px; }
-.hit-rating { left: 0; top: 48.3%; width: 28.92%; height: 51.7%; cursor: default; }
+.hit-rating { left: 0; top: 48.3%; width: 28.92%; height: 51.7%; cursor: pointer; }
 .hit-shop { left: 29.58%; top: 48.3%; width: 28.55%; height: 51.7%; }
 .hit-pause { left: 58.79%; top: 48.3%; width: 28.59%; height: 51.7%; }
 .hit-down { position: absolute; left: 88.04%; width: 11.96%; top: 48.3%; height: 51.7%; cursor: pointer; z-index: 2; }
@@ -116,9 +116,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 @keyframes omonFade { 0% { opacity: 0; } 100% { opacity: 1; } }
 .cell.anim-omon { animation: omonFade 0.4s ease-in; }
 
-/* НИЗ. Лес под коробками — одна непрерывная картинка: ряды того же спрайта
-   перекрыты мягким градиентом, поэтому горизонтальных швов нет.
-   Три прозрачные коробки лежат сверху — между ними и под ними виден лес. */
+/* НИЗ. Три прозрачные коробки лежат на том же лесу, что и верх (#app). Отдельной картинки и плитки нет. */
 .bottom-panel {
   position: relative;
   z-index: 2;
@@ -138,11 +136,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   z-index: 0;
   pointer-events: none;
   overflow: hidden;
-  background-color: #5a7c34;
-  background-image: url('img/ui_bottom_forest_A.png?v=53');
-  background-repeat: no-repeat;
-  background-position: center top;
-  background-size: 100% auto;
+  background: none;
 }
 .bottom-art {
   position: relative;
@@ -214,7 +208,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   aspect-ratio: 570 / 1438;
 }
 .shop-window {
-  background: #d7d8ae url('img/shop_bg.png') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/shop_bg.png?v=54') center / 100% 100% no-repeat;
   border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
@@ -551,12 +545,7 @@ cursor: pointer;
   box-sizing: border-box;
 }
 #hint-gallery.open { display: flex; }
-.book-forest { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; }
-.book-forest-fill { position: absolute; inset: 0; background: linear-gradient(180deg, #5d7a32 0%, #57732b 45%, #4a6828 100%); }
-.book-forest-top { position: absolute; left: 0; right: 0; top: 0; height: calc(100vw * 137 / 877 * 1.85); max-height: 130px; background: url('img/ui_top_forest.png') center bottom / 100% auto no-repeat; }
-.book-forest-far { position: absolute; left: -20%; right: -20%; top: 6%; height: 58%; background: url('img/ui_bottom_forest_A.png?v=53') center top / 100% auto no-repeat; opacity: 0.85; }
-.book-forest-near { position: absolute; left: -8%; right: -8%; bottom: 0; height: 64%; background: url('img/ui_bottom_forest_A.png?v=53') center top / 115% auto no-repeat; }
-.book-forest-dim { position: absolute; inset: 0; background: rgba(8, 14, 4, 0.36); }
+.book-forest { position: absolute; inset: 0; z-index: 0; overflow: hidden; pointer-events: none; background: linear-gradient(rgba(8, 14, 4, 0.30), rgba(8, 14, 4, 0.30)) center top / cover no-repeat, #3e5c22 url('img/forest_full.jpg?v=54') center top / cover no-repeat; }
 .book-header { position: relative; z-index: 2; flex: 0 0 auto; height: 36px; display: flex; align-items: center; justify-content: center; margin-bottom: 5px; }
 #hint-viewport { position: relative; z-index: 2; flex: 1 1 auto; min-height: 0; overflow: hidden; }
 #hint-track { height: 100%; display: flex; width: max-content; transition: transform 0.28s ease; will-change: transform; }
@@ -627,10 +616,136 @@ cursor: pointer;
 #char-pop.out[data-side="left"] img { transform: translateX(-105%); }
 #char-pop.out[data-side="right"] img { transform: translateX(105%); }
 #char-pop.pass, #char-pop.pass img { pointer-events: none; }
-.rating-table { width: 100%; border-collapse: collapse; margin: 4px 0 8px; }
-.rating-table th { text-align: left; color: #ffd700; font-size: 15px; padding: 8px 6px; border-bottom: 2px solid #8b6f2e; }
-.rating-table th:nth-child(2), .rating-table th:nth-child(3) { text-align: right; }
-.rating-soon { text-align: center; padding: 22px 8px 8px; font-weight: 800; }
+#char-pop.statue { background: rgba(0, 0, 0, 0.45); }
+#char-pop-buy {
+  display: none;
+  position: absolute;
+  left: 50%;
+  bottom: 78px;
+  transform: translateX(-50%);
+  z-index: 2;
+  padding: 9px 22px;
+  border-radius: 9px;
+  background: linear-gradient(#ffe36a, #f5c21b);
+  border: 2px solid #b8860b;
+  box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.35);
+  font-family: Arial, Helvetica, sans-serif;
+  font-weight: 700;
+  font-size: 15px;
+  line-height: 1.2;
+  color: #2b2200;
+  text-align: center;
+  white-space: nowrap;
+  letter-spacing: 0.2px;
+  cursor: pointer;
+}
+#char-pop.statue.on:not(.out) #char-pop-buy { display: block; }
+#rating-screen {
+  --rating-top: calc(var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)) + var(--tg-content-safe-area-inset-top, 56px));
+  position: fixed;
+  inset: 0;
+  z-index: 5240;
+  display: none;
+  flex-direction: column;
+  padding: calc(var(--rating-top) + 6px) 10px 12px;
+  box-sizing: border-box;
+  font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+  touch-action: none;
+}
+#rating-screen.open { display: flex; }
+.rating-bg {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(rgba(8, 14, 4, 0.30), rgba(8, 14, 4, 0.30)) center top / cover no-repeat, #5d9a2c url('img/forest_full.jpg?v=54') center top / cover no-repeat;
+}
+.rating-head { position: relative; z-index: 2; flex: 0 0 auto; height: 36px; margin-bottom: 6px; }
+#rating-close {
+  position: absolute;
+  right: 0;
+  top: 0;
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 2.5px solid #3a2a10;
+  background: #ffd24a;
+  color: #2b1a0e;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.45);
+}
+.rating-title {
+  position: relative;
+  z-index: 2;
+  margin: 8px 0 16px;
+  text-align: center;
+  font-size: 30px;
+  font-weight: 900;
+  color: #ffd23a;
+  letter-spacing: 2px;
+  -webkit-text-stroke: 2px #3b2a00;
+  paint-order: stroke fill;
+  text-shadow: 0 3px 0 #3b2a00;
+}
+.rating-list { position: relative; z-index: 2; }
+.rating-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 76px;
+  margin-bottom: 8px;
+  border-radius: 14px;
+  background: rgba(230, 238, 205, 0.18);
+  border: 1.5px solid rgba(255, 255, 255, 0.45);
+  padding: 0 12px;
+  color: #fff;
+}
+.rating-row.me { background: rgba(255, 210, 58, 0.22); border-color: #ffd23a; }
+.rating-place {
+  --digit-h: 28px;
+  --digit-slot: 24px;
+  width: 32px;
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.rating-av {
+  width: 54px;
+  height: 54px;
+  border-radius: 50%;
+  border: 3px solid #ffd23a;
+  background: linear-gradient(#6aa0d8, #3a6aa8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 24px;
+  font-weight: 800;
+  color: #fff;
+  flex: none;
+  overflow: hidden;
+}
+.rating-av img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.rating-row.empty .rating-av {
+  border-color: rgba(255, 255, 255, 0.5);
+  background: rgba(0, 0, 0, 0.25);
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 28px;
+  font-weight: 700;
+}
+.rating-info { flex: 1; min-width: 0; }
+.rating-nick { font-size: 17px; font-weight: 800; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.rating-row.empty .rating-nick { color: rgba(255, 255, 255, 0.55); font-weight: 700; }
+.rating-stats { margin-top: 5px; display: flex; gap: 14px; font-size: 15px; font-weight: 700; }
+.rating-stats span { display: inline-flex; align-items: center; gap: 4px; }
+.rating-stats img { height: 18px; width: auto; display: block; }
 #rules-modal { z-index: 5600; }
 .rules-scroll { flex: 1; overflow-y: auto; padding-right: 4px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 .rules-scroll p { color: #fff6e4; font-weight: 700; font-size: 15px; line-height: 1.4; margin: 0 0 12px; }
@@ -766,7 +881,7 @@ cursor: pointer;
 <div class="val-box" id="score-box"><div class="num-container" id="score-num"></div></div>
 <div class="val-box" id="coins-box"><div class="num-container" id="coins-num"></div></div>
 <div class="val-box" id="moves-box"><div class="num-container" id="moves-num"></div></div>
-<div class="hitbox hit-rating" aria-label="Рейтинг"></div>
+<div class="hitbox hit-rating" onclick="openRating()" aria-label="Рейтинг"></div>
 <div class="hitbox hit-shop" onclick="openModal('shop-modal')" aria-label="Магазин"></div>
 <div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"></div>
 <div class="hitbox hit-down" id="hit-down" onclick="useJurist()" aria-label="Юрист"></div>
@@ -839,24 +954,21 @@ cursor: pointer;
 <button type="button" class="shop-hitbox slot-5" onclick="buyItem({ name: 'Пила', price: 3000, tile: { kind: 'tool', tool: 'saw' } })" aria-label="Пила 3000"></button>
 <button type="button" class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })" aria-label="Мешок 4500"></button>
 <button type="button" class="shop-hitbox slot-7" onclick="openBloggerHelp()" aria-label="Блогер"></button>
-<img id="stamp-jurist" class="shop-paid for-jurist" src="img/paid_trim.png?v=53" alt="">
+<img id="stamp-jurist" class="shop-paid for-jurist" src="img/paid_trim.png?v=54" alt="">
 <button type="button" class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })" aria-label="Нанокоробка"></button>
-<button type="button" class="shop-hitbox slot-9" onclick="buyStarsPlaceholder('statue')" aria-label="Статуя свободы"></button>
-<img id="stamp-statue" class="shop-paid for-statue" src="img/paid_trim.png?v=53" alt="">
+<button type="button" class="shop-hitbox slot-9" onclick="openStatuePopup()" aria-label="Статуя свободы"></button>
+<img id="stamp-statue" class="shop-paid for-statue" src="img/paid_trim.png?v=54" alt="">
 <button type="button" class="shop-hitbox slot-10" aria-disabled="true" aria-label="Нужны деньги"></button>
 </div>
 </div>
 
-<div class="modal" id="rating-modal">
-<div class="modal-content">
-<h2>РЕЙТИНГ</h2>
-<table class="rating-table">
-<thead><tr><th>Ник</th><th>Очки</th><th>Ходы</th></tr></thead>
-<tbody></tbody>
-</table>
-<div class="rating-soon">Топ игроков скоро появится!</div>
-<button class="close-btn" onclick="closeModal('rating-modal')">Закрыть</button>
+<div id="rating-screen" aria-hidden="true">
+<div class="rating-bg" aria-hidden="true"></div>
+<div class="rating-head">
+<button type="button" id="rating-close" onclick="closeRating()" aria-label="Закрыть">×</button>
 </div>
+<h2 class="rating-title">РЕЙТИНГ</h2>
+<div class="rating-list" id="rating-list"></div>
 </div>
 
 <div class="modal" id="rules-modal">
@@ -981,16 +1093,11 @@ cursor: pointer;
 </div>
 <div id="char-pop" data-side="left" aria-hidden="true">
 <img id="char-pop-img" alt="" draggable="false">
+<button type="button" id="char-pop-buy">КУПИТЬ ЗА 199 звёзд</button>
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
-<div class="book-forest" aria-hidden="true">
-<div class="book-forest-fill"></div>
-<div class="book-forest-far"></div>
-<div class="book-forest-near"></div>
-<div class="book-forest-top"></div>
-<div class="book-forest-dim"></div>
-</div>
+<div class="book-forest" aria-hidden="true"></div>
 <div class="book-header">
 <div class="hint-dots" id="book-dots"></div>
 <button type="button" id="hint-close" onclick="closeHintGallery()" aria-label="Закрыть">×</button>
@@ -2471,10 +2578,27 @@ function layoutCharPopup() {
 const root = document.getElementById('char-pop');
 const image = document.getElementById('char-pop-img');
 if (!root || !image) return;
-const nw = image.naturalWidth || 900;
-const nh = image.naturalHeight || 700;
+const statue = !!(charItem && charItem.statue);
+const nw = image.naturalWidth || (statue ? 700 : 900);
+const nh = image.naturalHeight || (statue ? 868 : 700);
 const vw = window.innerWidth || 390;
 const vh = window.innerHeight || 800;
+if (statue) {
+let w = Math.round(vw * 0.87);
+let h = Math.round(w * nh / nw);
+let top = Math.round(vh * 0.24);
+const maxBottom = vh - 130;
+if (top + h > maxBottom) {
+h = Math.max(80, maxBottom - top);
+w = Math.round(h * nw / nh);
+}
+image.style.width = w + 'px';
+image.style.height = h + 'px';
+image.style.top = Math.round(top) + 'px';
+image.style.left = '0px';
+image.style.right = 'auto';
+return;
+}
 let w = Math.round(vw * 0.70);
 let h = Math.round(w * nh / nw);
 const maxH = Math.round(vh * 0.74);
@@ -2518,7 +2642,7 @@ else charOnClose = null;
 return;
 }
 if (immediate) {
-root.classList.remove('on', 'in', 'out', 'pass');
+root.classList.remove('on', 'in', 'out', 'pass', 'statue');
 root.setAttribute('aria-hidden', 'true');
 charOpen = false;
 charItem = null;
@@ -2530,7 +2654,7 @@ root.classList.remove('in');
 root.classList.add('out');
 setTimeout(function () {
 if (!root.classList.contains('out')) return;
-root.classList.remove('on', 'in', 'out', 'pass');
+root.classList.remove('on', 'in', 'out', 'pass', 'statue');
 root.setAttribute('aria-hidden', 'true');
 charOpen = false;
 charItem = null;
@@ -2551,6 +2675,7 @@ charItem = item;
 charOnClose = item.onClose || null;
 root.dataset.side = item.side;
 root.classList.toggle('pass', !!item.pass);
+root.classList.toggle('statue', !!item.statue);
 root.classList.remove('in', 'out');
 root.setAttribute('aria-hidden', 'false');
 image.onload = function () { if (charOpen) layoutCharPopup(); };
@@ -2592,8 +2717,18 @@ if (!root.classList.contains('on') || root.classList.contains('pass')) return;
 e.preventDefault();
 e.stopPropagation();
 }
+const buy = document.getElementById('char-pop-buy');
+if (buy) {
+buy.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+buy.addEventListener('pointerup', function (e) { e.stopPropagation(); });
+buy.addEventListener('click', function (e) {
+e.stopPropagation();
+showToast('Скоро: оплата звёздами');
+});
+}
 root.addEventListener('pointerdown', function (e) {
 if (!root.classList.contains('on') || root.classList.contains('pass')) return;
+if (e.target.closest && e.target.closest('#char-pop-buy')) return;
 eat(e);
 if (performance.now() < charArmedAt) return;
 if (charItem && charItem.pass) return;
@@ -3232,6 +3367,128 @@ render(); closeModal('shop-modal');
 }
 function buyStarsPlaceholder() {
 showToast('Скоро: оплата звёздами');
+}
+function openStatuePopup() {
+if (tutorial.active) return;
+if (charItem && charItem.statue) return;
+if (charQueue.some(function (it) { return it.statue; })) return;
+charQueue.push({
+key: 'statue-shop',
+img: 'img/popup_statue.png?v=54',
+side: 'left',
+sticky: true,
+statue: true
+});
+setTimeout(pumpCharPopup, 0);
+}
+function formatGrouped(n) {
+const s = String(Math.max(0, Math.floor(Number(n) || 0)));
+return s.replace(/\B(?=(\d{3})+(?!\d))/g, ' ');
+}
+function telegramPlayer() {
+try {
+const tg = window.Telegram && window.Telegram.WebApp;
+const u = tg && tg.initDataUnsafe && tg.initDataUnsafe.user;
+if (!u || typeof u !== 'object') return null;
+return u;
+} catch (e) { return null; }
+}
+function ratingPlace(n) {
+const el = document.createElement('div');
+el.className = 'rating-place';
+el.style.setProperty('--digit-h', '28px');
+el.style.setProperty('--digit-slot', (28 * DIGIT_SLOT_ASPECT).toFixed(2) + 'px');
+String(n).split('').forEach(function (ch) { el.appendChild(makeDigit(ch)); });
+return el;
+}
+function ratingAvatar(user, letter) {
+const av = document.createElement('div');
+av.className = 'rating-av';
+const photo = user && user.photo_url;
+if (photo) {
+const img = document.createElement('img');
+img.alt = '';
+img.referrerPolicy = 'no-referrer';
+img.src = photo;
+img.onerror = function () {
+img.remove();
+av.textContent = letter;
+};
+av.appendChild(img);
+} else {
+av.textContent = letter;
+}
+return av;
+}
+function ratingRowShell(n, empty) {
+const row = document.createElement('div');
+row.className = 'rating-row' + (empty ? ' empty' : ' me');
+row.appendChild(ratingPlace(n));
+return row;
+}
+function renderRating() {
+const list = document.getElementById('rating-list');
+if (!list) return;
+list.replaceChildren();
+const user = telegramPlayer();
+const first = user && user.first_name ? String(user.first_name).trim() : '';
+const last = user && user.last_name ? String(user.last_name).trim() : '';
+const name = (first + (last ? ' ' + last : '')).trim();
+const letter = (name || 'И').charAt(0).toUpperCase();
+let nick = name || 'Игрок';
+if (user && user.username) nick += ' (@' + user.username + ')';
+const me = ratingRowShell(1, false);
+me.appendChild(ratingAvatar(user, letter));
+const info = document.createElement('div');
+info.className = 'rating-info';
+const nickEl = document.createElement('div');
+nickEl.className = 'rating-nick';
+nickEl.textContent = nick;
+const stats = document.createElement('div');
+stats.className = 'rating-stats';
+[['img/cup_1.png?v=54', formatGrouped(score)], ['img/clock_1.png?v=54', formatGrouped(moves)]].forEach(function (pair) {
+const span = document.createElement('span');
+const img = document.createElement('img');
+img.src = pair[0];
+img.alt = '';
+span.appendChild(img);
+span.appendChild(document.createTextNode(pair[1]));
+stats.appendChild(span);
+});
+info.appendChild(nickEl);
+info.appendChild(stats);
+me.appendChild(info);
+list.appendChild(me);
+[{ n: 2, text: 'Скоро здесь будут игроки' }, { n: 3, text: '—' }, { n: 4, text: '—' }].forEach(function (slot) {
+const row = ratingRowShell(slot.n, true);
+const av = document.createElement('div');
+av.className = 'rating-av';
+av.textContent = '?';
+const infoEl = document.createElement('div');
+infoEl.className = 'rating-info';
+const label = document.createElement('div');
+label.className = 'rating-nick';
+label.textContent = slot.text;
+infoEl.appendChild(label);
+row.appendChild(av);
+row.appendChild(infoEl);
+list.appendChild(row);
+});
+}
+function openRating() {
+if (tutorial.active) return;
+const screen = document.getElementById('rating-screen');
+if (!screen) return;
+renderRating();
+screen.classList.add('open');
+screen.setAttribute('aria-hidden', 'false');
+sfx('ui');
+}
+function closeRating() {
+const screen = document.getElementById('rating-screen');
+if (!screen) return;
+screen.classList.remove('open');
+screen.setAttribute('aria-hidden', 'true');
 }
 
 function openModal(id) {
@@ -4206,7 +4463,7 @@ icon.appendChild(trimmedBookIcon(getTileImage({ kind: item.kind, level: item.lev
 } else {
 const q = document.createElement('img');
 q.className = 'q-icon';
-q.src = 'img/question_mark.png?v=53';
+q.src = 'img/question_mark.png?v=54';
 q.alt = '?';
 icon.appendChild(q);
 }
@@ -4221,9 +4478,9 @@ body.appendChild(quote);
 if (item.cup != null || item.coin != null || item.saw != null) {
 const stats = document.createElement('div');
 stats.className = 'pb-stats';
-if (item.cup != null) stats.appendChild(bookStat('img/cup_trim.png?v=53', item.cup));
-if (item.coin != null) stats.appendChild(bookStat('img/coin_trim.png?v=53', item.coin));
-if (item.saw != null) stats.appendChild(bookStat('img/saw_trim.png?v=53', item.saw));
+if (item.cup != null) stats.appendChild(bookStat('img/cup_trim.png?v=54', item.cup));
+if (item.coin != null) stats.appendChild(bookStat('img/coin_trim.png?v=54', item.coin));
+if (item.saw != null) stats.appendChild(bookStat('img/saw_trim.png?v=54', item.saw));
 body.appendChild(stats);
 }
 }
@@ -5339,7 +5596,7 @@ add('img/sheep-src.png?v=52');
 add('img/voter-grandpa.png?v=52');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/ui_bottom_forest_A.png?v=53','img/paid_trim.png?v=53','img/question_mark.png?v=53','img/cup_trim.png?v=53','img/coin_trim.png?v=53','img/saw_trim.png?v=53','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
