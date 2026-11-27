@@ -15,6 +15,20 @@ html, body { margin: 0; background: #6a7a72; }
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
+@font-face {
+  font-family: 'Nunito';
+  src: url('fonts/Nunito-VariableFont_wght.ttf') format('truetype');
+  font-weight: 200 1000;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: 'HireSans';
+  src: url('fonts/LiberationSans-Bold.ttf') format('truetype');
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
+}
 * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; outline: none; -webkit-touch-callout: none; }
 *:focus, *:active { outline: none; -webkit-tap-highlight-color: transparent; }
 html, body { height: 100%; overflow: hidden; user-select: none; touch-action: none; background: #7e6829; overscroll-behavior: none; }
@@ -208,7 +222,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   aspect-ratio: 570 / 1438;
 }
 .shop-window {
-  background: #d7d8ae url('img/shop_bg.png?v=54') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/shop_bg.png?v=56') center / 100% 100% no-repeat;
   border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
@@ -621,25 +635,43 @@ cursor: pointer;
   display: none;
   position: absolute;
   left: 50%;
-  bottom: 78px;
-  transform: translateX(-50%);
+  top: 0;
+  bottom: auto;
+  transform: translate(-50%, -50%);
   z-index: 2;
-  padding: 9px 22px;
-  border-radius: 9px;
+  padding: 4px 10px;
+  border-radius: 7px;
   background: linear-gradient(#ffe36a, #f5c21b);
   border: 2px solid #b8860b;
   box-shadow: inset 0 1px 0 rgba(255,255,255,0.6), 0 2px 4px rgba(0,0,0,0.35);
   font-family: Arial, Helvetica, sans-serif;
   font-weight: 700;
-  font-size: 15px;
+  font-size: 12px;
   line-height: 1.2;
   color: #2b2200;
   text-align: center;
   white-space: nowrap;
   letter-spacing: 0.2px;
   cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
 }
-#char-pop.statue.on:not(.out) #char-pop-buy { display: block; }
+#char-pop.statue.on:not(.out) #char-pop-buy { display: inline-flex; }
+#char-pop #char-pop-buy img {
+  position: static !important;
+  left: auto !important;
+  right: auto !important;
+  top: auto !important;
+  width: auto !important;
+  height: 16px !important;
+  max-width: none;
+  object-fit: contain;
+  pointer-events: none;
+  transform: none !important;
+  transition: none !important;
+  display: block;
+}
 #rating-screen {
   --rating-top: calc(var(--tg-safe-area-inset-top, env(safe-area-inset-top, 0px)) + var(--tg-content-safe-area-inset-top, 56px));
   position: fixed;
@@ -650,7 +682,7 @@ cursor: pointer;
   padding: calc(var(--rating-top) + 6px) 10px 12px;
   box-sizing: border-box;
   font-family: -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
-  touch-action: none;
+  touch-action: pan-y;
 }
 #rating-screen.open { display: flex; }
 .rating-bg {
@@ -694,7 +726,41 @@ cursor: pointer;
   paint-order: stroke fill;
   text-shadow: 0 3px 0 #3b2a00;
 }
-.rating-list { position: relative; z-index: 2; }
+#rating-banners {
+  position: absolute;
+  inset: 0;
+  overflow: hidden;
+  z-index: 1;
+  pointer-events: none;
+}
+.rating-caption {
+  position: absolute;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.22em;
+  font-family: inherit;
+  font-weight: 900;
+  line-height: 1;
+  color: #ffd23a;
+  letter-spacing: 2px;
+  -webkit-text-stroke: 2px #3b2a00;
+  paint-order: stroke fill;
+  text-shadow: 0 3px 0 #3b2a00;
+  white-space: nowrap;
+  transform: translate(-50%, -50%) rotate(-62deg);
+  transform-origin: center center;
+}
+#rating-list, .rating-list {
+  position: relative;
+  z-index: 2;
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
 .rating-row {
   display: flex;
   align-items: center;
@@ -711,7 +777,8 @@ cursor: pointer;
 .rating-place {
   --digit-h: 28px;
   --digit-slot: 24px;
-  width: 32px;
+  width: auto;
+  min-width: 32px;
   flex: none;
   display: flex;
   align-items: center;
@@ -842,6 +909,155 @@ cursor: pointer;
   cursor: pointer;
   align-self: center;
 }
+#gameover-modal.open { background: rgba(0,0,0,0.5); padding: 0; }
+#go-new { position: fixed; inset: 0; z-index: 6100; pointer-events: none; }
+#go-new-wrap {
+  position: absolute;
+  left: 0;
+  top: 148px;
+  width: 390px;
+  aspect-ratio: 1264 / 1568;
+  pointer-events: auto;
+}
+#go-new-wrap > img#go-girl { width: 100%; height: 100%; object-fit: fill; display: block; pointer-events: none; }
+#go-new .go-opt {
+  position: absolute;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  padding: 0 12px;
+  box-sizing: border-box;
+  border: 0;
+  background: transparent;
+  color: #171407;
+  font-family: HireSans, Arial, sans-serif;
+  font-weight: 700;
+  font-size: 16px;
+  line-height: 1;
+  text-transform: uppercase;
+  white-space: nowrap;
+  cursor: pointer;
+}
+#go-new .go-opt.undo { left: 5.70%; width: 57.44%; height: 6.72%; top: 7.88%; }
+#go-new .go-opt.clear { left: 5.70%; width: 57.44%; height: 6.72%; top: 16.67%; }
+#go-new .go-opt.menu { left: 5.70%; width: 57.44%; height: 6.72%; top: 25.45%; justify-content: center; }
+#go-new-wrap:not(.step2) .go-opt { display: none; }
+#go-new .go-opt::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  border-style: solid;
+  border-color: transparent;
+  border-width: 9.2px 12.2px;
+  border-image-source: url('img/hire_btn_frame2x.png?v=56');
+  border-image-slice: 44 52 44 52 fill;
+  border-image-repeat: stretch;
+}
+#go-new .go-opt > * { position: relative; z-index: 1; }
+#go-new .go-opt .price { display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto; }
+#go-new .go-opt .price img { display: block; width: auto; height: 13.5px; }
+#go-new .go-opt:disabled { opacity: 0.55; cursor: default; }
+#packs-modal { z-index: 3200; background: rgba(0,0,0,0.45); }
+.packs-card {
+  width: min(86vw, 360px);
+  background: #efe7c4;
+  border-radius: 18px;
+  overflow: hidden;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
+  color: #3a2410;
+}
+.packs-head {
+  position: relative;
+  background: #6f8b46;
+  color: #fff6c4;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 900;
+  letter-spacing: 0.08em;
+  font-size: 18px;
+  text-shadow: 0 1px 0 rgba(0,0,0,0.25);
+}
+.packs-x {
+  position: absolute;
+  right: 8px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  border: 2.5px solid #3a2a10;
+  background: #ffd24a;
+  color: #2b1a0e;
+  font-size: 24px;
+  font-weight: 900;
+  line-height: 1;
+  cursor: pointer;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.packs-body { display: flex; flex-direction: column; gap: 12px; padding: 16px 14px 18px; }
+.pack-wrap { position: relative; }
+.pack-row {
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 58px;
+  padding: 8px 10px;
+  border-radius: 16px;
+  border: 3px solid #6a4a12;
+  background: linear-gradient(#ffe56a, #f0b423);
+  box-shadow: inset 0 2px 0 rgba(255,255,255,0.55), 0 2px 0 #8a6418;
+  cursor: pointer;
+}
+.pack-row.hot { background: linear-gradient(#ffd56a, #f09a22); }
+.pack-amt { height: 34px; width: auto; display: block; pointer-events: none; }
+.pack-price { height: 32px; width: auto; display: block; pointer-events: none; }
+.pack-pill {
+  position: absolute;
+  right: 14px;
+  top: -9px;
+  z-index: 2;
+  color: #fff;
+  font-weight: 900;
+  font-size: 10px;
+  letter-spacing: 0.04em;
+  padding: 3px 7px;
+  border-radius: 8px;
+  line-height: 1;
+  pointer-events: none;
+}
+.pack-pill.good { background: #2f9e44; }
+.pack-pill.best { background: #d35400; }
+.pack-inf-label {
+  font-family: Nunito, sans-serif;
+  font-weight: 800;
+  font-size: 18px;
+  line-height: 1.05;
+  color: #3a2410;
+  text-align: left;
+  pointer-events: none;
+}
+.pack-paid {
+  display: none;
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  transform: translate(-50%, -50%) rotate(-8deg);
+  width: 78%;
+  height: auto;
+  pointer-events: none;
+  z-index: 3;
+}
+.pack-paid.on { display: block; }
 #toast {
   position: fixed;
   left: 50%;
@@ -955,15 +1171,59 @@ cursor: pointer;
 <button type="button" class="shop-hitbox slot-6" onclick="buyItem({ name: 'Мешок', price: 4500, tile: { kind: 'tool', tool: 'sack' } })" aria-label="Мешок 4500"></button>
 <button type="button" class="shop-hitbox slot-7" onclick="openBloggerHelp()" aria-label="Блогер"></button>
 <img id="stamp-jurist" class="shop-paid for-jurist" src="img/paid_trim.png?v=54" alt="">
-<button type="button" class="shop-hitbox slot-8" onclick="buyItem({ name: 'Нанокоробка', price: 5000, tile: { kind: 'tool', tool: 'nanobox' } })" aria-label="Нанокоробка"></button>
+<button type="button" class="shop-hitbox slot-8" onclick="buyNanoboxStars()" aria-label="Нанокоробка 699"></button>
 <button type="button" class="shop-hitbox slot-9" onclick="openStatuePopup()" aria-label="Статуя свободы"></button>
 <img id="stamp-statue" class="shop-paid for-statue" src="img/paid_trim.png?v=54" alt="">
-<button type="button" class="shop-hitbox slot-10" aria-disabled="true" aria-label="Нужны деньги"></button>
+<button type="button" class="shop-hitbox slot-10" onclick="openMoneyPacks()" aria-label="Нужны деньги"></button>
+</div>
+</div>
+
+<div class="modal" id="packs-modal" role="dialog" aria-label="Нужны деньги">
+<div class="packs-card">
+<div class="packs-head">
+<span>НУЖНЫ ДЕНЬГИ</span>
+<button type="button" class="packs-x" id="packs-x" aria-label="Закрыть">×</button>
+</div>
+<div class="packs-body">
+<button type="button" class="pack-row" onclick="buyMoneyPack('3000')">
+<img class="pack-amt" src="img/stars_badge_n3000.png?v=56" alt="3000">
+<img class="pack-price" src="img/stars_badge_50.png?v=56" alt="50">
+</button>
+<div class="pack-wrap">
+<span class="pack-pill good">ВЫГОДНО</span>
+<button type="button" class="pack-row" onclick="buyMoneyPack('10000')">
+<img class="pack-amt" src="img/stars_badge_n10000.png?v=56" alt="10000">
+<img class="pack-price" src="img/stars_badge_75.png?v=56" alt="75">
+</button>
+</div>
+<div class="pack-wrap">
+<span class="pack-pill best">ЛУЧШАЯ ЦЕНА</span>
+<button type="button" class="pack-row hot" onclick="buyMoneyPack('30000')">
+<img class="pack-amt" src="img/stars_badge_n30000.png?v=56" alt="30000">
+<img class="pack-price" src="img/stars_badge_149.png?v=56" alt="149">
+</button>
+</div>
+<div class="pack-wrap">
+<button type="button" class="pack-row" id="pack-inf" onclick="buyMoneyPack('inf')">
+<span class="pack-inf-label">Бесконечные<br>деньги</span>
+<img class="pack-price" src="img/stars_badge_9999.png?v=56" alt="9999">
+</button>
+<img id="pack-inf-stamp" class="pack-paid" src="img/paid_trim.png?v=54" alt="">
+</div>
+</div>
 </div>
 </div>
 
 <div id="rating-screen" aria-hidden="true">
 <div class="rating-bg" aria-hidden="true"></div>
+<div id="rating-banners" aria-hidden="true">
+<div class="rating-caption" style="left:50%;top:59.2%;font-size:28px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+<div class="rating-caption" style="left:104.1%;top:12.2%;font-size:24px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+<div class="rating-caption" style="left:-3%;top:105.3%;font-size:24px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+<div class="rating-caption" style="left:20.5%;top:53.3%;font-size:26px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+<div class="rating-caption" style="left:77%;top:69.9%;font-size:26px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+<div class="rating-caption" style="left:86.1%;top:92.3%;font-size:24px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+</div>
 <div class="rating-head">
 <button type="button" id="rating-close" onclick="closeRating()" aria-label="Закрыть">×</button>
 </div>
@@ -1034,17 +1294,19 @@ cursor: pointer;
 </div>
 
 <div class="modal" id="gameover-modal">
-<div class="modal-content gameover-card">
-<h2>Ходов больше нет</h2>
-<button type="button" id="go-undo" class="go-btn" onclick="undoFromGameOver()">
-<span class="go-title">Отменить ход</span>
-<span class="go-price"><img src="img/Coin_1.png" alt="">1500</span>
+<div id="go-new">
+<div id="go-new-wrap">
+<img id="go-girl" src="img/gameover_step1.png?v=56" alt="">
+<button type="button" class="go-opt undo" id="go-undo" onclick="undoFromGameOver()">
+<span>Ход назад</span>
+<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=56" alt="1500"></span>
 </button>
-<button type="button" id="go-clear" class="go-btn go-stars" onclick="buyClearFieldStars()">
-<span class="go-title">Расчистить поле</span>
-<span class="go-price">50 ⭐</span>
+<button type="button" class="go-opt clear" id="go-clear" onclick="buyClearFieldStars()">
+<span>Расчистить поле</span>
+<span class="price"><img src="img/stars_badge_50go.png?v=56" alt="50"></span>
 </button>
-<button type="button" class="go-restart" onclick="restartAfterOver()">Начать сначала</button>
+<button type="button" class="go-opt menu" onclick="restartAfterOver()"><span>Главное меню</span></button>
+</div>
 </div>
 </div>
 <div id="toast" role="status" aria-live="polite"></div>
@@ -1058,7 +1320,7 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="blogger-modal" role="dialog" aria-label="Помощь блогера">
 <div class="art-panel" id="blogger-panel">
-<img src="img/blogger_help.png?v=52" alt="">
+<img src="img/blogger_help.png?v=56" alt="">
 <div class="art-num" id="blogger-count">5</div>
 <button type="button" class="art-hit" id="blogger-use" aria-label="Использовать"></button>
 <button type="button" class="art-hit" id="blogger-cancel" aria-label="Отмена"></button>
@@ -1068,7 +1330,7 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="sizo-modal" role="dialog" aria-label="Юрист в СИЗО">
 <div class="art-panel" id="sizo-panel">
-<img src="img/jurist_sizo.jpg?v=52" alt="">
+<img src="img/jurist_sizo.jpg?v=56" alt="">
 <div class="art-num" id="sizo-count"></div>
 <button type="button" class="art-hit" id="sizo-think" aria-label="Подумать"></button>
 <button type="button" class="art-hit" id="sizo-bribe" aria-label="Взятка"></button>
@@ -1093,7 +1355,7 @@ cursor: pointer;
 </div>
 <div id="char-pop" data-side="left" aria-hidden="true">
 <img id="char-pop-img" alt="" draggable="false">
-<button type="button" id="char-pop-buy">КУПИТЬ ЗА 199 звёзд</button>
+<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_199.png?v=56" alt="199"></button>
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
@@ -1169,7 +1431,7 @@ const PIECE_LAYOUT = {
 };
 const CARE = ['🐻','🪙','🥇','🏛️','📜','💰','🏦','👑','🌍','🚀','🦁','🐯','🐘','🐳','🦅','🦉','🦄','🐉','👽','🛸'];
 const INCOME = ['💻','📺','🏦','🏢','🥚'];
-const INCOME_PER_TURN = [5, 15, 50, 150, 500];
+const INCOME_PER_TURN = [10, 11, 12, 13, 14];
 
 /* Награды исходной игры: очки и монеты получает фигурка, которая получилась при слиянии.
    saw — монеты, если спилили именно эту фигурку (null: в таблице выплаты за пилу нет).
@@ -1237,11 +1499,10 @@ let juristPending = false;
 let voterChannel = false;
 let voterTapStreak = 0;
 const JURIST_COOLDOWN = 123;
-/* Тестовый режим: юрист без пробных 5 использований и без отката в 123 хода.
-   Верните false, чтобы снова включить лимит, счётчик и кольцо отката. */
-const JURIST_TEST_UNLIMITED = true;
-/* Покупка статуи в тесте бесплатная. Кнопка по-прежнему говорит «199 звёзд». */
-const STATUE_TEST_FREE = true;
+/* Тестовая сборка: лимит 5 консультаций, откат и СИЗО включены.
+   Кнопки звёзд остаются заглушкой, но сразу применяют купленное состояние. */
+const JURIST_TEST_UNLIMITED = false;
+const STATUE_TEST_FREE = false;
 const STATUE_SRC = 'img/statue.png';
 const STATUE_ASPECT = 260 / 512;
 let nextTile = null, jailTile = null, bufferedNext = null, drag = null, undoState = null;
@@ -1430,8 +1691,8 @@ return !!(tile && tile.kind === 'chain' && tile.level === 3);
 function getTileImage(tile) {
 if (!tile) return null;
 if (tile.kind === 'chain') {
-if (tile.level === 2) return 'img/sheep-src.png?v=52';
-if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=52';
+if (tile.level === 2) return 'img/sheep-src.png?v=56';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=56';
 return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
 }
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
@@ -1551,8 +1812,14 @@ const voterSrc = voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png';
 if (!TRIM['img/sheep-src.png'] || !TRIM[voterSrc]) return;
 const sheep = visualCenterOffset('img/sheep-src.png');
 const voter = visualCenterOffset(voterSrc);
-wrap.style.setProperty('--piece-dx', (voter.x - sheep.x).toFixed(2) + 'px');
-wrap.style.setProperty('--piece-dy', (voter.y - sheep.y).toFixed(2) + 'px');
+const box = cellSize();
+const trim = TRIM['img/sheep-src.png'];
+const limit = 0.92 * Math.min(box.w, box.h);
+const cW = Math.max(1, (trim.r - trim.l) * trim.natW);
+const cH = Math.max(1, (trim.b - trim.t) * trim.natH);
+const s = limit / Math.max(cW, cH);
+wrap.style.setProperty('--piece-dx', ((voter.x - sheep.x) + 12 * s).toFixed(2) + 'px');
+wrap.style.setProperty('--piece-dy', ((voter.y - sheep.y) + 15 * s).toFixed(2) + 'px');
 }
 
 function bareSrc(src) {
@@ -2655,7 +2922,7 @@ const el = document.getElementById('shop-voter-art');
 if (!el) return;
 /* После пасхалки доска и «далее» меняют избирателя, слот магазина — нет. */
 el.classList.remove('on');
-el.src = 'img/voter-grandpa.png?v=52';
+el.src = 'img/voter-grandpa.png?v=56';
 }
 function closeChannelEgg() {
 closeModal('channel-modal');
@@ -2687,6 +2954,15 @@ image.style.height = h + 'px';
 image.style.top = Math.round(top) + 'px';
 image.style.left = '0px';
 image.style.right = 'auto';
+const buy = document.getElementById('char-pop-buy');
+if (buy) {
+const bx = w * (462 / 700);
+const by = top + h * (298 / 868);
+buy.style.left = bx + 'px';
+buy.style.top = by + 'px';
+buy.style.bottom = 'auto';
+buy.style.transform = 'translate(-50%, -50%)';
+}
 return;
 }
 let w = Math.round(vw * 0.70);
@@ -2863,7 +3139,7 @@ if (juristCooldown === 0) onJuristReady();
 
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
 if (grid[r][c] && grid[r][c].kind === 'income') {
-let gain = INCOME_PER_TURN[grid[r][c].level - 1] || 5;
+let gain = INCOME_PER_TURN[grid[r][c].level - 1] || 10;
 coins += gain;
 showFloatText(r, c, gain);
 }
@@ -2877,7 +3153,7 @@ else omons.push([r, c]);
 }
 }
 
-if (omons.length > 0) {
+if (omons.length > 0 && !boardHasStatue()) {
 markBusy(1100);
 setTimeout(() => {
 stepOmons(omons);
@@ -3099,7 +3375,8 @@ endMove();
 } else { render(); }
 }
 else if (tool.tool === 'saw') {
-if (grid[r][c]) {
+if (grid[r][c] && grid[r][c].kind === 'statue') { sfx('weed'); render(); }
+else if (grid[r][c]) {
 playSawFx(r, c);
 grantSawCash(grid[r][c], r, c);
 noteSawUse(grid[r][c]);
@@ -3194,6 +3471,11 @@ const r = +cell.dataset.r, c = +cell.dataset.c;
 if (nextTile && nextTile.kind === 'tool') {
 if (nextTile.tool !== 'sack' && !grid[r][c]) {
 setStatus();
+if (nextTile.tool === 'saw') sfx('weed');
+endDrag();
+return;
+}
+if (grid[r][c] && grid[r][c].kind === 'statue' && (nextTile.tool === 'saw' || nextTile.tool === 'nanobox')) {
 if (nextTile.tool === 'saw') sfx('weed');
 endDrag();
 return;
@@ -3390,7 +3672,7 @@ leaveToTitle();
 }
 
 function performUndo() {
-if (!undoState || coins < 1500) return false;
+if (!undoState || !canAfford(1500)) return false;
 gameOver = false;
 closeModal('gameover-modal');
 undoMove(1500);
@@ -3460,14 +3742,20 @@ sawStreak = undoState.sawStreak || 0;
 sheepSawStreak = undoState.sheepSawStreak || 0;
 urnaBuilt = undoState.urnaBuilt || 0;
 undoState = null;
-if (cost) coins = Math.max(0, coins - cost);
+if (cost && !infiniteMoney()) coins = Math.max(0, coins - cost);
 render(); saveGame();
 }
 
+function infiniteMoney() {
+return !!(purchases && purchases.infiniteMoney);
+}
+function canAfford(cost) {
+return infiniteMoney() || coins >= cost;
+}
 function buyItem(item) {
 if (tutorial.active) { setStatus(); return; }
-if (coins < item.price) { setStatus(); return; }
-coins -= item.price;
+if (!canAfford(item.price)) { setStatus(); return; }
+if (!infiniteMoney()) coins -= item.price;
 if (nextTile) bufferedNext = nextTile;
 nextTile = item.tile;
 unlockBookKey(item.tile);
@@ -3476,9 +3764,19 @@ render(); closeModal('shop-modal');
 function buyStarsPlaceholder() {
 showToast('Скоро: оплата звёздами');
 }
+function buyNanoboxStars() {
+if (tutorial.active) { setStatus(); return; }
+showToast('Скоро: оплата звёздами');
+if (nextTile) bufferedNext = nextTile;
+nextTile = { kind: 'tool', tool: 'nanobox' };
+unlockBookKey(nextTile);
+render();
+saveGame();
+closeModal('shop-modal');
+}
 function buyStatue() {
 if (!charItem || !charItem.statue) return;
-if (!STATUE_TEST_FREE) { showToast('Скоро: оплата звёздами'); return; }
+showToast('Скоро: оплата звёздами');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'statue', pop: true };
 markPurchase('statue');
@@ -3487,6 +3785,32 @@ closeCharPopup(true);
 render();
 saveGame();
 sfx('ui');
+}
+function openMoneyPacks() {
+if (tutorial.active) return;
+paintPackStamp();
+const el = document.getElementById('packs-modal');
+if (el) el.classList.add('open');
+sfx('ui');
+}
+function closeMoneyPacks() {
+const el = document.getElementById('packs-modal');
+if (el) el.classList.remove('open');
+}
+function buyMoneyPack(kind) {
+showToast('Скоро: оплата звёздами');
+if (kind === 'inf') {
+if (!purchases.infiniteMoney) markPurchase('infiniteMoney');
+paintPackStamp();
+render();
+saveGame();
+return;
+}
+const amount = kind === '3000' ? 3000 : kind === '10000' ? 10000 : kind === '30000' ? 30000 : 0;
+if (!amount) return;
+coins += amount;
+render();
+saveGame();
 }
 function openStatuePopup() {
 if (tutorial.active) return;
@@ -3579,8 +3903,8 @@ info.appendChild(nickEl);
 info.appendChild(stats);
 me.appendChild(info);
 list.appendChild(me);
-[{ n: 2, text: 'Скоро здесь будут игроки' }, { n: 3, text: '—' }, { n: 4, text: '—' }].forEach(function (slot) {
-const row = ratingRowShell(slot.n, true);
+for (let n = 2; n <= 100; n++) {
+const row = ratingRowShell(n, true);
 const av = document.createElement('div');
 av.className = 'rating-av';
 av.textContent = '?';
@@ -3588,12 +3912,12 @@ const infoEl = document.createElement('div');
 infoEl.className = 'rating-info';
 const label = document.createElement('div');
 label.className = 'rating-nick';
-label.textContent = slot.text;
+label.textContent = '—';
 infoEl.appendChild(label);
 row.appendChild(av);
 row.appendChild(infoEl);
 list.appendChild(row);
-});
+}
 }
 function openRating() {
 if (tutorial.active) return;
@@ -4465,7 +4789,7 @@ const BOOK = [
 ['income',5,"Светская львица, казначей оппозиции. Работает на дому, сортирует почту. Стабильный доход.",100000,1000,20000]
 ];
 let bookUnlocked = new Set(['chain_1', 'chain_2', 'chain_3']);
-let purchases = { jurist: false, statue: false };
+let purchases = { jurist: false, statue: false, infiniteMoney: false };
 function bookId(tile) {
 if (!tile || tile.level == null) return null;
 if (tile.kind !== 'chain' && tile.kind !== 'care' && tile.kind !== 'income') return null;
@@ -4503,16 +4827,22 @@ try {
 const o = JSON.parse(localStorage.getItem(PURCHASE_KEY) || '{}');
 purchases.jurist = !!(o && o.jurist);
 purchases.statue = !!(o && o.statue);
+purchases.infiniteMoney = !!(o && o.infiniteMoney);
 } catch (e) {}
 }
 function savePurchases() {
-try { localStorage.setItem(PURCHASE_KEY, JSON.stringify({ jurist: !!purchases.jurist, statue: !!purchases.statue })); } catch (e) {}
+try { localStorage.setItem(PURCHASE_KEY, JSON.stringify({ jurist: !!purchases.jurist, statue: !!purchases.statue, infiniteMoney: !!purchases.infiniteMoney })); } catch (e) {}
 }
 function markPurchase(id) {
-if (id !== 'jurist' && id !== 'statue') return;
+if (id !== 'jurist' && id !== 'statue' && id !== 'infiniteMoney') return;
 purchases[id] = true;
 savePurchases();
 paintShopStamps();
+paintPackStamp();
+}
+function paintPackStamp() {
+const stamp = document.getElementById('pack-inf-stamp');
+if (stamp) stamp.classList.toggle('on', !!purchases.infiniteMoney);
 }
 function paintShopStamps() {
 const j = document.getElementById('stamp-jurist');
@@ -4522,6 +4852,7 @@ if (s) s.classList.toggle('on', !!purchases.statue);
 }
 loadPurchases();
 paintShopStamps();
+paintPackStamp();
 window.markPurchase = markPurchase;
 
 let hintPage = 0;
@@ -4890,7 +5221,7 @@ return closedBoxCache;
 }
 function playNanobox(r, c, fromJail) {
 const target = grid[r] && grid[r][c];
-if (!target || target.kind === 'tool') { render(); return; }
+if (!target || target.kind === 'tool' || target.kind === 'statue') { render(); return; }
 const cell = document.querySelector('.cell[data-r="' + r + '"][data-c="' + c + '"]');
 if (!cell) { render(); return; }
 const rect = cell.getBoundingClientRect();
@@ -4937,6 +5268,7 @@ shrink.onfinish = () => { box.remove(); launchClone(target, r, c, cx, cy); };
 }, 80);
 }
 function giveClone(target) {
+if (!target || target.kind === 'statue') { render(); saveGame(); return; }
 const clone = { ...target, bounce: true };
 delete clone.pop;
 if (nextTile) bufferedNext = nextTile;
@@ -4945,6 +5277,7 @@ render();
 saveGame();
 }
 function launchClone(target, r, c, x0, y0) {
+if (!target || target.kind === 'statue') return;
 const slot = document.getElementById('next-content') || document.getElementById('next-tile');
 const dr = slot && slot.getBoundingClientRect();
 if (!dr || dr.width < 2 || dr.height < 2) { giveClone(target); return; }
@@ -4997,6 +5330,10 @@ btn.setAttribute('aria-disabled', ok ? 'false' : 'true');
 }
 function openGameOver() {
 refreshGameOverActions();
+const wrap = document.getElementById('go-new-wrap');
+const girl = document.getElementById('go-girl');
+if (wrap) wrap.classList.remove('step2');
+if (girl) girl.src = 'img/gameover_step1.png?v=56';
 openModal('gameover-modal');
 }
 let toastTimer = null;
@@ -5009,8 +5346,8 @@ if (toastTimer) clearTimeout(toastTimer);
 toastTimer = setTimeout(() => el.classList.remove('show'), 1400);
 }
 function buyClearFieldStars() {
-/* Telegram Stars (50⭐, пять пил подряд) требуют серверный invoice. Пока только заглушка. */
-showToast('Скоро');
+/* Telegram Stars (50⭐) требуют серверный invoice. Механики расчистки в игре нет. */
+showToast('Скоро: оплата звёздами');
 }
 function checkGameOver() {
 if (tutorial.active || gameOver) return;
@@ -5242,7 +5579,9 @@ try { if (tg.setHeaderColor) tg.setHeaderColor(bg); } catch (e) {}
 try { if (tg.setBackgroundColor) tg.setBackgroundColor(bg); } catch (e) {}
 try { if (tg.setBottomBarColor) tg.setBottomBarColor(bg); } catch (e) {}
 try { if (tg.disableVerticalSwipes) tg.disableVerticalSwipes(); } catch (e) {}
-try { if (typeof tg.requestFullscreen === 'function') tg.requestFullscreen(); } catch (e) {}
+try {
+if (typeof tg.requestFullscreen === 'function' && (!tg.isVersionAtLeast || tg.isVersionAtLeast('8.0'))) tg.requestFullscreen();
+} catch (e) {}
 document.documentElement.style.background = bg;
 document.body.style.background = bg;
 bindTelegramInsets();
@@ -5682,7 +6021,13 @@ if (cancel) cancel.addEventListener('click', closeBloggerHelp);
 const bx2 = document.getElementById('blogger-x');
 if (bx2) bx2.addEventListener('click', closeBloggerHelp);
 const hire = document.getElementById('blogger-hire');
-if (hire) hire.addEventListener('click', function () { showToast('Скоро: оплата звёздами'); });
+if (hire) hire.addEventListener('click', function () {
+showToast('Скоро: оплата звёздами');
+juristHired = true;
+saveConsults();
+markPurchase('jurist');
+paintBlogger();
+});
 const blogger = document.getElementById('blogger-modal');
 if (blogger) blogger.addEventListener('pointerdown', function (e) { if (e.target === blogger) closeBloggerHelp(); });
 const think = document.getElementById('sizo-think');
@@ -5690,11 +6035,36 @@ if (think) think.addEventListener('click', closeSizo);
 const sx = document.getElementById('sizo-x');
 if (sx) sx.addEventListener('click', closeSizo);
 const bribe = document.getElementById('sizo-bribe');
-if (bribe) bribe.addEventListener('click', function () { showToast('Скоро: оплата звёздами'); });
+if (bribe) bribe.addEventListener('click', function () {
+showToast('Скоро: оплата звёздами');
+if (!isJuristTile(nextTile)) {
+if (nextTile) bufferedNext = nextTile;
+nextTile = { kind: 'tool', tool: 'jurist' };
+}
+juristPending = true;
+juristCooldown = 0;
+render();
+saveGame();
+closeSizo();
+});
 const sizo = document.getElementById('sizo-modal');
 if (sizo) sizo.addEventListener('pointerdown', function (e) { if (e.target === sizo) closeSizo(); });
+const packsX = document.getElementById('packs-x');
+if (packsX) packsX.addEventListener('click', closeMoneyPacks);
+const packs = document.getElementById('packs-modal');
+if (packs) packs.addEventListener('pointerdown', function (e) { if (e.target === packs) closeMoneyPacks(); });
+const goModal = document.getElementById('gameover-modal');
+if (goModal) goModal.addEventListener('click', function (e) {
+const wrap = document.getElementById('go-new-wrap');
+if (!wrap || wrap.classList.contains('step2')) return;
+if (e.target.closest && e.target.closest('.go-opt')) return;
+const girl = document.getElementById('go-girl');
+if (girl) girl.src = 'img/gameover_step2.png?v=56';
+wrap.classList.add('step2');
+});
 window.addEventListener('resize', function () {
 if (document.getElementById('cellar').classList.contains('open')) layoutCellarX();
+if (charOpen) layoutCharPopup();
 });
 })();
 
@@ -5712,11 +6082,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
-add('img/sheep-src.png?v=52');
-add('img/voter-grandpa.png?v=52');
+add('img/sheep-src.png?v=56');
+add('img/voter-grandpa.png?v=56');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=56','img/voter-grandpa.png?v=56','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=56','img/jurist_sizo.jpg?v=56','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
