@@ -151,8 +151,8 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .jail-block .content, .next-block .content { position: relative; z-index: 1; width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; }
 .tray-fill {
   position: absolute;
-  inset: 7.5%;
-  border-radius: 18%;
+  inset: 1.5%;
+  border-radius: 9% / 7%;
   background: rgba(235, 240, 215, 0.35);
   pointer-events: none;
   z-index: 0;
@@ -1117,6 +1117,37 @@ cursor: pointer;
 const SIZE = 6;
 const SAVE_KEY = 'pasha_match_v46';
 const SEEN_KEY = 'pasha_match_seen_v46';
+const BEST_KEY = 'pasha_best_v1';
+let bestScore = 0;
+let bestMoves = 0;
+function loadBest() {
+let best = 0, mv = 0;
+try {
+const raw = localStorage.getItem(BEST_KEY);
+if (raw) {
+const o = JSON.parse(raw);
+if (o && typeof o.score === 'number') { best = o.score; mv = o.moves || 0; }
+}
+} catch (e) {}
+try {
+const save = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+if (save && typeof save.score === 'number' && save.score > best) {
+best = save.score;
+mv = typeof save.moves === 'number' ? save.moves : 0;
+}
+} catch (e) {}
+bestScore = Math.max(0, best | 0);
+bestMoves = Math.max(0, mv | 0);
+try { localStorage.setItem(BEST_KEY, JSON.stringify({ score: bestScore, moves: bestMoves })); } catch (e) {}
+}
+function noteBest() {
+if (score > bestScore) {
+bestScore = score;
+bestMoves = moves || 0;
+try { localStorage.setItem(BEST_KEY, JSON.stringify({ score: bestScore, moves: bestMoves })); } catch (e) {}
+}
+}
+loadBest();
 
 const CHAIN = ['💵','🐑','🗳️','🏫','📜','🧑‍💼','🏛️','👔','🤴','👑','👴','🧔','✍️','👨‍🚀','🍕','🏠','🛠️','🚀','🌌','🎩','💼','🏦','🎖️','🗽','🏰','💎','🚁','🛸'];
 const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
@@ -1209,6 +1240,10 @@ const JURIST_COOLDOWN = 123;
 /* Тестовый режим: юрист без пробных 5 использований и без отката в 123 хода.
    Верните false, чтобы снова включить лимит, счётчик и кольцо отката. */
 const JURIST_TEST_UNLIMITED = true;
+/* Покупка статуи в тесте бесплатная. Кнопка по-прежнему говорит «199 звёзд». */
+const STATUE_TEST_FREE = true;
+const STATUE_SRC = 'img/statue.png';
+const STATUE_ASPECT = 260 / 512;
 let nextTile = null, jailTile = null, bufferedNext = null, drag = null, undoState = null;
 let isSawMode = false, isNanoboxMode = false;
 let testSpawnIndex = 0;
@@ -1352,6 +1387,7 @@ root.setProperty('--digit-h', h.toFixed(2) + 'px');
 root.setProperty('--digit-slot', (h * DIGIT_SLOT_ASPECT).toFixed(2) + 'px');
 }
 function syncHud() {
+noteBest();
 const reduce = window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 if (!hudReady || reduce) {
 hudReady = true;
@@ -1402,6 +1438,7 @@ if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
 if (tile.kind === 'income') return `img/income_${tile.level}.png`;
 if (tile.kind === 'omon') return tile.level === 1 ? 'img/omon_1.png' : 'img/omon_2.png';
 if (tile.kind === 'pioneer') return 'img/Pioner_1.png';
+if (tile.kind === 'statue') return 'img/statue.png?v=55';
 if (tile.kind === 'tool') return `img/tool_${tile.tool}.png`;
 return null;
 }
@@ -1412,6 +1449,7 @@ if (tile.kind === 'care') return CARE[tile.level - 1] || '?';
 if (tile.kind === 'income') return INCOME[tile.level - 1] || '?';
 if (tile.kind === 'omon') return '🚔';
 if (tile.kind === 'pioneer') return '🧑‍🎓';
+if (tile.kind === 'statue') return '🗽';
 if (tile.kind === 'tool') return '🛠️';
 return '?';
 }
@@ -1521,6 +1559,11 @@ function bareSrc(src) {
 return src ? String(src).split('?')[0] : src;
 }
 function pieceDisplaySize(src, cellW, cellH) {
+/* Статуя: белая обводка — часть картинки, не обрезаем. Высота 1.012 клетки, ширина по пропорции 260×512. */
+if (bareSrc(src) === STATUE_SRC) {
+const h = cellH * 1.012;
+return { w: h * STATUE_ASPECT, h: h };
+}
 const limit = 0.92 * Math.min(cellW, cellH);
 const trim = src && TRIM[bareSrc(src)];
 if (!trim) return { w: limit, h: limit };
@@ -1705,7 +1748,8 @@ sfx('juristFree');
    «Чиновник» на этом шаге, текст обучения не трогаем.
    Чиновник — care 2, серебряная монета. Министр — care 3, золотая монета за столом.
    Церковь — income 2 (три патриарха income 1; отдельной могилы нет, пионер становится care 1).
-   Госзаказ — care 5, табличка «ГОСЗАКАЗ». Ракета — chain 15, нос, первая деталь ракеты. */
+   Госзаказ — care 5, табличка «ГОСЗАКАЗ». Ракета — chain 15, нос, первая деталь ракеты.
+   Люди в чёрном — chain 25 (трое chain 24). Дальше по цепочке: 26, 27, 28. */
 function notePieceCreated(tile) {
 if (!tile) return;
 const during = { allowTutorial: true };
@@ -1716,6 +1760,10 @@ if (tile.kind === 'chain' && tile.level === 6) showCharacterPopup('deputy', 'img
 else if (tile.kind === 'income' && tile.level === 2) showCharacterPopup('church', 'img/popup_church.png?v=52', 'left');
 else if (tile.kind === 'care' && tile.level === 5) showCharacterPopup('goszakaz', 'img/popup_goszakaz.png?v=52', 'right');
 else if (tile.kind === 'chain' && tile.level === ROCKET_NOSE) showCharacterPopup('rocket1', 'img/popup_rocket1.png?v=52', 'left');
+else if (tile.kind === 'chain' && tile.level === 25) showCharacterPopup('mib', 'img/popup_men_in_black.png?v=55', 'right');
+else if (tile.kind === 'chain' && tile.level === 26) showCharacterPopup('after_mib', 'img/popup_after_mib.png?v=55', 'right');
+else if (tile.kind === 'chain' && tile.level === 27) showCharacterPopup('after_mib2', 'img/popup_after_mib2.png?v=55', 'right');
+else if (tile.kind === 'chain' && tile.level === 28) showCharacterPopup('after_mib3', 'img/popup_after_mib3.png?v=55', 'right');
 }
 function checkDiscovery(tile) {
 if (!tile) return;
@@ -1862,8 +1910,15 @@ else if (r < 0.10) tile = { kind: 'chain', level: 1 };
 else if (r < 0.15) tile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
 else tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
 }
+if (tile.kind === 'omon' && boardHasStatue()) tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
 tile.pop = true;
 return tile;
+}
+function boardHasStatue() {
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+if (grid[r][c] && grid[r][c].kind === 'statue') return true;
+}
+return false;
 }
 
 function ensureBoard() {
@@ -1933,15 +1988,18 @@ return s;
 function mountTray(cont, tile) {
 if (!cont) return;
 const sig = tileSig(tile);
+const holdNext = cont.id === 'next-content' && nextSourceHidden;
 if (cont.dataset.sig === sig && (sig === '' ? !cont.firstChild : cont.querySelector('.piece'))) {
 if (tile && tile.pop) {
 const visual = cont.querySelector('.piece');
 if (visual && !visual.classList.contains('piece-pop')) visual.classList.add('piece-pop');
 }
+if (cont.id === 'next-content') cont.style.visibility = holdNext ? 'hidden' : '';
 return;
 }
 cont.dataset.sig = sig;
 cont.replaceChildren();
+if (cont.id === 'next-content') cont.style.visibility = holdNext ? 'hidden' : '';
 if (!tile) return;
 const el = makeTileContent(tile);
 if (tile.pop) el.classList.add('piece-pop');
@@ -2046,7 +2104,7 @@ function unifyTrayPieces() {}
 function findGroup(startR, startC, tempGrid = null) {
 let g = tempGrid || grid;
 const start = g[startR][startC];
-if (!start || start.kind === 'omon' || start.kind === 'pioneer' || start.kind === 'tool') return null;
+if (!start || start.kind === 'omon' || start.kind === 'pioneer' || start.kind === 'tool' || start.kind === 'statue') return null;
 let visited = {}, stack = [[startR, startC]], group = [];
 while (stack.length) {
 const [r, c] = stack.pop();
@@ -2076,7 +2134,7 @@ return ROCKET_TAIL;
 }
 function groupCanMerge(group, tile) {
 if (!group || group.length < 3 || !tile) return false;
-if (tile.kind === 'omon' || tile.kind === 'pioneer' || tile.kind === 'tool') return false;
+if (tile.kind === 'omon' || tile.kind === 'pioneer' || tile.kind === 'tool' || tile.kind === 'statue') return false;
 const maxL = tile.kind === 'chain' ? CHAIN.length : (tile.kind === 'care' ? CARE.length : INCOME.length);
 if (tile.level >= maxL) return false;
 if (tile.kind === 'chain' && tile.level >= ROCKET_NOSE && tile.level <= ROCKET_TAIL) return false;
@@ -2387,6 +2445,10 @@ taken[move.r + ',' + move.c] = true;
 if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
 grid[move.r][move.c] = { kind: 'pioneer', movedSeq: ++unitSeq, _stepped: true };
 grid[item.r][item.c] = null;
+if (freedomBeforeMove && freedomBeforeMove[item.r + ',' + item.c]) {
+freedomBeforeMove[move.r + ',' + move.c] = true;
+delete freedomBeforeMove[item.r + ',' + item.c];
+}
 const delta = slideDelta(item.r, item.c, move.r, move.c);
 moveAnims.push({ r: move.r, c: move.c, fromR: item.r, fromC: item.c, dx: delta.dx + 'px', dy: delta.dy + 'px', hop: false });
 moved = true;
@@ -2442,6 +2504,28 @@ lastDrop = { r: r, c: c };
 const t = grid[r] && grid[r][c];
 if (t && t.kind === 'pioneer') t.movedSeq = ++unitSeq;
 }
+/* Кто мог уйти до хода игрока. Снимок до постановки фишки: именно его клетка — якорь слияния. */
+let freedomBeforeMove = null;
+function snapshotPioneerFreedom() {
+const map = {};
+for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+const t = grid[r][c];
+if (t && t.kind === 'pioneer') map[r + ',' + c] = !pioneerOptions(r, c).blocked;
+}
+freedomBeforeMove = map;
+}
+function chooseTrapAnchor(list) {
+if (!list.length) return null;
+const fresh = list.filter(([r, c]) => freedomBeforeMove && freedomBeforeMove[r + ',' + c]);
+const pool = (fresh.length ? fresh : list).map(([r, c]) => {
+const t = grid[r] && grid[r][c];
+const seq = (t && t.movedSeq) || 0;
+const dist = lastDrop ? Math.abs(r - lastDrop.r) + Math.abs(c - lastDrop.c) : 0;
+return { r: r, c: c, seq: seq, dist: dist, adj: dist === 1 ? 1 : 0 };
+});
+pool.sort((a, b) => (b.adj - a.adj) || (b.seq - a.seq) || (a.dist - b.dist) || (a.r - b.r) || (a.c - b.c));
+return [pool[0].r, pool[0].c];
+}
 function orderedTrapped(list) {
 const ranked = list.map(([r, c]) => {
 const t = grid[r] && grid[r][c];
@@ -2467,7 +2551,12 @@ if (document.querySelector('.cell.anim-walk')) wait = Math.max(wait, 580);
 return wait;
 }
 function convertTrapped(trapped, done) {
-const spots = orderedTrapped(trapped);
+const anchor = chooseTrapAnchor(trapped);
+const spots = [];
+if (anchor) spots.push(anchor);
+orderedTrapped(trapped).forEach(p => {
+if (!anchor || p[0] !== anchor[0] || p[1] !== anchor[1]) spots.push(p);
+});
 const converting = {};
 spots.forEach(([r, c]) => { converting[r + ',' + c] = true; });
 moveAnims = moveAnims.filter(a => !converting[a.r + ',' + a.c]);
@@ -2555,7 +2644,7 @@ stepPioneers();
 afterPioneerStep();
 }
 function finishUnits() {
-if (!tutorial.active && moves % 50 === 0) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
+if (!tutorial.active && moves % 50 === 0 && !boardHasStatue()) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 const first = trappedPioneers();
 if (!first.length) { afterFirstTraps(); return; }
 convertTrapped(first, afterFirstTraps);
@@ -2564,8 +2653,9 @@ convertTrapped(first, afterFirstTraps);
 function updateShopVoter() {
 const el = document.getElementById('shop-voter-art');
 if (!el) return;
-el.classList.toggle('on', !!voterChannel);
-if (voterChannel) el.src = 'img/pasha_03.png';
+/* После пасхалки доска и «далее» меняют избирателя, слот магазина — нет. */
+el.classList.remove('on');
+el.src = 'img/voter-grandpa.png?v=52';
 }
 function closeChannelEgg() {
 closeModal('channel-modal');
@@ -2723,6 +2813,7 @@ buy.addEventListener('pointerdown', function (e) { e.stopPropagation(); });
 buy.addEventListener('pointerup', function (e) { e.stopPropagation(); });
 buy.addEventListener('click', function (e) {
 e.stopPropagation();
+if (charItem && charItem.statue) { buyStatue(); return; }
 showToast('Скоро: оплата звёздами');
 });
 }
@@ -2851,6 +2942,21 @@ const tile = drag.type === 'fromJail' ? jailTile : nextTile;
 showPreview(previewNodes(tile, +cell.dataset.r, +cell.dataset.c));
 }
 
+let nextSourceHidden = false;
+function hideNextSource() {
+nextSourceHidden = true;
+const cont = document.getElementById('next-content');
+if (cont) cont.style.visibility = 'hidden';
+}
+function revealNextSource() {
+nextSourceHidden = false;
+const cont = document.getElementById('next-content');
+if (cont) cont.style.visibility = '';
+}
+function endDrag() {
+drag = null;
+revealNextSource();
+}
 function detachDragListeners() {
 window.removeEventListener('pointermove', onMove);
 window.removeEventListener('pointerup', onUp);
@@ -2866,7 +2972,7 @@ function startTrayDrag(e, type, tile) {
 voterTapStreak = 0;
 if (!tile || isSawMode || isNanoboxMode || gameOver || isBusy() || tutorialBlocksBoard()) return;
 e.preventDefault();
-if (drag) { detachDragListeners(); clearDragVisuals(); drag = null; }
+if (drag) { detachDragListeners(); clearDragVisuals(); endDrag(); }
 const rect = document.querySelector('.cell').getBoundingClientRect();
 const ghost = document.createElement('div');
 ghost.className = 'ghost';
@@ -2875,6 +2981,7 @@ ghost.style.height = rect.height + 'px';
 ghost.appendChild(makeTileContent(tile));
 document.body.appendChild(ghost);
 drag = { type: type, ghost: ghost, offsetX: rect.width / 2, offsetY: rect.height / 2, tile: tile };
+if (type === 'fromNext') hideNextSource();
 placeGhost(e.clientX, e.clientY);
 updateDragPreview(e.clientX, e.clientY);
 try { window.Telegram?.WebApp?.HapticFeedback?.impactOccurred('light'); } catch(_) {}
@@ -2952,7 +3059,7 @@ function onCancel() {
 if (!drag) return;
 detachDragListeners();
 clearDragVisuals();
-drag = null;
+endDrag();
 }
 
 function onUp(e) {
@@ -2960,11 +3067,12 @@ if (!drag) return;
 if (drag.ghost) drag.dropRect = drag.ghost.getBoundingClientRect();
 detachDragListeners();
 clearDragVisuals();
+snapshotPioneerFreedom();
 
 const el = document.elementFromPoint(e.clientX, e.clientY);
 const cell = el?.closest('.cell');
 
-if (tutorialReject(el, cell)) { drag = null; return; }
+if (tutorialReject(el, cell)) { endDrag(); return; }
 
 // ИЗ ТЮРЬМЫ
 if (drag.type === 'fromJail') {
@@ -3018,7 +3126,7 @@ for (let i = 0; i < neighbors.length; i++) {
 let nr = neighbors[i][0], nc = neighbors[i][1];
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
 let nt = grid[nr][nc];
-if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool' || nt.kind === 'statue') continue;
 let found = false;
 for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
 if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
@@ -3059,7 +3167,7 @@ processCascades(r, c, false, () => endMove());
 }
 }
 }
-drag = null;
+endDrag();
 return;
 }
 
@@ -3074,7 +3182,7 @@ bufferedNext = null;
 render(); saveGame();
 sfx('place');
 notifyTutorial({ type: 'jail' });
-drag = null;
+endDrag();
 return;
 }
 }
@@ -3087,7 +3195,7 @@ if (nextTile && nextTile.kind === 'tool') {
 if (nextTile.tool !== 'sack' && !grid[r][c]) {
 setStatus();
 if (nextTile.tool === 'saw') sfx('weed');
-drag = null;
+endDrag();
 return;
 }
 
@@ -3101,7 +3209,7 @@ else juristPending = false;
 sfx('pop');
 render(); saveGame();
 notifyTutorial({ type: 'jurist' });
-drag = null;
+endDrag();
 return;
 }
 else if (nextTile.tool === 'saw') {
@@ -3118,19 +3226,19 @@ nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 render();
 processCascades(r, c, false, () => saveGame());
-drag = null;
+endDrag();
 return;
 }
 else if (nextTile.tool === 'nanobox') {
 breakToolStreak();
 playNanobox(r, c, false);
-drag = null;
+endDrag();
 return;
 }
 else if (nextTile.tool === 'sack') {
 if (grid[r][c]) {
 setStatus();
-drag = null; return;
+endDrag(); return;
 }
 breakToolStreak();
 
@@ -3139,7 +3247,7 @@ for (let i = 0; i < neighbors.length; i++) {
 let nr = neighbors[i][0], nc = neighbors[i][1];
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) continue;
 let nt = grid[nr][nc];
-if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool') continue;
+if (!nt || nt.kind === 'omon' || nt.kind === 'pioneer' || nt.kind === 'tool' || nt.kind === 'statue') continue;
 let found = false;
 for (let k = 0; k < tryKinds.length; k++) if (tryKinds[k].kind === nt.kind && tryKinds[k].level === nt.level) { found = true; break; }
 if (!found) tryKinds.push({ kind: nt.kind, level: nt.level });
@@ -3174,10 +3282,10 @@ processCascades(r, c, false, () => {
 notifyTutorial({ type: 'sack' });
 endMove();
 });
-drag = null;
+endDrag();
 return;
 }
-render(); saveGame(); drag = null;
+render(); saveGame(); endDrag();
 return;
 }
 
@@ -3199,7 +3307,7 @@ notifyTutorial({ type: 'placed' });
 processCascades(r, c, sackPlace, () => endMove());
 }
 }
-drag = null;
+endDrag();
 }
 
 // --- ПОЧТА ---
@@ -3368,6 +3476,18 @@ render(); closeModal('shop-modal');
 function buyStarsPlaceholder() {
 showToast('Скоро: оплата звёздами');
 }
+function buyStatue() {
+if (!charItem || !charItem.statue) return;
+if (!STATUE_TEST_FREE) { showToast('Скоро: оплата звёздами'); return; }
+if (nextTile) bufferedNext = nextTile;
+nextTile = { kind: 'statue', pop: true };
+markPurchase('statue');
+closeModal('shop-modal');
+closeCharPopup(true);
+render();
+saveGame();
+sfx('ui');
+}
 function openStatuePopup() {
 if (tutorial.active) return;
 if (charItem && charItem.statue) return;
@@ -3446,7 +3566,7 @@ nickEl.className = 'rating-nick';
 nickEl.textContent = nick;
 const stats = document.createElement('div');
 stats.className = 'rating-stats';
-[['img/cup_1.png?v=54', formatGrouped(score)], ['img/clock_1.png?v=54', formatGrouped(moves)]].forEach(function (pair) {
+[['img/cup_1.png?v=54', formatGrouped(bestScore)], ['img/clock_1.png?v=54', formatGrouped(bestMoves)]].forEach(function (pair) {
 const span = document.createElement('span');
 const img = document.createElement('img');
 img.src = pair[0];
@@ -4609,7 +4729,7 @@ const counts = {};
 [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => {
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return;
 const t = grid[nr][nc];
-if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool') return;
+if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool' || t.kind === 'statue') return;
 const k = t.kind + ':' + t.level;
 if (!counts[k]) counts[k] = { tile: t, n: 0 };
 counts[k].n++;
@@ -4675,7 +4795,7 @@ const counts = [];
 [[r - 1, c], [r + 1, c], [r, c - 1], [r, c + 1]].forEach(([nr, nc]) => {
 if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE) return;
 const t = grid[nr][nc];
-if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool') return;
+if (!t || t.kind === 'omon' || t.kind === 'pioneer' || t.kind === 'tool' || t.kind === 'statue') return;
 if (t.kind === 'chain' && t.level >= ROCKET_NOSE && t.level <= ROCKET_TAIL) return;
 let slot = counts.find(k => k.kind === t.kind && k.level === t.level);
 if (!slot) { slot = { kind: t.kind, level: t.level, n: 0 }; counts.push(slot); }
@@ -5596,7 +5716,7 @@ add('img/sheep-src.png?v=52');
 add('img/voter-grandpa.png?v=52');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=52','img/voter-grandpa.png?v=52','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=52','img/jurist_sizo.jpg?v=52','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
