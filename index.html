@@ -15,25 +15,39 @@ html, body { margin: 0; background: #6a7a72; }
 
 /* === batch 19 === */
 .hit-pause { position: absolute; }
-#pause-dot {
-  position: absolute;
-  right: 7%;
-  top: 10%;
-  width: 22%;
-  aspect-ratio: 1;
-  background: #e31c1c;
-  border: 2px solid #fff;
-  border-radius: 50%;
-  box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+#pause-dot { display: none !important; }
+.pause-bars {
   display: none;
+  position: absolute;
+  inset: 0;
   pointer-events: none;
   z-index: 4;
 }
-#pause-dot.on { display: block; }
+.hit-pause.pulse .pause-bars { display: block; }
+.pause-bar {
+  position: absolute;
+  top: 27.48%;
+  height: 39.69%;
+  border-radius: 2px;
+  background: #c42828;
+  animation: pauseBarPulse 1.6s ease-in-out infinite;
+}
+.pause-bar:nth-child(1) { left: 45.26%; width: 3.79%; }
+.pause-bar:nth-child(2) { left: 50.95%; width: 4.07%; }
+@keyframes pauseBarPulse {
+  0%, 100% {
+    opacity: 0.15;
+    box-shadow: 0 0 1px 0 rgba(200, 40, 40, 0.10);
+  }
+  50% {
+    opacity: 0.45;
+    box-shadow: 0 0 2.5px 0.5px rgba(200, 40, 40, 0.275);
+  }
+}
 .money-window {
   display: none;
   aspect-ratio: 785 / 2000;
-  background: #d7d8ae url('img/money10_bg.png?v=58') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/money10_bg.png?v=59') center / 100% 100% no-repeat;
 }
 .money-tile {
   position: absolute;
@@ -104,20 +118,6 @@ html, body { margin: 0; background: #6a7a72; }
   justify-content: center;
 }
 .rating-stats .gold-gap { width: 0.25em; flex: 0 0 auto; display: inline-block; }
-#hint-recipe {
-  display: flex;
-  opacity: 0;
-  transition: opacity 0.1s linear;
-}
-#hint-recipe.has-recipe {
-  display: flex;
-  opacity: 1;
-  background: #62844a;
-  border-radius: 14px;
-  box-shadow: inset 0 0 0 2px rgba(35, 55, 24, 0.45);
-}
-.cell { transition: box-shadow 0.1s linear; }
-.cell.drop-target { box-shadow: inset 0 0 0 3px #ffe566; }
 .mission-card {
   position: relative;
   flex: 1 1 0;
@@ -133,6 +133,7 @@ html, body { margin: 0; background: #6a7a72; }
   padding: 4px 8px 4px 6px;
   cursor: pointer;
   box-sizing: border-box;
+  pointer-events: auto;
 }
 .mission-card .mc-title {
   font-family: 'Nunito', 'Liberation Sans', Arial, sans-serif;
@@ -213,17 +214,6 @@ html, body { margin: 0; background: #6a7a72; }
 .mission-card.claimed .mc-title,
 .mission-card.claimed .mc-sub,
 .mission-card.claimed .mc-reward { opacity: 0.72; }
-.blogger-hire-badge {
-  position: absolute;
-  left: 58.2%;
-  top: 74.55%;
-  height: 9.2%;
-  width: auto;
-  z-index: 6;
-  pointer-events: none;
-  object-fit: contain;
-  display: block;
-}
 
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
@@ -435,7 +425,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   aspect-ratio: 570 / 1438;
 }
 .shop-window {
-  background: #d7d8ae url('img/shop_bg.png?v=58') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/shop_bg.png?v=59') center / 100% 100% no-repeat;
   border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
@@ -443,7 +433,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .money-window {
   display: none;
   aspect-ratio: 785 / 2000;
-  background: #d7d8ae url('img/money10_bg.png?v=58') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/money10_bg.png?v=59') center / 100% 100% no-repeat;
 }
 #shop-modal.money-open > .shop-window:not(.money-window) { visibility: hidden; }
 #shop-modal.money-open > .money-window { display: block; }
@@ -481,6 +471,19 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   top: 94%;
   width: calc(37.89% * 1.30);
 }
+/* 399⭐ on the unpurchased statue card: covers painted КУПИТЬ; badge matches nanobox 699 exactly. */
+#shop-statue-price {
+  position: absolute;
+  z-index: 3;
+  pointer-events: none;
+  left: 7.19%;
+  top: 81.64%;
+  width: 38.42%;
+  height: 15.65%;
+  display: block;
+  object-fit: fill;
+}
+#shop-statue-price.is-hidden { display: none; }
 .shop-voter-art {
   display: none;
   position: absolute;
@@ -522,7 +525,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 #pause-modal .pause-bot { height: calc(78vw * var(--pause-scale) * 390 / 902); flex-basis: auto; }
 .pause-top, .pause-mid, .pause-bot { position: relative; width: 100%; background-repeat: no-repeat; }
 .pause-top { flex: 0 0 auto; height: calc(100% * 430 / 902 * 570 / 1438); background-image: url('img/pause_top.png?v=47'); background-size: 100% 100%; }
-.pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=58'); background-size: 100% 100%; }
+.pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=59'); background-size: 100% 100%; }
 .pause-mid { flex: 1 1 auto; min-height: 0; background-image: url('img/pause_mid.png?v=47'); background-size: 100% 100%; }
 .pause-undo { left: 6.76%; top: 47.22%; width: 18.74%; height: 42.79%; }
 .pause-list { left: 29.82%; top: 47.22%; width: 18.74%; height: 42.79%; }
@@ -564,7 +567,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   flex-direction: column;
   justify-content: space-evenly;
   gap: 2%;
-  pointer-events: none;
+  pointer-events: auto;
 }
 .pause-missions img { width: 100%; min-height: 0; flex: 1 1 0; object-fit: contain; object-position: center; display: block; }
 
@@ -670,9 +673,7 @@ left: 5%;
 right: 8%;
 top: 16%;
 bottom: 14%;
-display: flex;
-opacity: 0;
-transition: opacity 0.1s linear;
+display: none;
 align-items: center;
 justify-content: center;
 flex-wrap: nowrap;
@@ -681,7 +682,7 @@ pointer-events: none;
 padding: 4px 2px;
 }
 #hint-recipe.has-recipe {
-opacity: 1;
+display: flex;
 background: #62844a;
 border-radius: 14px;
 box-shadow: inset 0 0 0 2px rgba(35, 55, 24, 0.45);
@@ -1064,12 +1065,41 @@ cursor: pointer;
 .cellar-dot.on { background: #ffd24a; }
 .art-modal { position: fixed; inset: 0; z-index: 4900; display: none; align-items: center; justify-content: center; background: rgba(0,0,0,0.55); padding: 12px; }
 .art-modal.open { display: flex; }
-.art-panel { position: relative; width: min(94vw, 520px); container-type: inline-size; }
+.art-panel { position: relative; width: min(94vw, 520px); container-type: inline-size; overflow: hidden; border-radius: 2.8cqi; }
 .art-panel > img { width: 100%; height: auto; display: block; }
 .art-hit { position: absolute; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer; }
 .art-hit.is-off { background: rgba(20,16,10,0.45); cursor: default; border-radius: 18px; }
 .art-num { position: absolute; font-weight: 900; color: #1a1208; line-height: 1; pointer-events: none; }
-#blogger-count { left: 36.8%; top: 81.15%; font-size: 3.7cqi; }
+#blogger-count {
+  left: 5.6%;
+  top: 73.6%;
+  width: 35.4%;
+  padding: 0.6% 1.6% 1.4% 0.5%;
+  box-sizing: border-box;
+  display: block;
+  background: #e2eaaa;
+  font-family: Nunito, 'Liberation Sans', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 3.35cqi;
+  color: #111;
+  line-height: 1.25;
+  z-index: 2;
+}
+#blogger-count .gold-num {
+  display: inline-flex;
+  align-items: center;
+  height: var(--digit-h, 1.3cap);
+  margin-left: 0.28em;
+  vertical-align: -0.18em;
+}
+#blogger-count .hud-digit {
+  height: var(--digit-h, 1.3cap);
+  width: var(--digit-slot);
+  flex: 0 0 var(--digit-slot);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
 #sizo-count { left: 38.8%; top: 43.55%; font-size: 3.3cqi; }
 #blogger-use { left: 9.56%; top: 57.21%; width: 34.69%; height: 10.10%; }
 #blogger-cancel { left: 45.75%; top: 57.21%; width: 23.63%; height: 10.10%; }
@@ -1184,7 +1214,7 @@ cursor: pointer;
   border-style: solid;
   border-color: transparent;
   border-width: 9.2px 12.2px;
-  border-image-source: url('img/hire_btn_frame2x.png?v=58');
+  border-image-source: url('img/hire_btn_frame2x.png?v=59');
   border-image-slice: 44 52 44 52 fill;
   border-image-repeat: stretch;
 }
@@ -1233,7 +1263,7 @@ cursor: pointer;
 <div class="val-box" id="moves-box"><div class="num-container" id="moves-num"></div></div>
 <div class="hitbox hit-rating" onclick="openRating()" aria-label="Рейтинг"></div>
 <div class="hitbox hit-shop" onclick="openModal('shop-modal')" aria-label="Магазин"></div>
-<div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"><span id="pause-dot" aria-hidden="true"></span></div>
+<div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"><span id="pause-dot" aria-hidden="true"></span><span class="pause-bars" aria-hidden="true"><span class="pause-bar"></span><span class="pause-bar"></span></span></div>
 <div class="hitbox hit-down" id="hit-down" onclick="useJurist()" aria-label="Юрист"></div>
 <div class="hitbox hit-jurist" onclick="useJurist()" aria-label="Юрист">
 <svg id="jurist-ring" class="jurist-ring" viewBox="0 0 100 100" aria-hidden="true">
@@ -1306,7 +1336,8 @@ cursor: pointer;
 <button type="button" class="shop-hitbox slot-7" onclick="openBloggerHelp()" aria-label="Блогер"></button>
 <img id="stamp-jurist" class="shop-paid for-jurist" src="img/paid_trim.png?v=54" alt="">
 <button type="button" class="shop-hitbox slot-8" onclick="buyNanoboxStars()" aria-label="Нанокоробка 699"></button>
-<button type="button" class="shop-hitbox slot-9" onclick="openStatuePopup()" aria-label="Защита от ОМОНовцев"></button>
+<button type="button" class="shop-hitbox slot-9" onclick="openStatuePopup()" aria-label="Защита от ОМОНовцев 399"></button>
+<img id="shop-statue-price" src="img/shop_statue_399.png?v=59" alt="399" draggable="false">
 <img id="stamp-statue" class="shop-paid for-statue" src="img/paid_trim.png?v=54" alt="">
 <button type="button" class="shop-hitbox slot-10" onclick="openMoneyPacks()" aria-label="Нужны деньги"></button>
 <img id="stamp-money" class="shop-paid for-money" src="img/paid_trim.png?v=54" alt="">
@@ -1393,14 +1424,14 @@ cursor: pointer;
 <div class="modal" id="gameover-modal">
 <div id="go-new">
 <div id="go-new-wrap">
-<img id="go-girl" src="img/gameover_step1.png?v=58" alt="">
+<img id="go-girl" src="img/gameover_step1.png?v=59" alt="">
 <button type="button" class="go-opt undo" id="go-undo" onclick="undoFromGameOver()">
 <span>Ход назад</span>
-<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=58" alt="1500"></span>
+<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=59" alt="1500"></span>
 </button>
 <button type="button" class="go-opt clear" id="go-clear" onclick="buyClearFieldStars()">
 <span>Расчистить поле</span>
-<span class="price"><img src="img/stars_badge_50go.png?v=58" alt="50"></span>
+<span class="price"><img src="img/stars_badge_50go.png?v=59" alt="50"></span>
 </button>
 <button type="button" class="go-opt menu" onclick="restartAfterOver()"><span>Главное меню</span></button>
 </div>
@@ -1417,18 +1448,17 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="blogger-modal" role="dialog" aria-label="Помощь блогера">
 <div class="art-panel" id="blogger-panel">
-<img src="img/blogger_help.png?v=58" alt="">
-<div class="art-num" id="blogger-count">5</div>
+<img src="img/blogger_help.png?v=59" alt="">
+<div class="art-num" id="blogger-count"></div>
 <button type="button" class="art-hit" id="blogger-use" aria-label="Использовать"></button>
 <button type="button" class="art-hit" id="blogger-cancel" aria-label="Отмена"></button>
 <button type="button" class="art-hit" id="blogger-x" aria-label="Закрыть"></button>
-<button type="button" class="art-hit" id="blogger-hire" aria-label="Нанять в штат 29"></button>
-<img id="blogger-hire-badge" class="blogger-hire-badge" src="img/stars_badge_29.png?v=58" alt="29" draggable="false">
+<button type="button" class="art-hit" id="blogger-hire" aria-label="Нанять в штат"></button>
 </div>
 </div>
 <div class="art-modal" id="sizo-modal" role="dialog" aria-label="Юрист в СИЗО">
 <div class="art-panel" id="sizo-panel">
-<img src="img/jurist_sizo.jpg?v=58" alt="">
+<img src="img/jurist_sizo.jpg?v=59" alt="">
 <div class="art-num" id="sizo-count"></div>
 <button type="button" class="art-hit" id="sizo-think" aria-label="Подумать"></button>
 <button type="button" class="art-hit" id="sizo-bribe" aria-label="Взятка"></button>
@@ -1453,7 +1483,7 @@ cursor: pointer;
 </div>
 <div id="char-pop" data-side="left" aria-hidden="true">
 <img id="char-pop-img" alt="" draggable="false">
-<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_399.png?v=58" alt="399"></button>
+<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_399.png?v=59" alt="399"></button>
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
@@ -1478,6 +1508,21 @@ const SIZE = 6;
 const SAVE_KEY = 'pasha_match_v46';
 const SEEN_KEY = 'pasha_match_seen_v46';
 const BEST_KEY = 'pasha_best_v1';
+const RESET_B20_FLAG = 'pasha_reset_b20';
+(function resetBatch20Once() {
+  try {
+    if (localStorage.getItem(RESET_B20_FLAG)) return;
+    localStorage.removeItem('pasha_purchases_v1');
+    localStorage.removeItem('pasha_blogger_consults_v1');
+    localStorage.removeItem('pasha_daily_v1');
+    localStorage.removeItem('pasha_match_v46');
+    localStorage.removeItem('pasha_match_seen_v46');
+    localStorage.removeItem('pasha_book_v1');
+    localStorage.removeItem('pasha_tutorial_done_v1');
+    localStorage.removeItem('pasha_achievements_v1');
+    localStorage.setItem(RESET_B20_FLAG, '1');
+  } catch (e) {}
+})();
 let bestScore = 0;
 let bestMoves = 0;
 function loadBest() {
@@ -1514,21 +1559,21 @@ const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
 /* Occupied-cell darkening from batch 5. Set true to restore the shade overlay. */
 const OCCUPIED_SHADE = false;
 /* Live merge recipe inside «Нажми меня». The panel stays «? НАЖМИ МЕНЯ»; tap still opens the hint gallery. */
-const LIVE_HINT_PREVIEW = true;
+const LIVE_HINT_PREVIEW = false;
 /* === batch 19 helpers === */
 const TG_CHANNEL_URL = '';
 const DAILY_KEY = 'pasha_daily_v1';
 const MONEY_PACKS = [
-  { kind: '4500', coins: 4500, stars: 50, art: 'img/money_pile_01.png?v=58', amt: 'img/money_amt_4500.png?v=58', label: '4 500' },
-  { kind: '8000', coins: 8000, stars: 75, art: 'img/money_pile_02.png?v=58', amt: 'img/money_amt_8000.png?v=58', label: '8 000' },
-  { kind: '18000', coins: 18000, stars: 149, art: 'img/money_pile_03.png?v=58', amt: 'img/money_amt_18000.png?v=58', label: '18 000' },
-  { kind: '33500', coins: 33500, stars: 249, art: 'img/money_pile_04.png?v=58', amt: 'img/money_amt_33500.png?v=58', label: '33 500' },
-  { kind: '52000', coins: 52000, stars: 349, art: 'img/money_pile_05.png?v=58', amt: 'img/money_amt_52000.png?v=58', label: '52 000' },
-  { kind: '120000', coins: 120000, stars: 749, art: 'img/money_pile_06.png?v=58', amt: 'img/money_amt_120000.png?v=58', label: '120 000' },
-  { kind: '235000', coins: 235000, stars: 1299, art: 'img/money_pile_07.png?v=58', amt: 'img/money_amt_235000.png?v=58', label: '235 000' },
-  { kind: '455000', coins: 455000, stars: 2299, art: 'img/money_pile_08.png?v=58', amt: 'img/money_amt_455000.png?v=58', label: '455 000' },
-  { kind: '900000', coins: 900000, stars: 3999, art: 'img/money_pile_09.png?v=58', amt: 'img/money_amt_900000.png?v=58', label: '900 000' },
-  { kind: 'inf', coins: 0, stars: 9999, art: 'img/bear_6.png?v=58', amt: 'img/money_amt_inf.png?v=58', label: '∞', inf: true }
+  { kind: '4500', coins: 4500, stars: 50, art: 'img/money_pile_01.png?v=59', amt: 'img/money_amt_4500.png?v=59', label: '4 500' },
+  { kind: '8000', coins: 8000, stars: 75, art: 'img/money_pile_02.png?v=59', amt: 'img/money_amt_8000.png?v=59', label: '8 000' },
+  { kind: '18000', coins: 18000, stars: 149, art: 'img/money_pile_03.png?v=59', amt: 'img/money_amt_18000.png?v=59', label: '18 000' },
+  { kind: '33500', coins: 33500, stars: 249, art: 'img/money_pile_04.png?v=59', amt: 'img/money_amt_33500.png?v=59', label: '33 500' },
+  { kind: '52000', coins: 52000, stars: 349, art: 'img/money_pile_05.png?v=59', amt: 'img/money_amt_52000.png?v=59', label: '52 000' },
+  { kind: '120000', coins: 120000, stars: 749, art: 'img/money_pile_06.png?v=59', amt: 'img/money_amt_120000.png?v=59', label: '120 000' },
+  { kind: '235000', coins: 235000, stars: 1299, art: 'img/money_pile_07.png?v=59', amt: 'img/money_amt_235000.png?v=59', label: '235 000' },
+  { kind: '455000', coins: 455000, stars: 2299, art: 'img/bear_5.png?v=59', amt: 'img/money_amt_455000.png?v=59', label: '455 000' },
+  { kind: '900000', coins: 900000, stars: 3999, art: 'img/bear_6.png?v=59', amt: 'img/money_amt_900000.png?v=59', label: '900 000' },
+  { kind: 'inf', coins: 0, stars: 9999, art: 'img/bear_18.png?v=59', amt: 'img/money_amt_inf.png?v=59', label: '∞', inf: true }
 ];
 const MONEY_TILE_BOX = [
   { left: 5.48, top: 8.35, width: 41.78, height: 16.80 },
@@ -1576,7 +1621,7 @@ function buildMoneyWindow() {
     amtRow.appendChild(amt);
     const badge = document.createElement('img');
     badge.className = 'money-tile-badge';
-    badge.src = 'img/stars_badge_' + pack.stars + '.png?v=58';
+    badge.src = 'img/stars_badge_' + pack.stars + '.png?v=59';
     badge.alt = String(pack.stars);
     badge.draggable = false;
     btn.appendChild(art);
@@ -1747,8 +1792,10 @@ function dailyHasClaimable() {
   return dailyState.slots.some(function (s) { return s.done && !s.claimed; });
 }
 function updatePauseDot() {
+  const hit = document.querySelector('.hit-pause');
+  if (hit) hit.classList.toggle('pulse', dailyHasClaimable());
   const dot = document.getElementById('pause-dot');
-  if (dot) dot.classList.toggle('on', dailyHasClaimable());
+  if (dot) { dot.classList.remove('on'); }
 }
 function dailyInc(slot, n, goal) {
   if (slot.claimed || slot.done) return;
@@ -2145,8 +2192,8 @@ return !!(tile && tile.kind === 'chain' && tile.level === 3);
 function getTileImage(tile) {
 if (!tile) return null;
 if (tile.kind === 'chain') {
-if (tile.level === 2) return 'img/sheep-src.png?v=58';
-if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=58';
+if (tile.level === 2) return 'img/sheep-src.png?v=59';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=59';
 return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
 }
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
@@ -3435,7 +3482,7 @@ const el = document.getElementById('shop-voter-art');
 if (!el) return;
 /* После пасхалки доска и «далее» меняют избирателя, слот магазина — нет. */
 el.classList.remove('on');
-el.src = 'img/voter-grandpa.png?v=58';
+el.src = 'img/voter-grandpa.png?v=59';
 }
 function closeChannelEgg() {
 closeModal('channel-modal');
@@ -3725,9 +3772,7 @@ const y = clientY - drag.offsetY;
 drag.ghost.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
 }
 
-function hideCellHighlight() {
-document.querySelectorAll('.cell.drop-target').forEach(function (el) { el.classList.remove('drop-target'); });
-}
+function hideCellHighlight() {}
 
 function updateDragPreview(clientX, clientY) {
 if (!LIVE_HINT_PREVIEW) { clearPreview(); return; }
@@ -3736,11 +3781,7 @@ const hit = document.elementFromPoint(clientX, clientY);
 const cell = hit && hit.closest ? hit.closest('.cell') : null;
 if (!cell) { clearPreview(); return; }
 const tile = drag.type === 'fromJail' ? jailTile : nextTile;
-const nodes = previewNodes(tile, +cell.dataset.r, +cell.dataset.c);
-if (!nodes || !nodes.length) { clearPreview(); return; }
-hideCellHighlight();
-cell.classList.add('drop-target');
-showPreview(nodes);
+showPreview(previewNodes(tile, +cell.dataset.r, +cell.dataset.c));
 }
 
 let nextSourceHidden = false;
@@ -5424,9 +5465,11 @@ function paintShopStamps() {
 const j = document.getElementById('stamp-jurist');
 const s = document.getElementById('stamp-statue');
 const m = document.getElementById('stamp-money');
+const price = document.getElementById('shop-statue-price');
 if (j) j.classList.toggle('on', !!purchases.jurist);
 if (s) s.classList.toggle('on', !!purchases.statue);
 if (m) m.classList.toggle('on', !!purchases.infiniteMoney);
+if (price) price.classList.toggle('is-hidden', !!purchases.statue);
 }
 loadPurchases();
 if (purchases.statue) unlockBookKey('statue');
@@ -5687,11 +5730,10 @@ if (drag) return;
 clearPreview();
 }
 function clearPreview() {
-hideCellHighlight();
 const box = document.getElementById('hint-recipe');
 if (!box) return;
-box.classList.remove('has-recipe', 'compact');
 box.innerHTML = '';
+box.classList.remove('has-recipe', 'compact');
 }
 function showPreview(nodes) {
 if (!LIVE_HINT_PREVIEW) { clearPreview(); return; }
@@ -5773,24 +5815,7 @@ return next;
 function previewNodes(tile, r, c) {
 const result = previewResult(tile, r, c);
 if (!result) return [];
-const nodes = [];
-const prev = grid[r] && grid[r][c];
-let group = null;
-if (tile && (tile.kind === 'chain' || tile.kind === 'care' || tile.kind === 'income')) {
-grid[r][c] = tile;
-group = findGroup(r, c);
-grid[r][c] = prev;
-}
-if (group && group.length >= 2) {
-group.slice(0, 4).forEach(function (p) {
-const t = (p[0] === r && p[1] === c) ? tile : (grid[p[0]] && grid[p[0]][p[1]]);
-if (t) nodes.push(hintNode(t));
-});
-if (group.length > 4) nodes.push(hintMark('…'));
-} else if (tile) {
-nodes.push(hintNode(tile));
-}
-nodes.push(hintMark('→'));
+const nodes = [hintNode(tile), hintMark('→')];
 if (result.empty) {
 const empty = document.createElement('span');
 empty.className = 'hint-empty';
@@ -5939,7 +5964,7 @@ refreshGameOverActions();
 const wrap = document.getElementById('go-new-wrap');
 const girl = document.getElementById('go-girl');
 if (wrap) wrap.classList.remove('step2');
-if (girl) girl.src = 'img/gameover_step1.png?v=58';
+if (girl) girl.src = 'img/gameover_step1.png?v=59';
 openModal('gameover-modal');
 }
 let toastTimer = null;
@@ -6545,16 +6570,28 @@ function paintBlogger() {
 const n = document.getElementById('blogger-count');
 const use = document.getElementById('blogger-use');
 if (n) {
-if (JURIST_TEST_UNLIMITED) { n.textContent = ''; n.style.visibility = 'hidden'; }
-else { n.style.visibility = ''; n.textContent = '\u00a0' + consultsLeft; }
+if (JURIST_TEST_UNLIMITED) { n.replaceChildren(); n.style.visibility = 'hidden'; }
+else {
+n.style.visibility = '';
+n.style.setProperty('--digit-h', '1.3cap');
+n.style.setProperty('--digit-slot', 'calc(1.3cap * ' + DIGIT_SLOT_ASPECT + ')');
+const lead = document.createElement('span');
+lead.textContent = 'Осталось консультаций:';
+const num = document.createElement('span');
+num.className = 'gold-num';
+String(Math.max(0, consultsLeft | 0)).split('').forEach(function (ch) { num.appendChild(makeDigit(ch)); });
+n.replaceChildren(lead, num);
+}
 }
 if (use) {
 const off = JURIST_TEST_UNLIMITED ? juristWaiting() : (bloggerUseBlocked() || (!juristHired && consultsLeft <= 0));
 use.classList.toggle('is-off', off);
 use.setAttribute('aria-disabled', off ? 'true' : 'false');
+use.setAttribute('aria-label', 'Использовать');
 }
 }
 function openBloggerHelp() {
+if ((purchases && purchases.jurist) || juristHired) return;
 paintBlogger();
 const el = document.getElementById('blogger-modal');
 if (el) el.classList.add('open');
@@ -6563,6 +6600,17 @@ sfx('ui');
 function closeBloggerHelp() {
 const el = document.getElementById('blogger-modal');
 if (el) el.classList.remove('open');
+}
+function applyJuristBribe() {
+showToast('Скоро: оплата звёздами');
+if (!isJuristTile(nextTile)) {
+if (nextTile) bufferedNext = nextTile;
+nextTile = { kind: 'tool', tool: 'jurist' };
+}
+juristPending = true;
+juristCooldown = 0;
+render();
+saveGame();
 }
 function useBloggerConsult() {
 if (JURIST_TEST_UNLIMITED) {
@@ -6647,15 +6695,7 @@ const sx = document.getElementById('sizo-x');
 if (sx) sx.addEventListener('click', closeSizo);
 const bribe = document.getElementById('sizo-bribe');
 if (bribe) bribe.addEventListener('click', function () {
-showToast('Скоро: оплата звёздами');
-if (!isJuristTile(nextTile)) {
-if (nextTile) bufferedNext = nextTile;
-nextTile = { kind: 'tool', tool: 'jurist' };
-}
-juristPending = true;
-juristCooldown = 0;
-render();
-saveGame();
+applyJuristBribe();
 closeSizo();
 });
 const sizo = document.getElementById('sizo-modal');
@@ -6668,7 +6708,7 @@ const wrap = document.getElementById('go-new-wrap');
 if (!wrap || wrap.classList.contains('step2')) return;
 if (e.target.closest && e.target.closest('.go-opt')) return;
 const girl = document.getElementById('go-girl');
-if (girl) girl.src = 'img/gameover_step2.png?v=58';
+if (girl) girl.src = 'img/gameover_step2.png?v=59';
 wrap.classList.add('step2');
 });
 window.addEventListener('resize', function () {
@@ -6691,11 +6731,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
-add('img/sheep-src.png?v=58');
-add('img/voter-grandpa.png?v=58');
+add('img/sheep-src.png?v=59');
+add('img/voter-grandpa.png?v=59');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=58','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=58','img/voter-grandpa.png?v=58','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=58','img/jurist_sizo.jpg?v=58','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png','img/money_window.png?v=58','img/stars_badge_249.png?v=58','img/stars_badge_399.png?v=58','img/stars_badge_29.png?v=58','img/stars_badge_349.png?v=58','img/stars_badge_749.png?v=58','img/stars_badge_1299.png?v=58','img/stars_badge_2299.png?v=58','img/stars_badge_3999.png?v=58','img/stars_badge_9999.png?v=58','img/money10_bg.png?v=58','img/bear_6.png?v=58','img/pause_bot.png?v=58','img/money_pile_01.png?v=58','img/money_pile_02.png?v=58','img/money_pile_03.png?v=58','img/money_pile_04.png?v=58','img/money_pile_05.png?v=58','img/money_pile_06.png?v=58','img/money_pile_07.png?v=58','img/money_pile_08.png?v=58','img/money_pile_09.png?v=58','img/money_amt_4500.png?v=58','img/money_amt_8000.png?v=58','img/money_amt_18000.png?v=58','img/money_amt_33500.png?v=58','img/money_amt_52000.png?v=58','img/money_amt_120000.png?v=58','img/money_amt_235000.png?v=58','img/money_amt_455000.png?v=58','img/money_amt_900000.png?v=58','img/money_amt_inf.png?v=58'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=59','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=59','img/voter-grandpa.png?v=59','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=59','img/jurist_sizo.jpg?v=59','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png','img/money_window.png?v=59','img/stars_badge_249.png?v=59','img/stars_badge_399.png?v=59','img/stars_badge_29.png?v=59','img/stars_badge_349.png?v=59','img/stars_badge_749.png?v=59','img/stars_badge_1299.png?v=59','img/stars_badge_2299.png?v=59','img/stars_badge_3999.png?v=59','img/stars_badge_9999.png?v=59','img/money10_bg.png?v=59','img/bear_6.png?v=59','img/pause_bot.png?v=59','img/money_pile_01.png?v=59','img/money_pile_02.png?v=59','img/money_pile_03.png?v=59','img/money_pile_04.png?v=59','img/money_pile_05.png?v=59','img/money_pile_06.png?v=59','img/money_pile_07.png?v=59','img/money_pile_08.png?v=59','img/money_pile_09.png?v=59','img/money_amt_4500.png?v=59','img/money_amt_8000.png?v=59','img/money_amt_18000.png?v=59','img/money_amt_33500.png?v=59','img/money_amt_52000.png?v=59','img/money_amt_120000.png?v=59','img/money_amt_235000.png?v=59','img/money_amt_455000.png?v=59','img/money_amt_900000.png?v=59','img/money_amt_inf.png?v=59'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
