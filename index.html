@@ -12,6 +12,219 @@ html, body { margin: 0; background: #6a7a72; }
 #boot { position: fixed; inset: 0; z-index: 6000; background: #6a7a72; transition: opacity 0.3s ease; }
 #boot img { width: 100%; height: 100%; object-fit: cover; object-position: center; display: block; }
 #boot.hide { opacity: 0; pointer-events: none; }
+
+/* === batch 19 === */
+.hit-pause { position: absolute; }
+#pause-dot {
+  position: absolute;
+  right: 7%;
+  top: 10%;
+  width: 22%;
+  aspect-ratio: 1;
+  background: #e31c1c;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.45);
+  display: none;
+  pointer-events: none;
+  z-index: 4;
+}
+#pause-dot.on { display: block; }
+.money-window {
+  display: none;
+  aspect-ratio: 785 / 2000;
+  background: #d7d8ae url('img/money10_bg.png?v=58') center / 100% 100% no-repeat;
+}
+.money-tile {
+  position: absolute;
+  border: 0;
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  border-radius: 10px;
+}
+.money-tile:active { background: rgba(255,255,255,0.14); }
+.money-tile-art {
+  position: absolute;
+  left: 50%;
+  bottom: 26.5%;
+  height: 69%;
+  max-width: 94%;
+  transform: translateX(-50%);
+  object-fit: contain;
+  object-position: center bottom;
+  pointer-events: none;
+}
+.money-tile-amt {
+  position: absolute;
+  left: 50%;
+  bottom: 26.2%;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  height: 15px;
+  width: max-content;
+  max-width: 92%;
+  pointer-events: none;
+  z-index: 2;
+}
+.money-tile-amt img {
+  height: 15px;
+  width: auto;
+  flex: 0 0 auto;
+  display: block;
+  object-fit: contain;
+}
+.money-tile-badge {
+  position: absolute;
+  left: 16.74%;
+  top: 74.2%;
+  width: 66.51%;
+  height: 19.6%;
+  object-fit: contain;
+  pointer-events: none;
+  z-index: 2;
+}
+#money-x { top: 1.15%; left: 83.57%; width: 14.65%; height: 5.80%; border-radius: 10px; }
+.rating-stats img { height: 32px; width: auto; display: block; }
+.rating-stats .gold-num {
+  display: inline-flex;
+  align-items: center;
+  height: 17px;
+}
+.rating-stats .hud-digit {
+  height: 17px;
+  width: var(--digit-slot);
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.rating-stats .gold-gap { width: 0.25em; flex: 0 0 auto; display: inline-block; }
+#hint-recipe {
+  display: flex;
+  opacity: 0;
+  transition: opacity 0.1s linear;
+}
+#hint-recipe.has-recipe {
+  display: flex;
+  opacity: 1;
+  background: #62844a;
+  border-radius: 14px;
+  box-shadow: inset 0 0 0 2px rgba(35, 55, 24, 0.45);
+}
+.cell { transition: box-shadow 0.1s linear; }
+.cell.drop-target { box-shadow: inset 0 0 0 3px #ffe566; }
+.mission-card {
+  position: relative;
+  flex: 1 1 0;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #efe6c8;
+  border: 2px solid #5a3a14;
+  border-radius: 8px;
+  box-shadow: 0 2px 0 #3a2410, inset 0 1px 0 rgba(255,255,255,0.65);
+  overflow: hidden;
+  padding: 4px 8px 4px 6px;
+  cursor: pointer;
+  box-sizing: border-box;
+}
+.mission-card .mc-title {
+  font-family: 'Nunito', 'Liberation Sans', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 11px;
+  letter-spacing: 0.02em;
+  color: #5a2a0a;
+  line-height: 1.1;
+  text-transform: uppercase;
+}
+.mission-card .mc-sub {
+  font-family: 'Nunito', 'Liberation Sans', Arial, sans-serif;
+  font-weight: 800;
+  font-size: 9px;
+  color: #5a5848;
+  line-height: 1.15;
+  margin-top: 1px;
+}
+.mission-card .mc-reward {
+  margin-top: auto;
+  align-self: flex-start;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  background: #6f8b46;
+  border: 2px solid #fff;
+  border-radius: 5px;
+  padding: 1px 6px 1px 3px;
+  color: #fff;
+  font-weight: 900;
+  font-size: 11px;
+  text-shadow: 0 1px 0 #3a4a20;
+}
+.mission-card .mc-reward img { width: 12px; height: 12px; object-fit: contain; }
+.mission-dot {
+  position: absolute;
+  right: 4%;
+  top: 6%;
+  width: 10px;
+  height: 10px;
+  background: #e31c1c;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: none;
+  z-index: 3;
+  box-shadow: 0 1px 2px rgba(0,0,0,0.4);
+}
+.mission-dot.blink {
+  display: block;
+  animation: missionBlink 0.9s ease-in-out infinite;
+}
+@keyframes missionBlink {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.18; }
+}
+.mission-stamp {
+  position: absolute;
+  left: 50%;
+  top: 54%;
+  transform: translate(-50%, -50%) rotate(-18deg);
+  border: 6px solid #b42323;
+  color: #b42323;
+  background: rgba(255,255,255,0.12);
+  font-family: 'Nunito', 'Liberation Sans', Arial, sans-serif;
+  font-weight: 900;
+  font-size: 26px;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  padding: 4px 8px;
+  border-radius: 6px;
+  pointer-events: none;
+  z-index: 4;
+  white-space: nowrap;
+  text-shadow: 0 1px 0 rgba(255,255,255,0.4);
+  box-shadow: 0 0 0 1px rgba(180,35,35,0.25);
+}
+.mission-card.claimed { cursor: default; }
+.mission-card.claimed .mc-title,
+.mission-card.claimed .mc-sub,
+.mission-card.claimed .mc-reward { opacity: 0.72; }
+.blogger-hire-badge {
+  position: absolute;
+  left: 58.2%;
+  top: 74.55%;
+  height: 9.2%;
+  width: auto;
+  z-index: 6;
+  pointer-events: none;
+  object-fit: contain;
+  display: block;
+}
+
 </style>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
 <style>
@@ -222,15 +435,15 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   aspect-ratio: 570 / 1438;
 }
 .shop-window {
-  background: #d7d8ae url('img/shop_bg.png?v=57') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/shop_bg.png?v=58') center / 100% 100% no-repeat;
   border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
 }
 .money-window {
   display: none;
-  aspect-ratio: 570 / 707;
-  background: #d7d8ae url('img/money_window.png?v=57') center / 100% 100% no-repeat;
+  aspect-ratio: 785 / 2000;
+  background: #d7d8ae url('img/money10_bg.png?v=58') center / 100% 100% no-repeat;
 }
 #shop-modal.money-open > .shop-window:not(.money-window) { visibility: hidden; }
 #shop-modal.money-open > .money-window { display: block; }
@@ -309,7 +522,7 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 #pause-modal .pause-bot { height: calc(78vw * var(--pause-scale) * 390 / 902); flex-basis: auto; }
 .pause-top, .pause-mid, .pause-bot { position: relative; width: 100%; background-repeat: no-repeat; }
 .pause-top { flex: 0 0 auto; height: calc(100% * 430 / 902 * 570 / 1438); background-image: url('img/pause_top.png?v=47'); background-size: 100% 100%; }
-.pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=47'); background-size: 100% 100%; }
+.pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=58'); background-size: 100% 100%; }
 .pause-mid { flex: 1 1 auto; min-height: 0; background-image: url('img/pause_mid.png?v=47'); background-size: 100% 100%; }
 .pause-undo { left: 6.76%; top: 47.22%; width: 18.74%; height: 42.79%; }
 .pause-list { left: 29.82%; top: 47.22%; width: 18.74%; height: 42.79%; }
@@ -457,7 +670,9 @@ left: 5%;
 right: 8%;
 top: 16%;
 bottom: 14%;
-display: none;
+display: flex;
+opacity: 0;
+transition: opacity 0.1s linear;
 align-items: center;
 justify-content: center;
 flex-wrap: nowrap;
@@ -466,7 +681,7 @@ pointer-events: none;
 padding: 4px 2px;
 }
 #hint-recipe.has-recipe {
-display: flex;
+opacity: 1;
 background: #62844a;
 border-radius: 14px;
 box-shadow: inset 0 0 0 2px rgba(35, 55, 24, 0.45);
@@ -829,7 +1044,7 @@ cursor: pointer;
 .rating-row.empty .rating-nick { color: rgba(255, 255, 255, 0.55); font-weight: 700; }
 .rating-stats { margin-top: 5px; display: flex; gap: 14px; font-size: 15px; font-weight: 700; }
 .rating-stats span { display: inline-flex; align-items: center; gap: 4px; }
-.rating-stats img { height: 18px; width: auto; display: block; }
+.rating-stats img { height: 32px; width: auto; display: block; }
 #rules-modal { z-index: 5600; }
 .rules-scroll { flex: 1; overflow-y: auto; padding-right: 4px; -webkit-overflow-scrolling: touch; touch-action: pan-y; }
 .rules-scroll p { color: #fff6e4; font-weight: 700; font-size: 15px; line-height: 1.4; margin: 0 0 12px; }
@@ -969,7 +1184,7 @@ cursor: pointer;
   border-style: solid;
   border-color: transparent;
   border-width: 9.2px 12.2px;
-  border-image-source: url('img/hire_btn_frame2x.png?v=57');
+  border-image-source: url('img/hire_btn_frame2x.png?v=58');
   border-image-slice: 44 52 44 52 fill;
   border-image-repeat: stretch;
 }
@@ -1018,7 +1233,7 @@ cursor: pointer;
 <div class="val-box" id="moves-box"><div class="num-container" id="moves-num"></div></div>
 <div class="hitbox hit-rating" onclick="openRating()" aria-label="Рейтинг"></div>
 <div class="hitbox hit-shop" onclick="openModal('shop-modal')" aria-label="Магазин"></div>
-<div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"></div>
+<div class="hitbox hit-pause" onclick="openPause()" aria-label="Пауза"><span id="pause-dot" aria-hidden="true"></span></div>
 <div class="hitbox hit-down" id="hit-down" onclick="useJurist()" aria-label="Юрист"></div>
 <div class="hitbox hit-jurist" onclick="useJurist()" aria-label="Юрист">
 <svg id="jurist-ring" class="jurist-ring" viewBox="0 0 100 100" aria-hidden="true">
@@ -1097,11 +1312,7 @@ cursor: pointer;
 <img id="stamp-money" class="shop-paid for-money" src="img/paid_trim.png?v=54" alt="">
 </div>
 <div class="shop-window money-window" id="money-window" role="dialog" aria-label="Нужны деньги">
-<button type="button" class="shop-hitbox" id="money-x" aria-label="Закрыть" style="top:2.17%;left:83.86%;width:14.32%;height:11.22%"></button>
-<button type="button" class="shop-hitbox" onclick="buyMoneyPack('3000')" aria-label="3000 монет, 50 звёзд" style="top:17.09%;left:5.30%;width:42.17%;height:36.86%"></button>
-<button type="button" class="shop-hitbox" onclick="buyMoneyPack('10000')" aria-label="10000 монет, 75 звёзд" style="top:17.09%;left:52.69%;width:42.33%;height:36.86%"></button>
-<button type="button" class="shop-hitbox" onclick="buyMoneyPack('30000')" aria-label="30000 монет, 149 звёзд" style="top:56.95%;left:5.30%;width:42.17%;height:37.88%"></button>
-<button type="button" class="shop-hitbox" onclick="buyMoneyPack('inf')" aria-label="Бесконечные деньги, 9999 звёзд" style="top:56.95%;left:52.69%;width:42.33%;height:37.88%"></button>
+<button type="button" class="shop-hitbox" id="money-x" aria-label="Закрыть"></button>
 </div>
 </div>
 
@@ -1136,9 +1347,9 @@ cursor: pointer;
 </div>
 <div class="pause-mid"><div class="pause-missions" id="missions-area"></div></div>
 <div class="pause-bot">
-<button type="button" class="shop-hitbox pause-fb" aria-disabled="true" tabindex="-1" aria-label="Facebook"></button>
-<button type="button" class="shop-hitbox pause-like" aria-disabled="true" tabindex="-1" aria-label="Нравится"></button>
-<button type="button" class="shop-hitbox pause-star" aria-disabled="true" tabindex="-1" aria-label="Оценка"></button>
+<button type="button" class="shop-hitbox pause-fb" onclick="pauseRepost()" aria-label="Репост другу"></button>
+<button type="button" class="shop-hitbox pause-like" onclick="pauseJoinChannel()" aria-label="Вступи в канал"></button>
+<button type="button" class="shop-hitbox pause-star" onclick="pauseReact()" aria-label="Оставь реакцию"></button>
 </div>
 </div>
 </div>
@@ -1182,14 +1393,14 @@ cursor: pointer;
 <div class="modal" id="gameover-modal">
 <div id="go-new">
 <div id="go-new-wrap">
-<img id="go-girl" src="img/gameover_step1.png?v=57" alt="">
+<img id="go-girl" src="img/gameover_step1.png?v=58" alt="">
 <button type="button" class="go-opt undo" id="go-undo" onclick="undoFromGameOver()">
 <span>Ход назад</span>
-<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=57" alt="1500"></span>
+<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=58" alt="1500"></span>
 </button>
 <button type="button" class="go-opt clear" id="go-clear" onclick="buyClearFieldStars()">
 <span>Расчистить поле</span>
-<span class="price"><img src="img/stars_badge_50go.png?v=57" alt="50"></span>
+<span class="price"><img src="img/stars_badge_50go.png?v=58" alt="50"></span>
 </button>
 <button type="button" class="go-opt menu" onclick="restartAfterOver()"><span>Главное меню</span></button>
 </div>
@@ -1206,17 +1417,18 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="blogger-modal" role="dialog" aria-label="Помощь блогера">
 <div class="art-panel" id="blogger-panel">
-<img src="img/blogger_help.png?v=57" alt="">
+<img src="img/blogger_help.png?v=58" alt="">
 <div class="art-num" id="blogger-count">5</div>
 <button type="button" class="art-hit" id="blogger-use" aria-label="Использовать"></button>
 <button type="button" class="art-hit" id="blogger-cancel" aria-label="Отмена"></button>
 <button type="button" class="art-hit" id="blogger-x" aria-label="Закрыть"></button>
-<button type="button" class="art-hit" id="blogger-hire" aria-label="Нанять в штат"></button>
+<button type="button" class="art-hit" id="blogger-hire" aria-label="Нанять в штат 29"></button>
+<img id="blogger-hire-badge" class="blogger-hire-badge" src="img/stars_badge_29.png?v=58" alt="29" draggable="false">
 </div>
 </div>
 <div class="art-modal" id="sizo-modal" role="dialog" aria-label="Юрист в СИЗО">
 <div class="art-panel" id="sizo-panel">
-<img src="img/jurist_sizo.jpg?v=57" alt="">
+<img src="img/jurist_sizo.jpg?v=58" alt="">
 <div class="art-num" id="sizo-count"></div>
 <button type="button" class="art-hit" id="sizo-think" aria-label="Подумать"></button>
 <button type="button" class="art-hit" id="sizo-bribe" aria-label="Взятка"></button>
@@ -1241,7 +1453,7 @@ cursor: pointer;
 </div>
 <div id="char-pop" data-side="left" aria-hidden="true">
 <img id="char-pop-img" alt="" draggable="false">
-<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_249.png?v=57" alt="249"></button>
+<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_399.png?v=58" alt="399"></button>
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
@@ -1302,7 +1514,363 @@ const LARGE_TILES = [4, 7, 14, 15, 16, 17, 18, 19];
 /* Occupied-cell darkening from batch 5. Set true to restore the shade overlay. */
 const OCCUPIED_SHADE = false;
 /* Live merge recipe inside «Нажми меня». The panel stays «? НАЖМИ МЕНЯ»; tap still opens the hint gallery. */
-const LIVE_HINT_PREVIEW = false;
+const LIVE_HINT_PREVIEW = true;
+/* === batch 19 helpers === */
+const TG_CHANNEL_URL = '';
+const DAILY_KEY = 'pasha_daily_v1';
+const MONEY_PACKS = [
+  { kind: '4500', coins: 4500, stars: 50, art: 'img/money_pile_01.png?v=58', amt: 'img/money_amt_4500.png?v=58', label: '4 500' },
+  { kind: '8000', coins: 8000, stars: 75, art: 'img/money_pile_02.png?v=58', amt: 'img/money_amt_8000.png?v=58', label: '8 000' },
+  { kind: '18000', coins: 18000, stars: 149, art: 'img/money_pile_03.png?v=58', amt: 'img/money_amt_18000.png?v=58', label: '18 000' },
+  { kind: '33500', coins: 33500, stars: 249, art: 'img/money_pile_04.png?v=58', amt: 'img/money_amt_33500.png?v=58', label: '33 500' },
+  { kind: '52000', coins: 52000, stars: 349, art: 'img/money_pile_05.png?v=58', amt: 'img/money_amt_52000.png?v=58', label: '52 000' },
+  { kind: '120000', coins: 120000, stars: 749, art: 'img/money_pile_06.png?v=58', amt: 'img/money_amt_120000.png?v=58', label: '120 000' },
+  { kind: '235000', coins: 235000, stars: 1299, art: 'img/money_pile_07.png?v=58', amt: 'img/money_amt_235000.png?v=58', label: '235 000' },
+  { kind: '455000', coins: 455000, stars: 2299, art: 'img/money_pile_08.png?v=58', amt: 'img/money_amt_455000.png?v=58', label: '455 000' },
+  { kind: '900000', coins: 900000, stars: 3999, art: 'img/money_pile_09.png?v=58', amt: 'img/money_amt_900000.png?v=58', label: '900 000' },
+  { kind: 'inf', coins: 0, stars: 9999, art: 'img/bear_6.png?v=58', amt: 'img/money_amt_inf.png?v=58', label: '∞', inf: true }
+];
+const MONEY_TILE_BOX = [
+  { left: 5.48, top: 8.35, width: 41.78, height: 16.80 },
+  { left: 53.63, top: 8.35, width: 41.40, height: 16.15 },
+  { left: 5.48, top: 26.55, width: 41.78, height: 16.20 },
+  { left: 53.63, top: 26.55, width: 41.40, height: 16.20 },
+  { left: 5.48, top: 44.75, width: 41.78, height: 16.15 },
+  { left: 53.63, top: 44.75, width: 41.40, height: 16.15 },
+  { left: 5.48, top: 62.95, width: 41.78, height: 16.35 },
+  { left: 53.63, top: 62.95, width: 41.40, height: 16.35 },
+  { left: 5.48, top: 81.40, width: 41.78, height: 17.10 },
+  { left: 53.63, top: 81.40, width: 41.40, height: 17.10 }
+];
+function buildMoneyWindow() {
+  const root = document.getElementById('money-window');
+  if (!root || root.dataset.ready === '1') return;
+  root.dataset.ready = '1';
+  MONEY_PACKS.forEach(function (pack, i) {
+    const box = MONEY_TILE_BOX[i];
+    const btn = document.createElement('button');
+    btn.type = 'button';
+    btn.className = 'money-tile';
+    btn.setAttribute('aria-label', pack.inf ? ('Бесконечные деньги, ' + pack.stars + ' звёзд') : (pack.label + ' монет, ' + pack.stars + ' звёзд'));
+    btn.style.left = box.left + '%';
+    btn.style.top = box.top + '%';
+    btn.style.width = box.width + '%';
+    btn.style.height = box.height + '%';
+    btn.addEventListener('click', function () { buyMoneyPack(pack.kind); });
+    const art = document.createElement('img');
+    art.className = 'money-tile-art';
+    art.src = pack.art;
+    art.alt = '';
+    art.draggable = false;
+    const amtRow = document.createElement('div');
+    amtRow.className = 'money-tile-amt';
+    const coin = document.createElement('img');
+    coin.src = 'img/coin_trim.png?v=54';
+    coin.alt = '';
+    coin.draggable = false;
+    const amt = document.createElement('img');
+    amt.src = pack.amt;
+    amt.alt = pack.label;
+    amt.draggable = false;
+    amtRow.appendChild(coin);
+    amtRow.appendChild(amt);
+    const badge = document.createElement('img');
+    badge.className = 'money-tile-badge';
+    badge.src = 'img/stars_badge_' + pack.stars + '.png?v=58';
+    badge.alt = String(pack.stars);
+    badge.draggable = false;
+    btn.appendChild(art);
+    btn.appendChild(amtRow);
+    btn.appendChild(badge);
+    root.appendChild(btn);
+  });
+}
+function shrinkMoneyAmounts() {
+  const win = document.getElementById('money-window');
+  if (!win) return;
+  win.querySelectorAll('.money-tile').forEach(function (tile) {
+    const row = tile.querySelector('.money-tile-amt');
+    if (!row) return;
+    row.style.transform = 'translateX(-50%)';
+    const max = tile.clientWidth * 0.92;
+    const w = row.scrollWidth;
+    if (w > max && max > 0) {
+      const s = max / w;
+      row.style.transform = 'translateX(-50%) scale(' + s + ')';
+      row.style.transformOrigin = 'center bottom';
+    }
+  });
+}
+
+function localDayKey() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + '-' + m + '-' + day;
+}
+function dailyHash(s) {
+  let h = 2166136261;
+  for (let i = 0; i < s.length; i++) { h ^= s.charCodeAt(i); h = Math.imul(h, 16777619); }
+  return h >>> 0;
+}
+const DAILY_DEFS = {
+  1:  { tier: 'easy', reward: 1000, title: 'ТРИ ПАЧКИ', sub: 'Собери барана', type: 'merge', kind: 'chain', level: 2, goal: 1 },
+  2:  { tier: 'easy', reward: 1400, title: 'ОТАРА', sub: 'Собери три барана', type: 'merge', kind: 'chain', level: 2, goal: 3 },
+  3:  { tier: 'easy', reward: 1200, title: 'ГРАЖДАНСКИЙ ДОЛГ', sub: 'Собери избирателя', type: 'merge', kind: 'chain', level: 3, goal: 1 },
+  4:  { tier: 'easy', reward: 1200, title: 'ЗАМКНИ ПИОНЕРА', sub: 'Получи медведя', type: 'trap', goal: 1 },
+  5:  { tier: 'easy', reward: 800, title: 'В ТЕМНИЦУ', sub: 'Спрячь фигурку', type: 'jailIn', goal: 1 },
+  6:  { tier: 'easy', reward: 1000, title: 'ВЫПУСТИЛИ', sub: 'Верни из тюрьмы', type: 'jailOut', goal: 1 },
+  7:  { tier: 'easy', reward: 800, title: 'МЕЛОЧЬ НА КАРМАН', sub: 'Купи деньги', type: 'buy', name: 'Деньги', goal: 1 },
+  8:  { tier: 'easy', reward: 1000, title: 'ЯРМАРКА БАРАНОВ', sub: 'Купи барана', type: 'buy', name: 'Баран', goal: 1 },
+  9:  { tier: 'easy', reward: 1000, title: 'ПЯТЬДЕСЯТ ШАГОВ', sub: 'Сделай 50 ходов', type: 'moves', goal: 50 },
+  10: { tier: 'easy', reward: 1200, title: 'ПЕРВЫЕ КУБКИ', sub: 'Набери 2000 очков', type: 'score', goal: 2000 },
+  11: { tier: 'easy', reward: 1400, title: 'ЧИНОВНИК НА МЕСТЕ', sub: 'Собери чиновника', type: 'merge', kind: 'care', level: 2, goal: 1 },
+  12: { tier: 'easy', reward: 1400, title: 'УРОК ТРУДА', sub: 'Собери школу', type: 'merge', kind: 'chain', level: 4, goal: 1 },
+  13: { tier: 'easy', reward: 1200, title: 'ТРОЕ В ЛЕСУ', sub: 'Три медведя на поле', type: 'board', kind: 'care', level: 1, goal: 3 },
+  14: { tier: 'easy', reward: 1400, title: 'СРОЧНАЯ КОНСУЛЬТАЦИЯ', sub: 'Вызови юриста', type: 'juristFree', goal: 1 },
+  15: { tier: 'easy', reward: 1600, title: 'ЯВКА СОСТОЯЛАСЬ', sub: 'Собери урну', type: 'merge', kind: 'chain', level: 5, goal: 1 },
+  16: { tier: 'easy', reward: 1200, title: 'КАССОВЫЙ СБОР', sub: 'Заработай 200 монет', type: 'mergeCoins', goal: 200 },
+  17: { tier: 'easy', reward: 1400, title: 'ДВЕ ШКОЛЫ', sub: 'Держи две сразу', type: 'board', kind: 'chain', level: 4, goal: 2 },
+  18: { tier: 'easy', reward: 1400, title: 'ДЯДЯ ИЗ ЯЩИКА', sub: 'Постучи по избирателю', type: 'voterTap', goal: 10 },
+  19: { tier: 'easy', reward: 1000, title: 'ПЯТЬ СЛИЯНИЙ', sub: 'Слей что угодно', type: 'anyMerge', goal: 5 },
+  20: { tier: 'easy', reward: 1200, title: 'ЗАВТРАК ПИОНЕРА', sub: 'Пионер съел деньгу', type: 'pioneerEat', goal: 1 },
+  21: { tier: 'medium', reward: 2200, title: 'МАНДАТ', sub: 'Собери депутата', type: 'merge', kind: 'chain', level: 6, goal: 1 },
+  22: { tier: 'medium', reward: 2800, title: 'ДУМАЮТ', sub: 'Собери Думу', type: 'merge', kind: 'chain', level: 7, goal: 1 },
+  23: { tier: 'medium', reward: 2200, title: 'КРЕСЛО МИНИСТРА', sub: 'Собери министра', type: 'merge', kind: 'care', level: 3, goal: 1 },
+  24: { tier: 'medium', reward: 3000, title: 'КАБМИН', sub: 'Собери правительство', type: 'merge', kind: 'care', level: 4, goal: 1 },
+  25: { tier: 'medium', reward: 2800, title: 'КАРУСЕЛЬ', sub: 'Собери три урны', type: 'merge', kind: 'chain', level: 5, goal: 3 },
+  26: { tier: 'medium', reward: 3200, title: '1-Е СЕНТЯБРЯ', sub: 'Семь школ на поле', type: 'board', kind: 'chain', level: 4, goal: 7 },
+  27: { tier: 'medium', reward: 2600, title: 'ЧИНОВНИЧИЙ ЛЕС', sub: 'Пять чиновников', type: 'board', kind: 'care', level: 2, goal: 5 },
+  28: { tier: 'medium', reward: 2800, title: 'БАБЛО РЕШАЕТ', sub: 'Собери мешком', type: 'sackMerge', goal: 1 },
+  29: { tier: 'medium', reward: 2200, title: 'ОДИН ПРОПИЛ', sub: 'Используй пилу', type: 'saw', goal: 1 },
+  30: { tier: 'medium', reward: 3200, title: 'КУРБАН-БАЙРАМ', sub: 'Спили двух баранов подряд', type: 'sheepSaw', goal: 2 },
+  31: { tier: 'medium', reward: 2800, title: 'ТРОЙНОЙ КОТЁЛ', sub: 'Замкни трёх пионеров', type: 'trapOnce', goal: 3 },
+  32: { tier: 'medium', reward: 2500, title: 'ПРОБЕЖКА', sub: 'Сделай 200 ходов', type: 'moves', goal: 200 },
+  33: { tier: 'medium', reward: 2800, title: 'КУБОК ПОБОЛЬШЕ', sub: '16 000 очков', type: 'score', goal: 16000 },
+  34: { tier: 'medium', reward: 2000, title: 'ПОХОДИЛИ ПО МАГАЗИНАМ', sub: 'Потрать 3000', type: 'spend', goal: 3000 },
+  35: { tier: 'medium', reward: 3000, title: 'ВТОРАЯ КОНСУЛЬТАЦИЯ', sub: 'Юрист дважды', type: 'juristUse', goal: 2 },
+  36: { tier: 'medium', reward: 3000, title: 'ПРИХОД', sub: 'Собери храм', type: 'merge', kind: 'income', level: 2, goal: 1 },
+  37: { tier: 'medium', reward: 3200, title: 'ГОСЗАКАЗ НА СТОЛЕ', sub: 'Собери госзаказ', type: 'merge', kind: 'care', level: 5, goal: 1 },
+  38: { tier: 'medium', reward: 2400, title: 'ВЕЖЛИВЫЕ ЛЮДИ', sub: 'Спили ОМОНа', type: 'sawOmon', goal: 1 },
+  39: { tier: 'medium', reward: 2600, title: 'ЧЕТЫРЕ В СТЕК', sub: 'Слей сразу четырёх', type: 'groupSize', goal: 4 },
+  40: { tier: 'medium', reward: 3200, title: 'ПРЕМЬЕР БЕЗ КОНВЕРТА', sub: 'Собери премьера', type: 'mergeNoSack', kind: 'chain', level: 8, goal: 1 },
+  41: { tier: 'hard', reward: 6000, title: 'КОРОНАЦИЯ', sub: 'Собери царя', type: 'merge', kind: 'chain', level: 10, goal: 1, needBook: 'chain_10' },
+  42: { tier: 'hard', reward: 7000, title: 'ПИЛА НАИЗНАНКУ', sub: 'Попили четыре раза подряд', type: 'sawStreak', goal: 4 },
+  43: { tier: 'hard', reward: 5500, title: 'ПОПИЛИ БЮДЖЕТ', sub: 'Распили бюджет', type: 'sawBudget', goal: 1, needBook: 'care_6' },
+  44: { tier: 'hard', reward: 8000, title: 'ПОЕХАЛИ', sub: 'Собери Гагарина', type: 'merge', kind: 'chain', level: 14, goal: 1, needBook: 'chain_14' },
+  45: { tier: 'hard', reward: 8000, title: 'НА СТАРТ', sub: 'Собери ракету', type: 'rocket', goal: 1, needBook: 'chain_18' },
+  46: { tier: 'hard', reward: 7000, title: 'СЕЛИГЕР', sub: 'Замкни пять пионеров', type: 'trapOnce', goal: 5 },
+  47: { tier: 'hard', reward: 6000, title: 'СТАЙЕР-СПРИНТЕР', sub: 'Сделай 500 ходов', type: 'moves', goal: 500 },
+  48: { tier: 'hard', reward: 7000, title: 'ДЗЮДО И АППАРАТ', sub: 'Два трофея за день', type: 'twoTrophies', goal: 1 },
+  49: { tier: 'hard', reward: 5000, title: 'ДВА МЕШКА', sub: 'Бабло сработало дважды', type: 'sackMerge', goal: 2 },
+  50: { tier: 'hard', reward: 5000, title: 'ЧЕСТНЫЙ ДЗЮДОИСТ', sub: 'Без мешка бабла', type: 'mergeNoSack', kind: 'chain', level: 9, goal: 1 }
+};
+const DAILY_FALLBACK_HARD = [42, 47, 49, 50, 46];
+let dailyState = null;
+let pendingJuristFree = false;
+function dailyBookOk(def) {
+  if (!def.needBook) return true;
+  try { return !!(typeof bookUnlocked !== 'undefined' && bookUnlocked && bookUnlocked.has(def.needBook)); } catch (e) { return false; }
+}
+function dailyPickForDay(day) {
+  const byTier = { easy: [], medium: [], hard: [] };
+  Object.keys(DAILY_DEFS).forEach(function (k) {
+    const id = +k;
+    const def = DAILY_DEFS[id];
+    if (def.tier === 'hard' && !dailyBookOk(def)) return;
+    byTier[def.tier].push(id);
+  });
+  if (byTier.hard.length === 0) byTier.hard = DAILY_FALLBACK_HARD.slice();
+  function pick(list, salt, used) {
+    const pool = list.filter(function (id) { return used.indexOf(id) < 0; });
+    const src = pool.length ? pool : list;
+    const h = dailyHash(day + ':' + salt);
+    return src[h % src.length];
+  }
+  let used = [];
+  let easy = pick(byTier.easy, 'e', used); used.push(easy);
+  let medium = pick(byTier.medium, 'm', used); used.push(medium);
+  let hard = pick(byTier.hard, 'h', used);
+  // avoid two of the same purchase / same rare piece
+  const clash = function (a, b) {
+    const da = DAILY_DEFS[a], db = DAILY_DEFS[b];
+    if (!da || !db) return false;
+    if (da.type === 'buy' && db.type === 'buy' && da.name === db.name) return true;
+    if (da.type === 'sackMerge' && db.type === 'sackMerge') return true;
+    if (da.type === 'saw' && (db.type === 'saw' || db.type === 'sawStreak')) return true;
+    if ((da.type === 'merge' || da.type === 'mergeNoSack') && (db.type === 'merge' || db.type === 'mergeNoSack') && da.kind === db.kind && da.level === db.level) return true;
+    return false;
+  };
+  let guard = 0;
+  while (guard++ < 20 && (clash(easy, medium) || clash(medium, hard) || clash(easy, hard))) {
+    hard = pick(byTier.hard, 'h' + guard, [easy, medium]);
+    if (clash(easy, medium)) medium = pick(byTier.medium, 'm' + guard, [easy, hard]);
+  }
+  return [easy, medium, hard];
+}
+function freshDaily(day) {
+  const ids = dailyPickForDay(day);
+  return {
+    day: day,
+    slots: ids.map(function (id) {
+      return { id: id, progress: 0, done: false, claimed: false, extra: {} };
+    })
+  };
+}
+function loadDaily() {
+  const day = localDayKey();
+  try {
+    const raw = localStorage.getItem(DAILY_KEY);
+    const o = raw ? JSON.parse(raw) : null;
+    if (o && o.day === day && Array.isArray(o.slots) && o.slots.length === 3) {
+      dailyState = o;
+      return dailyState;
+    }
+  } catch (e) {}
+  dailyState = freshDaily(day);
+  saveDaily();
+  return dailyState;
+}
+function saveDaily() {
+  if (!dailyState) return;
+  try { localStorage.setItem(DAILY_KEY, JSON.stringify(dailyState)); } catch (e) {}
+  updatePauseDot();
+}
+function syncDaily() {
+  const day = localDayKey();
+  if (!dailyState || dailyState.day !== day) loadDaily();
+  return dailyState;
+}
+function dailyHasClaimable() {
+  syncDaily();
+  return dailyState.slots.some(function (s) { return s.done && !s.claimed; });
+}
+function updatePauseDot() {
+  const dot = document.getElementById('pause-dot');
+  if (dot) dot.classList.toggle('on', dailyHasClaimable());
+}
+function dailyInc(slot, n, goal) {
+  if (slot.claimed || slot.done) return;
+  slot.progress = Math.min(goal, (slot.progress || 0) + n);
+  if (slot.progress >= goal) slot.done = true;
+}
+function dailyEvent(type, data) {
+  data = data || {};
+  syncDaily();
+  let changed = false;
+  dailyState.slots.forEach(function (slot) {
+    if (slot.done || slot.claimed) return;
+    const def = DAILY_DEFS[slot.id];
+    if (!def) return;
+    const before = slot.progress;
+    if (def.type === 'merge' && type === 'merge' && data.kind === def.kind && data.level === def.level) dailyInc(slot, 1, def.goal);
+    else if (def.type === 'mergeNoSack' && type === 'merge' && !data.viaSack && data.kind === def.kind && data.level === def.level) dailyInc(slot, 1, def.goal);
+    else if (def.type === 'anyMerge' && type === 'merge') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'sackMerge' && type === 'merge' && data.viaSack) dailyInc(slot, 1, def.goal);
+    else if (def.type === 'groupSize' && type === 'merge' && (data.groupSize || 0) >= def.goal) dailyInc(slot, 1, 1);
+    else if (def.type === 'rocket' && type === 'rocket') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'twoTrophies' && type === 'merge') {
+      slot.extra = slot.extra || {};
+      if (data.kind === 'chain' && data.level === 9) slot.extra.judo = true;
+      if (data.kind === 'care' && data.level === 4) slot.extra.gov = true;
+      if (slot.extra.judo && slot.extra.gov) dailyInc(slot, 1, 1);
+    }
+    else if (def.type === 'trap' && type === 'trap') dailyInc(slot, data.count || 1, def.goal);
+    else if (def.type === 'trapOnce' && type === 'trap' && (data.count || 0) >= def.goal) dailyInc(slot, 1, 1);
+    else if (def.type === 'jailIn' && type === 'jailIn') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'jailOut' && type === 'jailOut') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'buy' && type === 'buy' && data.name === def.name) dailyInc(slot, 1, def.goal);
+    else if (def.type === 'spend' && type === 'buy' && data.price) dailyInc(slot, data.price, def.goal);
+    else if (def.type === 'moves' && type === 'move') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'score' && type === 'score') dailyInc(slot, data.amount || 0, def.goal);
+    else if (def.type === 'mergeCoins' && type === 'mergeCoins') dailyInc(slot, data.amount || 0, def.goal);
+    else if (def.type === 'board' && type === 'board') {
+      const n = data.counts && data.counts[def.kind + ':' + def.level] || 0;
+      if (n >= def.goal) dailyInc(slot, def.goal, def.goal);
+    }
+    else if (def.type === 'juristFree' && type === 'juristFree') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'juristUse' && type === 'juristUse') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'voterTap' && type === 'voterTap') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'pioneerEat' && type === 'pioneerEat') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'saw' && type === 'saw') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'sheepSaw' && type === 'sheepSaw') {
+      if ((data.streak || 0) >= def.goal) dailyInc(slot, def.goal, def.goal);
+    }
+    else if (def.type === 'sawStreak' && type === 'sawStreak') {
+      if ((data.streak || 0) >= def.goal) dailyInc(slot, def.goal, def.goal);
+    }
+    else if (def.type === 'sawOmon' && type === 'saw' && data.kind === 'omon') dailyInc(slot, 1, def.goal);
+    else if (def.type === 'sawBudget' && type === 'saw' && data.kind === 'care' && data.level === 6) dailyInc(slot, 1, def.goal);
+    if (slot.progress !== before || slot.done) changed = true;
+  });
+  if (changed) {
+    saveDaily();
+    const pause = document.getElementById('pause-modal');
+    if (pause && pause.classList.contains('open')) renderMissions();
+  }
+}
+function dailyScanBoard() {
+  const counts = {};
+  if (typeof grid === 'undefined' || !grid) return;
+  for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
+    const t = grid[r][c];
+    if (!t || t.level == null) continue;
+    const k = t.kind + ':' + t.level;
+    counts[k] = (counts[k] || 0) + 1;
+  }
+  dailyEvent('board', { counts: counts });
+}
+function claimDailySlot(index) {
+  syncDaily();
+  const slot = dailyState.slots[index];
+  if (!slot || !slot.done || slot.claimed) return;
+  const def = DAILY_DEFS[slot.id];
+  if (!def) return;
+  coins += def.reward;
+  slot.claimed = true;
+  render();
+  saveGame();
+  saveDaily();
+  renderMissions();
+  sfx('ui');
+  showFloatText && showToast('+' + def.reward);
+}
+function appendGoldNumber(parent, n) {
+  const wrap = document.createElement('span');
+  wrap.className = 'gold-num';
+  wrap.style.setProperty('--digit-h', '17px');
+  wrap.style.setProperty('--digit-slot', (17 * DIGIT_SLOT_ASPECT).toFixed(2) + 'px');
+  String(Math.max(0, Math.floor(Number(n) || 0))).split('').forEach(function (ch) {
+    wrap.appendChild(makeDigit(ch));
+  });
+  parent.appendChild(wrap);
+}
+function pauseRepost() {
+  try {
+    const tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && typeof tg.openTelegramLink === 'function' && typeof tg.initDataUnsafe === 'object') {
+      /* no share URL yet */
+    }
+    if (navigator.share) {
+      navigator.share({ title: 'Демократия', text: 'Играй в Демократию!' }).catch(function () { showToast('Скоро'); });
+      return;
+    }
+  } catch (e) {}
+  showToast('Скоро');
+}
+function pauseJoinChannel() {
+  if (!TG_CHANNEL_URL) { showToast('Скоро'); return; }
+  try {
+    const tg = window.Telegram && window.Telegram.WebApp;
+    if (tg && typeof tg.openTelegramLink === 'function') { tg.openTelegramLink(TG_CHANNEL_URL); return; }
+  } catch (e) {}
+  window.open(TG_CHANNEL_URL, '_blank');
+}
+function pauseReact() {
+  showToast('Скоро');
+}
+
 /* Extra scale / floor seat for pieces that read small or high inside the trimmed cell.
    drop / lift are fractions of the cell height (positive drop moves the piece down). */
 const PIECE_LAYOUT = {
@@ -1577,8 +2145,8 @@ return !!(tile && tile.kind === 'chain' && tile.level === 3);
 function getTileImage(tile) {
 if (!tile) return null;
 if (tile.kind === 'chain') {
-if (tile.level === 2) return 'img/sheep-src.png?v=57';
-if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=57';
+if (tile.level === 2) return 'img/sheep-src.png?v=58';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=58';
 return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
 }
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
@@ -2507,7 +3075,11 @@ sfx('merge');
 notifyTutorial({ type: 'merge', tile: grid[anchorR][anchorC], r: anchorR, c: anchorC });
 score += gain.score;
 coins += gain.coins;
+dailyEvent('merge', { kind: kind, level: newLevel, viaSack: !!isSackMerge, groupSize: group.length });
+dailyEvent('score', { amount: gain.score });
+if (gain.coins) dailyEvent('mergeCoins', { amount: gain.coins });
 render();
+dailyScanBoard();
 if (gain.coins) showFloatText(anchorR, anchorC, gain.coins);
 setTimeout(() => commitMerge(anchorR, anchorC, isSackMerge, done, depth + 1), 40);
 };
@@ -2533,7 +3105,12 @@ coins += gain.coins;
 sfx('merge');
 checkDiscovery(grid[anchorR][anchorC]);
 notifyTutorial({ type: 'merge', tile: grid[anchorR][anchorC], r: anchorR, c: anchorC });
+dailyEvent('rocket');
+dailyEvent('merge', { kind: 'chain', level: ROCKET_FULL, viaSack: !!isSackMerge, groupSize: 3 });
+dailyEvent('score', { amount: gain.score });
+if (gain.coins) dailyEvent('mergeCoins', { amount: gain.coins });
 render();
+dailyScanBoard();
 if (gain.coins) showFloatText(anchorR, anchorC, gain.coins);
 setTimeout(() => commitMerge(anchorR, anchorC, isSackMerge, done, (depth || 0) + 1), 40);
 });
@@ -2572,7 +3149,7 @@ const t = grid[nr][nc];
 if (!t) empty.push({ r: nr, c: nc, type: 'empty' });
 else if (!tutorial.active && t.kind === 'chain' && t.level === 1) money.push({ r: nr, c: nc, type: 'money' });
 });
-return { empty, money, blocked: empty.length + money.length === 0 };
+return { empty, money, blocked: empty.length === 0 };
 }
 
 function stepPioneers() {
@@ -2587,7 +3164,7 @@ for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
 const t = grid[r][c];
 if (!t || t.kind !== 'pioneer' || t._stepped) continue;
 const opt = pioneerOptions(r, c);
-const pool = opt.money.length ? opt.money : opt.empty;
+const pool = (opt.empty.length && opt.money.length) ? opt.money : opt.empty;
 if (pool.length) ready.push({ r: r, c: c });
 }
 for (let i = ready.length - 1; i > 0; i--) {
@@ -2599,11 +3176,11 @@ ready.forEach(item => {
 const here = grid[item.r] && grid[item.r][item.c];
 if (!here || here.kind !== 'pioneer' || here._stepped) return;
 const opt = pioneerOptions(item.r, item.c);
-const pool = (opt.money.length ? opt.money : opt.empty).filter(p => !taken[p.r + ',' + p.c]);
+const pool = ((opt.empty.length && opt.money.length) ? opt.money : opt.empty).filter(p => !taken[p.r + ',' + p.c]);
 if (!pool.length) return;
 const move = pool[Math.floor(Math.random() * pool.length)];
 taken[move.r + ',' + move.c] = true;
-if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); }
+if (move.type === 'money') { coins += 20; showFloatText(move.r, move.c, 20); dailyEvent('pioneerEat'); }
 grid[move.r][move.c] = { kind: 'pioneer', movedSeq: ++unitSeq, _stepped: true };
 grid[item.r][item.c] = null;
 if (freedomBeforeMove && freedomBeforeMove[item.r + ',' + item.c]) {
@@ -2778,6 +3355,7 @@ if (grid[r] && grid[r][c]) { processCascades(r, c, false, next); return; }
 }
 if (trappedN) {
 moveTrapCount += trappedN;
+dailyEvent('trap', { count: trappedN });
 if (moveTrapCount >= 20) unlockAchievement('seliger');
 notifyTutorial({ type: 'trap', n: trappedN });
 }
@@ -2857,7 +3435,7 @@ const el = document.getElementById('shop-voter-art');
 if (!el) return;
 /* После пасхалки доска и «далее» меняют избирателя, слот магазина — нет. */
 el.classList.remove('on');
-el.src = 'img/voter-grandpa.png?v=57';
+el.src = 'img/voter-grandpa.png?v=58';
 }
 function closeChannelEgg() {
 closeModal('channel-modal');
@@ -2892,7 +3470,7 @@ image.style.right = 'auto';
 const buy = document.getElementById('char-pop-buy');
 if (buy) {
 const bx = w * (462 / 700);
-const by = top + h * (298 / 868);
+const by = top + h * (368 / 868);
 buy.style.left = bx + 'px';
 buy.style.top = by + 'px';
 buy.style.bottom = 'auto';
@@ -3052,6 +3630,9 @@ function noteSawUse(tile) {
 sawStreak++;
 if (tile && tile.kind === 'chain' && tile.level === 2) sheepSawStreak++;
 else sheepSawStreak = 0;
+dailyEvent('saw', { kind: tile && tile.kind, level: tile && tile.level });
+dailyEvent('sheepSaw', { streak: sheepSawStreak });
+dailyEvent('sawStreak', { streak: sawStreak });
 if (sawStreak >= 2 && missions.saw && missions.saw.status === 'active') {
 missions.saw.status = 'completed';
 updateMailBadge();
@@ -3067,6 +3648,8 @@ function endMove() {
 voterTapStreak = 0;
 moveTrapCount = 0;
 moves++;
+dailyEvent('move');
+dailyScanBoard();
 checkMoveAchievements();
 if (juristCooldown > 0) {
 juristCooldown--;
@@ -3142,7 +3725,9 @@ const y = clientY - drag.offsetY;
 drag.ghost.style.transform = 'translate3d(' + x + 'px,' + y + 'px,0)';
 }
 
-function hideCellHighlight() {}
+function hideCellHighlight() {
+document.querySelectorAll('.cell.drop-target').forEach(function (el) { el.classList.remove('drop-target'); });
+}
 
 function updateDragPreview(clientX, clientY) {
 if (!LIVE_HINT_PREVIEW) { clearPreview(); return; }
@@ -3151,7 +3736,11 @@ const hit = document.elementFromPoint(clientX, clientY);
 const cell = hit && hit.closest ? hit.closest('.cell') : null;
 if (!cell) { clearPreview(); return; }
 const tile = drag.type === 'fromJail' ? jailTile : nextTile;
-showPreview(previewNodes(tile, +cell.dataset.r, +cell.dataset.c));
+const nodes = previewNodes(tile, +cell.dataset.r, +cell.dataset.c);
+if (!nodes || !nodes.length) { clearPreview(); return; }
+hideCellHighlight();
+cell.classList.add('drop-target');
+showPreview(nodes);
 }
 
 let nextSourceHidden = false;
@@ -3237,6 +3826,7 @@ return;
 }
 if (voterChannel) return;
 voterTapStreak++;
+dailyEvent('voterTap');
 if (voterTapStreak >= 10) {
 voterTapStreak = 0;
 voterChannel = true;
@@ -3372,6 +3962,7 @@ if (!grid[r][c]) {
 undoState = takeSnapshot();
 grid[r][c] = jailTile;
 jailTile = null;
+dailyEvent('jailOut');
 rememberDrop(r, c);
 noteBoardMoney(grid[r][c]);
 checkDiscovery(grid[r][c]);
@@ -3391,6 +3982,7 @@ if (drag.type === 'fromNext') {
 breakToolStreak();
 if (jailTile) bufferedNext = jailTile;
 jailTile = nextTile;
+dailyEvent('jailIn');
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 render(); saveGame();
@@ -3596,13 +4188,42 @@ function renderMissions() {
 const c = document.getElementById('missions-area');
 if (!c) return;
 c.replaceChildren();
-['img/mission_elections.png', 'img/mission_forest.png', 'img/mission_saw.png'].forEach(src => {
-const img = document.createElement('img');
-img.src = src;
-img.alt = '';
-img.draggable = false;
-c.appendChild(img);
+syncDaily();
+dailyState.slots.forEach(function (slot, index) {
+const def = DAILY_DEFS[slot.id] || { title: 'ЗАДАНИЕ', sub: '', reward: 0 };
+const card = document.createElement('div');
+card.className = 'mission-card' + (slot.claimed ? ' claimed' : '');
+card.setAttribute('role', 'button');
+card.tabIndex = 0;
+const title = document.createElement('div');
+title.className = 'mc-title';
+title.textContent = def.title;
+const sub = document.createElement('div');
+sub.className = 'mc-sub';
+sub.textContent = def.sub;
+const reward = document.createElement('div');
+reward.className = 'mc-reward';
+const coin = document.createElement('img');
+coin.src = 'img/coin_trim.png?v=54';
+coin.alt = '';
+reward.appendChild(coin);
+reward.appendChild(document.createTextNode(String(def.reward)));
+const dot = document.createElement('span');
+dot.className = 'mission-dot' + (slot.done && !slot.claimed ? ' blink' : '');
+card.appendChild(title);
+card.appendChild(sub);
+card.appendChild(reward);
+card.appendChild(dot);
+if (slot.claimed) {
+const stamp = document.createElement('div');
+stamp.className = 'mission-stamp';
+stamp.textContent = 'ОСВОЕНО';
+card.appendChild(stamp);
+}
+card.addEventListener('click', function () { claimDailySlot(index); });
+c.appendChild(card);
 });
+updatePauseDot();
 }
 
 function openPauseList() {
@@ -3614,6 +4235,7 @@ if (!undoState || !canAfford(1500)) return false;
 gameOver = false;
 closeModal('gameover-modal');
 undoMove(1500);
+dailyEvent('buy', { name: 'Отмена', price: 1500 });
 return true;
 }
 function buyUndo() {
@@ -3651,6 +4273,7 @@ sfx('pop');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
 juristPending = true;
+dailyEvent('juristUse');
 render(); saveGame();
 }
 
@@ -3697,6 +4320,7 @@ if (!infiniteMoney()) coins -= item.price;
 if (nextTile) bufferedNext = nextTile;
 nextTile = item.tile;
 unlockBookKey(item.tile);
+dailyEvent('buy', { name: item.name, price: item.price, tile: item.tile });
 render(); closeModal('shop-modal');
 }
 function buyStarsPlaceholder() {
@@ -3728,8 +4352,10 @@ sfx('ui');
 }
 function openMoneyPacks() {
 if (tutorial.active) return;
+buildMoneyWindow();
 const el = document.getElementById('shop-modal');
 if (el) el.classList.add('money-open');
+requestAnimationFrame(shrinkMoneyAmounts);
 sfx('ui');
 }
 function closeMoneyPacks() {
@@ -3744,7 +4370,8 @@ render();
 saveGame();
 return;
 }
-const amount = kind === '3000' ? 3000 : kind === '10000' ? 10000 : kind === '30000' ? 30000 : 0;
+const pack = MONEY_PACKS.find(function (p) { return p.kind === kind; });
+const amount = pack && pack.coins ? pack.coins : (kind === '3000' ? 3000 : kind === '10000' ? 10000 : kind === '30000' ? 30000 : 0);
 if (!amount) return;
 coins += amount;
 render();
@@ -3828,13 +4455,13 @@ nickEl.className = 'rating-nick';
 nickEl.textContent = nick;
 const stats = document.createElement('div');
 stats.className = 'rating-stats';
-[['img/cup_1.png?v=54', formatGrouped(bestScore)], ['img/clock_1.png?v=54', formatGrouped(bestMoves)]].forEach(function (pair) {
+[['img/cup_1.png?v=54', bestScore], ['img/clock_1.png?v=54', bestMoves]].forEach(function (pair) {
 const span = document.createElement('span');
 const img = document.createElement('img');
 img.src = pair[0];
 img.alt = '';
 span.appendChild(img);
-span.appendChild(document.createTextNode(pair[1]));
+appendGoldNumber(span, pair[1]);
 stats.appendChild(span);
 });
 info.appendChild(nickEl);
@@ -4729,16 +5356,17 @@ const BOOK = [
 ['income',3,"\"Бог поругаем не бывает. Что посеет человек, то и пожнет.\" Проявил неуважение к иконе - просиди два года в зоне.",26000,1000,10000],
 ['income',4,"Поет Мадонна гораздо лучше Pussy Riot, знает толк в свободе, отличное белье. Прогнать пыталась, встретила отпор.",50000,1000,15000],
 ['income',5,"Светская львица, казначей оппозиции. Работает на дому, сортирует почту. Стабильный доход.",100000,1000,20000],
-{ kind: 'statue', key: 'statue', name: 'Защита от ОМОНовцев', quote: '«Вздохни спокойно на 10,000 ходов. На этом острове нет баз Черноморского флота и вежливых людей.»', cup: null, coin: null, saw: null },
+{ kind: 'statue', key: 'statue', name: 'Защита от ОМОНовцев', quote: '«Вздохни спокойно. На этом острове нет баз Черноморского флота и вежливых людей.»', cup: null, coin: null, saw: null },
 { kind: 'tool', tool: 'sack', key: 'tool_sack', name: 'Мешок с баблом', quote: '«Бабло решает все проблемы. Например, когда для комбинации на поле не хватает фигурки!»', cup: null, coin: null, saw: null },
-{ kind: 'tool', tool: 'saw', key: 'tool_saw', name: 'Пила', quote: '«Универсальный инструмент. И травку уберет, и пионера остановит, и Бюджет попилит.»', cup: null, coin: null, saw: null }
+{ kind: 'tool', tool: 'saw', key: 'tool_saw', name: 'Пила', quote: '«Универсальный инструмент. И травку уберет, и пионера остановит, и Бюджет попилит.»', cup: null, coin: null, saw: null },
+{ kind: 'tool', tool: 'nanobox', key: 'tool_nanobox', name: 'Нанокоробка', quote: '«Коробка из-под ксерокса - секретное оружие нанопролетариата. Клонирует любую фигуру на поле, и сразу исчезает из поля зрения прокуратуры»', cup: null, coin: null, saw: null }
 ];
-let bookUnlocked = new Set(['chain_1', 'chain_2', 'chain_3']);
+let bookUnlocked = new Set(['chain_1', 'chain_2', 'chain_3', 'tool_sack', 'tool_nanobox']);
 let purchases = { jurist: false, statue: false, infiniteMoney: false };
 function bookId(tile) {
 if (!tile) return null;
 if (tile.kind === 'statue') return 'statue';
-if (tile.kind === 'tool' && (tile.tool === 'sack' || tile.tool === 'saw')) return 'tool_' + tile.tool;
+if (tile.kind === 'tool' && (tile.tool === 'sack' || tile.tool === 'saw' || tile.tool === 'nanobox')) return 'tool_' + tile.tool;
 if (tile.level == null) return null;
 if (tile.kind !== 'chain' && tile.kind !== 'care' && tile.kind !== 'income') return null;
 return tile.kind + '_' + tile.level;
@@ -4752,6 +5380,8 @@ if (Array.isArray(arr)) arr.forEach(k => { if (typeof k === 'string') bookUnlock
 bookUnlocked.add('chain_1');
 bookUnlocked.add('chain_2');
 bookUnlocked.add('chain_3');
+bookUnlocked.add('tool_sack');
+bookUnlocked.add('tool_nanobox');
 }
 function saveBook() {
 try { localStorage.setItem(BOOK_KEY, JSON.stringify(Array.from(bookUnlocked))); } catch (e) {}
@@ -4770,6 +5400,8 @@ unlockBookKey(jailTile);
 unlockBookKey(bufferedNext);
 }
 loadBook();
+loadDaily();
+buildMoneyWindow();
 function loadPurchases() {
 try {
 const o = JSON.parse(localStorage.getItem(PURCHASE_KEY) || '{}');
@@ -5055,10 +5687,11 @@ if (drag) return;
 clearPreview();
 }
 function clearPreview() {
+hideCellHighlight();
 const box = document.getElementById('hint-recipe');
 if (!box) return;
-box.innerHTML = '';
 box.classList.remove('has-recipe', 'compact');
+box.innerHTML = '';
 }
 function showPreview(nodes) {
 if (!LIVE_HINT_PREVIEW) { clearPreview(); return; }
@@ -5140,7 +5773,24 @@ return next;
 function previewNodes(tile, r, c) {
 const result = previewResult(tile, r, c);
 if (!result) return [];
-const nodes = [hintNode(tile), hintMark('→')];
+const nodes = [];
+const prev = grid[r] && grid[r][c];
+let group = null;
+if (tile && (tile.kind === 'chain' || tile.kind === 'care' || tile.kind === 'income')) {
+grid[r][c] = tile;
+group = findGroup(r, c);
+grid[r][c] = prev;
+}
+if (group && group.length >= 2) {
+group.slice(0, 4).forEach(function (p) {
+const t = (p[0] === r && p[1] === c) ? tile : (grid[p[0]] && grid[p[0]][p[1]]);
+if (t) nodes.push(hintNode(t));
+});
+if (group.length > 4) nodes.push(hintMark('…'));
+} else if (tile) {
+nodes.push(hintNode(tile));
+}
+nodes.push(hintMark('→'));
 if (result.empty) {
 const empty = document.createElement('span');
 empty.className = 'hint-empty';
@@ -5289,7 +5939,7 @@ refreshGameOverActions();
 const wrap = document.getElementById('go-new-wrap');
 const girl = document.getElementById('go-girl');
 if (wrap) wrap.classList.remove('step2');
-if (girl) girl.src = 'img/gameover_step1.png?v=57';
+if (girl) girl.src = 'img/gameover_step1.png?v=58';
 openModal('gameover-modal');
 }
 let toastTimer = null;
@@ -5896,7 +6546,7 @@ const n = document.getElementById('blogger-count');
 const use = document.getElementById('blogger-use');
 if (n) {
 if (JURIST_TEST_UNLIMITED) { n.textContent = ''; n.style.visibility = 'hidden'; }
-else { n.style.visibility = ''; n.textContent = '\u00a0' + (juristHired ? '∞' : consultsLeft); }
+else { n.style.visibility = ''; n.textContent = '\u00a0' + consultsLeft; }
 }
 if (use) {
 const off = JURIST_TEST_UNLIMITED ? juristWaiting() : (bloggerUseBlocked() || (!juristHired && consultsLeft <= 0));
@@ -5923,8 +6573,11 @@ if (!juristHired && consultsLeft <= 0) return;
 if (!juristHired) {
 consultsLeft--;
 saveConsults();
+pendingJuristFree = true;
+dailyEvent('juristFree');
 }
 }
+dailyEvent('juristUse');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'tool', tool: 'jurist' };
 if (JURIST_TEST_UNLIMITED) { juristPending = false; juristCooldown = 0; }
@@ -6015,7 +6668,7 @@ const wrap = document.getElementById('go-new-wrap');
 if (!wrap || wrap.classList.contains('step2')) return;
 if (e.target.closest && e.target.closest('.go-opt')) return;
 const girl = document.getElementById('go-girl');
-if (girl) girl.src = 'img/gameover_step2.png?v=57';
+if (girl) girl.src = 'img/gameover_step2.png?v=58';
 wrap.classList.add('step2');
 });
 window.addEventListener('resize', function () {
@@ -6038,11 +6691,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
-add('img/sheep-src.png?v=57');
-add('img/voter-grandpa.png?v=57');
+add('img/sheep-src.png?v=58');
+add('img/voter-grandpa.png?v=58');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=57','img/voter-grandpa.png?v=57','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=57','img/jurist_sizo.jpg?v=57','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png','img/money_window.png?v=57','img/stars_badge_249.png?v=57'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=58','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=58','img/voter-grandpa.png?v=58','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=58','img/jurist_sizo.jpg?v=58','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png','img/money_window.png?v=58','img/stars_badge_249.png?v=58','img/stars_badge_399.png?v=58','img/stars_badge_29.png?v=58','img/stars_badge_349.png?v=58','img/stars_badge_749.png?v=58','img/stars_badge_1299.png?v=58','img/stars_badge_2299.png?v=58','img/stars_badge_3999.png?v=58','img/stars_badge_9999.png?v=58','img/money10_bg.png?v=58','img/bear_6.png?v=58','img/pause_bot.png?v=58','img/money_pile_01.png?v=58','img/money_pile_02.png?v=58','img/money_pile_03.png?v=58','img/money_pile_04.png?v=58','img/money_pile_05.png?v=58','img/money_pile_06.png?v=58','img/money_pile_07.png?v=58','img/money_pile_08.png?v=58','img/money_pile_09.png?v=58','img/money_amt_4500.png?v=58','img/money_amt_8000.png?v=58','img/money_amt_18000.png?v=58','img/money_amt_33500.png?v=58','img/money_amt_52000.png?v=58','img/money_amt_120000.png?v=58','img/money_amt_235000.png?v=58','img/money_amt_455000.png?v=58','img/money_amt_900000.png?v=58','img/money_amt_inf.png?v=58'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
