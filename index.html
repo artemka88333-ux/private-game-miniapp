@@ -222,11 +222,18 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
   aspect-ratio: 570 / 1438;
 }
 .shop-window {
-  background: #d7d8ae url('img/shop_bg.png?v=56') center / 100% 100% no-repeat;
+  background: #d7d8ae url('img/shop_bg.png?v=57') center / 100% 100% no-repeat;
   border-radius: calc(50vw * 20 / 570);
   box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
 }
+.money-window {
+  display: none;
+  aspect-ratio: 570 / 707;
+  background: #d7d8ae url('img/money_window.png?v=57') center / 100% 100% no-repeat;
+}
+#shop-modal.money-open > .shop-window:not(.money-window) { visibility: hidden; }
+#shop-modal.money-open > .money-window { display: block; }
 .shop-hitbox { position: absolute; border: 0; padding: 0; margin: 0; background: transparent; cursor: pointer; border-radius: 16px; }
 .shop-hitbox:active { background: rgba(255,255,255,0.18); }
 .shop-hitbox[aria-disabled="true"] { cursor: default; }
@@ -256,6 +263,11 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 .shop-paid.on { display: block; }
 .shop-paid.for-jurist { top: 76.6%; }
 .shop-paid.for-statue { top: 95%; }
+.shop-paid.for-money {
+  left: calc(55.09% + 37.89% / 2);
+  top: 94%;
+  width: calc(37.89% * 1.30);
+}
 .shop-voter-art {
   display: none;
   position: absolute;
@@ -284,14 +296,17 @@ body { background: #7e6829; color: #fff; font-family: sans-serif; display: flex;
 /* Размер как на референсе: ~78% ширины экрана, сверху 17% до 83% высоты, по центру.
    Верх и низ держат пропорции исходных картинок (902×430 и 902×390), тянется середина. */
 #pause-modal .pause-window {
-  top: 17dvh;
-  width: 78vw;
-  height: 66dvh;
+  --pause-scale: 0.75;
+  top: calc(50dvh - 33dvh * var(--pause-scale));
+  width: calc(78vw * var(--pause-scale));
+  height: calc(66dvh * var(--pause-scale));
   aspect-ratio: auto;
   max-height: none;
+  left: 50%;
+  transform: translateX(-50%);
 }
-#pause-modal .pause-top { height: calc(78vw * 430 / 902); flex-basis: auto; }
-#pause-modal .pause-bot { height: calc(78vw * 390 / 902); flex-basis: auto; }
+#pause-modal .pause-top { height: calc(78vw * var(--pause-scale) * 430 / 902); flex-basis: auto; }
+#pause-modal .pause-bot { height: calc(78vw * var(--pause-scale) * 390 / 902); flex-basis: auto; }
 .pause-top, .pause-mid, .pause-bot { position: relative; width: 100%; background-repeat: no-repeat; }
 .pause-top { flex: 0 0 auto; height: calc(100% * 430 / 902 * 570 / 1438); background-image: url('img/pause_top.png?v=47'); background-size: 100% 100%; }
 .pause-bot { flex: 0 0 auto; height: calc(100% * 390 / 902 * 570 / 1438); background-image: url('img/pause_bot.png?v=47'); background-size: 100% 100%; }
@@ -584,6 +599,7 @@ cursor: pointer;
 .pb-icon canvas, .pb-icon img { position: absolute; left: 50%; top: 50%; transform: translate(-50%, -50%); z-index: 1; max-width: 100%; max-height: 100%; width: auto; height: auto; object-fit: contain; display: block; }
 .pb-icon img.q-icon { width: 46%; height: auto; max-width: 70%; max-height: 82%; filter: drop-shadow(0 1px 2px rgba(0,0,0,0.5)); }
 .pb-body { flex: 1 1 auto; min-width: 0; min-height: 0; display: flex; flex-direction: column; justify-content: center; align-self: stretch; padding: 2px 0; }
+.pb-name { font-size: 12px; line-height: 1.1; font-weight: 800; color: #ffe36a; text-shadow: 0 1px 2px rgba(0,0,0,0.65); }
 .pb-quote { font-size: 13px; line-height: 1.16; font-weight: 700; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.65); overflow: hidden; }
 .pb-stats { flex: 0 0 auto; display: flex; align-items: center; gap: 8px; margin-top: 4px; }
 .pb-stat { display: inline-flex; align-items: center; gap: 3px; font-size: 12px; font-weight: 800; color: #fff; text-shadow: 0 1px 2px rgba(0,0,0,0.7); font-variant-numeric: tabular-nums; white-space: nowrap; }
@@ -658,6 +674,7 @@ cursor: pointer;
   gap: 4px;
 }
 #char-pop.statue.on:not(.out) #char-pop-buy { display: inline-flex; }
+#char-pop.statue.owned.on:not(.out) #char-pop-buy { display: none; }
 #char-pop #char-pop-buy img {
   position: static !important;
   left: auto !important;
@@ -952,7 +969,7 @@ cursor: pointer;
   border-style: solid;
   border-color: transparent;
   border-width: 9.2px 12.2px;
-  border-image-source: url('img/hire_btn_frame2x.png?v=56');
+  border-image-source: url('img/hire_btn_frame2x.png?v=57');
   border-image-slice: 44 52 44 52 fill;
   border-image-repeat: stretch;
 }
@@ -960,104 +977,6 @@ cursor: pointer;
 #go-new .go-opt .price { display: inline-flex; align-items: center; gap: 3px; flex: 0 0 auto; }
 #go-new .go-opt .price img { display: block; width: auto; height: 13.5px; }
 #go-new .go-opt:disabled { opacity: 0.55; cursor: default; }
-#packs-modal { z-index: 3200; background: rgba(0,0,0,0.45); }
-.packs-card {
-  width: min(86vw, 360px);
-  background: #efe7c4;
-  border-radius: 18px;
-  overflow: hidden;
-  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
-  color: #3a2410;
-}
-.packs-head {
-  position: relative;
-  background: #6f8b46;
-  color: #fff6c4;
-  min-height: 48px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 900;
-  letter-spacing: 0.08em;
-  font-size: 18px;
-  text-shadow: 0 1px 0 rgba(0,0,0,0.25);
-}
-.packs-x {
-  position: absolute;
-  right: 8px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 36px;
-  height: 36px;
-  border-radius: 9px;
-  border: 2.5px solid #3a2a10;
-  background: #ffd24a;
-  color: #2b1a0e;
-  font-size: 24px;
-  font-weight: 900;
-  line-height: 1;
-  cursor: pointer;
-  padding: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-.packs-body { display: flex; flex-direction: column; gap: 12px; padding: 16px 14px 18px; }
-.pack-wrap { position: relative; }
-.pack-row {
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 8px;
-  min-height: 58px;
-  padding: 8px 10px;
-  border-radius: 16px;
-  border: 3px solid #6a4a12;
-  background: linear-gradient(#ffe56a, #f0b423);
-  box-shadow: inset 0 2px 0 rgba(255,255,255,0.55), 0 2px 0 #8a6418;
-  cursor: pointer;
-}
-.pack-row.hot { background: linear-gradient(#ffd56a, #f09a22); }
-.pack-amt { height: 34px; width: auto; display: block; pointer-events: none; }
-.pack-price { height: 32px; width: auto; display: block; pointer-events: none; }
-.pack-pill {
-  position: absolute;
-  right: 14px;
-  top: -9px;
-  z-index: 2;
-  color: #fff;
-  font-weight: 900;
-  font-size: 10px;
-  letter-spacing: 0.04em;
-  padding: 3px 7px;
-  border-radius: 8px;
-  line-height: 1;
-  pointer-events: none;
-}
-.pack-pill.good { background: #2f9e44; }
-.pack-pill.best { background: #d35400; }
-.pack-inf-label {
-  font-family: Nunito, sans-serif;
-  font-weight: 800;
-  font-size: 18px;
-  line-height: 1.05;
-  color: #3a2410;
-  text-align: left;
-  pointer-events: none;
-}
-.pack-paid {
-  display: none;
-  position: absolute;
-  left: 50%;
-  top: 54%;
-  transform: translate(-50%, -50%) rotate(-8deg);
-  width: 78%;
-  height: auto;
-  pointer-events: none;
-  z-index: 3;
-}
-.pack-paid.on { display: block; }
 #toast {
   position: fixed;
   left: 50%;
@@ -1172,57 +1091,24 @@ cursor: pointer;
 <button type="button" class="shop-hitbox slot-7" onclick="openBloggerHelp()" aria-label="Блогер"></button>
 <img id="stamp-jurist" class="shop-paid for-jurist" src="img/paid_trim.png?v=54" alt="">
 <button type="button" class="shop-hitbox slot-8" onclick="buyNanoboxStars()" aria-label="Нанокоробка 699"></button>
-<button type="button" class="shop-hitbox slot-9" onclick="openStatuePopup()" aria-label="Статуя свободы"></button>
+<button type="button" class="shop-hitbox slot-9" onclick="openStatuePopup()" aria-label="Защита от ОМОНовцев"></button>
 <img id="stamp-statue" class="shop-paid for-statue" src="img/paid_trim.png?v=54" alt="">
 <button type="button" class="shop-hitbox slot-10" onclick="openMoneyPacks()" aria-label="Нужны деньги"></button>
+<img id="stamp-money" class="shop-paid for-money" src="img/paid_trim.png?v=54" alt="">
 </div>
-</div>
-
-<div class="modal" id="packs-modal" role="dialog" aria-label="Нужны деньги">
-<div class="packs-card">
-<div class="packs-head">
-<span>НУЖНЫ ДЕНЬГИ</span>
-<button type="button" class="packs-x" id="packs-x" aria-label="Закрыть">×</button>
-</div>
-<div class="packs-body">
-<button type="button" class="pack-row" onclick="buyMoneyPack('3000')">
-<img class="pack-amt" src="img/stars_badge_n3000.png?v=56" alt="3000">
-<img class="pack-price" src="img/stars_badge_50.png?v=56" alt="50">
-</button>
-<div class="pack-wrap">
-<span class="pack-pill good">ВЫГОДНО</span>
-<button type="button" class="pack-row" onclick="buyMoneyPack('10000')">
-<img class="pack-amt" src="img/stars_badge_n10000.png?v=56" alt="10000">
-<img class="pack-price" src="img/stars_badge_75.png?v=56" alt="75">
-</button>
-</div>
-<div class="pack-wrap">
-<span class="pack-pill best">ЛУЧШАЯ ЦЕНА</span>
-<button type="button" class="pack-row hot" onclick="buyMoneyPack('30000')">
-<img class="pack-amt" src="img/stars_badge_n30000.png?v=56" alt="30000">
-<img class="pack-price" src="img/stars_badge_149.png?v=56" alt="149">
-</button>
-</div>
-<div class="pack-wrap">
-<button type="button" class="pack-row" id="pack-inf" onclick="buyMoneyPack('inf')">
-<span class="pack-inf-label">Бесконечные<br>деньги</span>
-<img class="pack-price" src="img/stars_badge_9999.png?v=56" alt="9999">
-</button>
-<img id="pack-inf-stamp" class="pack-paid" src="img/paid_trim.png?v=54" alt="">
-</div>
-</div>
+<div class="shop-window money-window" id="money-window" role="dialog" aria-label="Нужны деньги">
+<button type="button" class="shop-hitbox" id="money-x" aria-label="Закрыть" style="top:2.17%;left:83.86%;width:14.32%;height:11.22%"></button>
+<button type="button" class="shop-hitbox" onclick="buyMoneyPack('3000')" aria-label="3000 монет, 50 звёзд" style="top:17.09%;left:5.30%;width:42.17%;height:36.86%"></button>
+<button type="button" class="shop-hitbox" onclick="buyMoneyPack('10000')" aria-label="10000 монет, 75 звёзд" style="top:17.09%;left:52.69%;width:42.33%;height:36.86%"></button>
+<button type="button" class="shop-hitbox" onclick="buyMoneyPack('30000')" aria-label="30000 монет, 149 звёзд" style="top:56.95%;left:5.30%;width:42.17%;height:37.88%"></button>
+<button type="button" class="shop-hitbox" onclick="buyMoneyPack('inf')" aria-label="Бесконечные деньги, 9999 звёзд" style="top:56.95%;left:52.69%;width:42.33%;height:37.88%"></button>
 </div>
 </div>
 
 <div id="rating-screen" aria-hidden="true">
 <div class="rating-bg" aria-hidden="true"></div>
 <div id="rating-banners" aria-hidden="true">
-<div class="rating-caption" style="left:50%;top:59.2%;font-size:28px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
-<div class="rating-caption" style="left:104.1%;top:12.2%;font-size:24px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
-<div class="rating-caption" style="left:-3%;top:105.3%;font-size:24px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
-<div class="rating-caption" style="left:20.5%;top:53.3%;font-size:26px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
-<div class="rating-caption" style="left:77%;top:69.9%;font-size:26px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
-<div class="rating-caption" style="left:86.1%;top:92.3%;font-size:24px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
+<div class="rating-caption" style="left:53%;top:54.5%;font-size:28px"><span>ЗАСЕДАНИЕ ПЕРЕНОСИТСЯ</span><span>ЖДЁМ ОСТАЛЬНЫХ</span></div>
 </div>
 <div class="rating-head">
 <button type="button" id="rating-close" onclick="closeRating()" aria-label="Закрыть">×</button>
@@ -1296,14 +1182,14 @@ cursor: pointer;
 <div class="modal" id="gameover-modal">
 <div id="go-new">
 <div id="go-new-wrap">
-<img id="go-girl" src="img/gameover_step1.png?v=56" alt="">
+<img id="go-girl" src="img/gameover_step1.png?v=57" alt="">
 <button type="button" class="go-opt undo" id="go-undo" onclick="undoFromGameOver()">
 <span>Ход назад</span>
-<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=56" alt="1500"></span>
+<span class="price"><img src="img/coin_trim.png?v=54" alt=""><img src="img/stars_badge_1500go.png?v=57" alt="1500"></span>
 </button>
 <button type="button" class="go-opt clear" id="go-clear" onclick="buyClearFieldStars()">
 <span>Расчистить поле</span>
-<span class="price"><img src="img/stars_badge_50go.png?v=56" alt="50"></span>
+<span class="price"><img src="img/stars_badge_50go.png?v=57" alt="50"></span>
 </button>
 <button type="button" class="go-opt menu" onclick="restartAfterOver()"><span>Главное меню</span></button>
 </div>
@@ -1320,7 +1206,7 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="blogger-modal" role="dialog" aria-label="Помощь блогера">
 <div class="art-panel" id="blogger-panel">
-<img src="img/blogger_help.png?v=56" alt="">
+<img src="img/blogger_help.png?v=57" alt="">
 <div class="art-num" id="blogger-count">5</div>
 <button type="button" class="art-hit" id="blogger-use" aria-label="Использовать"></button>
 <button type="button" class="art-hit" id="blogger-cancel" aria-label="Отмена"></button>
@@ -1330,7 +1216,7 @@ cursor: pointer;
 </div>
 <div class="art-modal" id="sizo-modal" role="dialog" aria-label="Юрист в СИЗО">
 <div class="art-panel" id="sizo-panel">
-<img src="img/jurist_sizo.jpg?v=56" alt="">
+<img src="img/jurist_sizo.jpg?v=57" alt="">
 <div class="art-num" id="sizo-count"></div>
 <button type="button" class="art-hit" id="sizo-think" aria-label="Подумать"></button>
 <button type="button" class="art-hit" id="sizo-bribe" aria-label="Взятка"></button>
@@ -1355,7 +1241,7 @@ cursor: pointer;
 </div>
 <div id="char-pop" data-side="left" aria-hidden="true">
 <img id="char-pop-img" alt="" draggable="false">
-<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_199.png?v=56" alt="199"></button>
+<button type="button" id="char-pop-buy"><span>КУПИТЬ</span><img src="img/stars_badge_249.png?v=57" alt="249"></button>
 </div>
 
 <div id="hint-gallery" aria-hidden="true">
@@ -1691,8 +1577,8 @@ return !!(tile && tile.kind === 'chain' && tile.level === 3);
 function getTileImage(tile) {
 if (!tile) return null;
 if (tile.kind === 'chain') {
-if (tile.level === 2) return 'img/sheep-src.png?v=56';
-if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=56';
+if (tile.level === 2) return 'img/sheep-src.png?v=57';
+if (tile.level === 3) return voterChannel ? 'img/pasha_03.png' : 'img/voter-grandpa.png?v=57';
 return `img/pasha_${tile.level < 10 ? '0'+tile.level : tile.level}.png`;
 }
 if (tile.kind === 'care') return `img/bear_${tile.level}.png`;
@@ -2130,6 +2016,7 @@ moneyBags = 0;
 charShown = {};
 charQueue = [];
 lastDrop = null;
+lastSawnPioneer = null;
 unitSeq = 1;
 closeCharPopup(true);
 hideTutorial();
@@ -2157,6 +2044,10 @@ else { spawned++; checkDiscovery(grid[r][c]); }
 }
 }
 nextTile = newRandomTile();
+if (purchases && purchases.statue && !boardHasStatue()) {
+nextTile = { kind: 'statue', pop: true };
+unlockBookKey('statue');
+}
 render();
 setStatus();
 saveGame();
@@ -2177,7 +2068,7 @@ else if (r < 0.10) tile = { kind: 'chain', level: 1 };
 else if (r < 0.15) tile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2 };
 else tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
 }
-if (tile.kind === 'omon' && boardHasStatue()) tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
+if (tile.kind === 'omon' && omonBlocked()) tile = { kind: 'chain', level: 1 + Math.floor(Math.random() * 3) };
 tile.pop = true;
 return tile;
 }
@@ -2186,6 +2077,9 @@ for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
 if (grid[r][c] && grid[r][c].kind === 'statue') return true;
 }
 return false;
+}
+function omonBlocked() {
+return !!(purchases && purchases.statue) || boardHasStatue();
 }
 
 function ensureBoard() {
@@ -2716,6 +2610,11 @@ if (freedomBeforeMove && freedomBeforeMove[item.r + ',' + item.c]) {
 freedomBeforeMove[move.r + ',' + move.c] = true;
 delete freedomBeforeMove[item.r + ',' + item.c];
 }
+if (lastSawnPioneer && lastSawnPioneer.group) {
+lastSawnPioneer.group.forEach(p => {
+if (p[0] === item.r && p[1] === item.c) { p[0] = move.r; p[1] = move.c; }
+});
+}
 const delta = slideDelta(item.r, item.c, move.r, move.c);
 moveAnims.push({ r: move.r, c: move.c, fromR: item.r, fromC: item.c, dx: delta.dx + 'px', dy: delta.dy + 'px', hop: false });
 moved = true;
@@ -2781,8 +2680,40 @@ if (t && t.kind === 'pioneer') map[r + ',' + c] = !pioneerOptions(r, c).blocked;
 }
 freedomBeforeMove = map;
 }
+let lastSawnPioneer = null;
+function rememberSawnPioneer(r, c) {
+const group = [];
+const seen = {};
+const stack = [[r, c]];
+seen[r + ',' + c] = true;
+while (stack.length) {
+const cur = stack.pop();
+group.push([cur[0], cur[1]]);
+[[0, 1], [0, -1], [1, 0], [-1, 0]].forEach(d => {
+const nr = cur[0] + d[0], nc = cur[1] + d[1];
+const k = nr + ',' + nc;
+if (nr < 0 || nr >= SIZE || nc < 0 || nc >= SIZE || seen[k]) return;
+if (grid[nr][nc] && grid[nr][nc].kind === 'pioneer') {
+seen[k] = true;
+stack.push([nr, nc]);
+}
+});
+}
+lastSawnPioneer = { r: r, c: c, group: group };
+}
+function sawnAnchorIfRelevant(list) {
+if (!lastSawnPioneer || !list || !list.length) return null;
+const keys = {};
+(lastSawnPioneer.group || []).forEach(p => { keys[p[0] + ',' + p[1]] = true; });
+for (let i = 0; i < list.length; i++) {
+if (keys[list[i][0] + ',' + list[i][1]]) return [lastSawnPioneer.r, lastSawnPioneer.c];
+}
+return null;
+}
 function chooseTrapAnchor(list) {
 if (!list.length) return null;
+const sawn = sawnAnchorIfRelevant(list);
+if (sawn) return sawn;
 const fresh = list.filter(([r, c]) => freedomBeforeMove && freedomBeforeMove[r + ',' + c]);
 const pool = (fresh.length ? fresh : list).map(([r, c]) => {
 const t = grid[r] && grid[r][c];
@@ -2834,6 +2765,10 @@ grid[r][c] = { kind: 'care', level: 1, pop: true };
 checkDiscovery(grid[r][c]);
 trappedN++;
 });
+if (lastSawnPioneer && lastSawnPioneer.group) {
+lastSawnPioneer.group = lastSawnPioneer.group.filter(([r, c]) => grid[r] && grid[r][c] && grid[r][c].kind === 'pioneer');
+if (!lastSawnPioneer.group.length) lastSawnPioneer = null;
+}
 render();
 (function next() {
 while (spots.length) {
@@ -2911,7 +2846,7 @@ stepPioneers();
 afterPioneerStep();
 }
 function finishUnits() {
-if (!tutorial.active && moves % 50 === 0 && !boardHasStatue()) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
+if (!tutorial.active && moves % 50 === 0 && !omonBlocked()) nextTile = { kind: 'omon', level: Math.random() < 0.5 ? 1 : 2, pop: true };
 const first = trappedPioneers();
 if (!first.length) { afterFirstTraps(); return; }
 convertTrapped(first, afterFirstTraps);
@@ -2922,7 +2857,7 @@ const el = document.getElementById('shop-voter-art');
 if (!el) return;
 /* После пасхалки доска и «далее» меняют избирателя, слот магазина — нет. */
 el.classList.remove('on');
-el.src = 'img/voter-grandpa.png?v=56';
+el.src = 'img/voter-grandpa.png?v=57';
 }
 function closeChannelEgg() {
 closeModal('channel-modal');
@@ -3008,7 +2943,7 @@ else charOnClose = null;
 return;
 }
 if (immediate) {
-root.classList.remove('on', 'in', 'out', 'pass', 'statue');
+root.classList.remove('on', 'in', 'out', 'pass', 'statue', 'owned');
 root.setAttribute('aria-hidden', 'true');
 charOpen = false;
 charItem = null;
@@ -3020,7 +2955,7 @@ root.classList.remove('in');
 root.classList.add('out');
 setTimeout(function () {
 if (!root.classList.contains('out')) return;
-root.classList.remove('on', 'in', 'out', 'pass', 'statue');
+root.classList.remove('on', 'in', 'out', 'pass', 'statue', 'owned');
 root.setAttribute('aria-hidden', 'true');
 charOpen = false;
 charItem = null;
@@ -3042,6 +2977,7 @@ charOnClose = item.onClose || null;
 root.dataset.side = item.side;
 root.classList.toggle('pass', !!item.pass);
 root.classList.toggle('statue', !!item.statue);
+root.classList.toggle('owned', !!(item.statue && purchases && purchases.statue));
 root.classList.remove('in', 'out');
 root.setAttribute('aria-hidden', 'false');
 image.onload = function () { if (charOpen) layoutCharPopup(); };
@@ -3153,7 +3089,7 @@ else omons.push([r, c]);
 }
 }
 
-if (omons.length > 0 && !boardHasStatue()) {
+if (omons.length > 0 && !omonBlocked()) {
 markBusy(1100);
 setTimeout(() => {
 stepOmons(omons);
@@ -3381,6 +3317,7 @@ playSawFx(r, c);
 grantSawCash(grid[r][c], r, c);
 noteSawUse(grid[r][c]);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
+if (grid[r][c].kind === 'pioneer') rememberSawnPioneer(r, c);
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
 grid[r][c] = null;
@@ -3499,6 +3436,7 @@ playSawFx(r, c);
 grantSawCash(grid[r][c], r, c);
 noteSawUse(grid[r][c]);
 if (grid[r][c].kind === 'omon' || grid[r][c].kind === 'pioneer') {
+if (grid[r][c].kind === 'pioneer') rememberSawnPioneer(r, c);
 grid[r][c] = { kind: 'care', level: 1 }; checkDiscovery(grid[r][c]);
 } else {
 grid[r][c] = null;
@@ -3507,7 +3445,7 @@ rememberDrop(r, c);
 nextTile = bufferedNext || dealNext();
 bufferedNext = null;
 render();
-processCascades(r, c, false, () => saveGame());
+processCascades(r, c, false, () => endMove());
 endDrag();
 return;
 }
@@ -3776,10 +3714,12 @@ closeModal('shop-modal');
 }
 function buyStatue() {
 if (!charItem || !charItem.statue) return;
+if (purchases && purchases.statue) { showToast('Уже куплено'); return; }
 showToast('Скоро: оплата звёздами');
 if (nextTile) bufferedNext = nextTile;
 nextTile = { kind: 'statue', pop: true };
 markPurchase('statue');
+unlockBookKey(nextTile);
 closeModal('shop-modal');
 closeCharPopup(true);
 render();
@@ -3788,20 +3728,18 @@ sfx('ui');
 }
 function openMoneyPacks() {
 if (tutorial.active) return;
-paintPackStamp();
-const el = document.getElementById('packs-modal');
-if (el) el.classList.add('open');
+const el = document.getElementById('shop-modal');
+if (el) el.classList.add('money-open');
 sfx('ui');
 }
 function closeMoneyPacks() {
-const el = document.getElementById('packs-modal');
-if (el) el.classList.remove('open');
+const el = document.getElementById('shop-modal');
+if (el) el.classList.remove('money-open');
 }
 function buyMoneyPack(kind) {
 showToast('Скоро: оплата звёздами');
 if (kind === 'inf') {
 if (!purchases.infiniteMoney) markPurchase('infiniteMoney');
-paintPackStamp();
 render();
 saveGame();
 return;
@@ -3936,7 +3874,9 @@ screen.setAttribute('aria-hidden', 'true');
 }
 
 function openModal(id) {
-document.getElementById(id).classList.add('open');
+const el = document.getElementById(id);
+if (id === 'shop-modal' && el) el.classList.remove('money-open');
+el.classList.add('open');
 if (id === 'shop-modal') { paintShopStamps(); notifyTutorial({ type: 'shop' }); }
 sfx('ui');
 }
@@ -4058,6 +3998,7 @@ const row = rows[r] || [];
 for (let c = 0; c < SIZE; c++) if (row[c]) putTile(r, c, row[c]);
 }
 nextTile = next || null;
+unlockBookKey(nextTile);
 jailTile = null;
 juristPending = false;
 bufferedNext = null;
@@ -4364,6 +4305,7 @@ hideTitle();
 charShown = {};
 charQueue = [];
 lastDrop = null;
+lastSawnPioneer = null;
 unitSeq = 1;
 closeCharPopup(true);
 grid = Array.from({ length: SIZE }, () => Array(SIZE).fill(null));
@@ -4786,12 +4728,18 @@ const BOOK = [
 ['income',2,"Фонд, храм или бизнес-центр - кто уж разберет. Но можно офис снять в аренду, локейшен супер и стабильно каждый ход вам ХХС дает доход.",4000,500,250],
 ['income',3,"\"Бог поругаем не бывает. Что посеет человек, то и пожнет.\" Проявил неуважение к иконе - просиди два года в зоне.",26000,1000,10000],
 ['income',4,"Поет Мадонна гораздо лучше Pussy Riot, знает толк в свободе, отличное белье. Прогнать пыталась, встретила отпор.",50000,1000,15000],
-['income',5,"Светская львица, казначей оппозиции. Работает на дому, сортирует почту. Стабильный доход.",100000,1000,20000]
+['income',5,"Светская львица, казначей оппозиции. Работает на дому, сортирует почту. Стабильный доход.",100000,1000,20000],
+{ kind: 'statue', key: 'statue', name: 'Защита от ОМОНовцев', quote: '«Вздохни спокойно на 10,000 ходов. На этом острове нет баз Черноморского флота и вежливых людей.»', cup: null, coin: null, saw: null },
+{ kind: 'tool', tool: 'sack', key: 'tool_sack', name: 'Мешок с баблом', quote: '«Бабло решает все проблемы. Например, когда для комбинации на поле не хватает фигурки!»', cup: null, coin: null, saw: null },
+{ kind: 'tool', tool: 'saw', key: 'tool_saw', name: 'Пила', quote: '«Универсальный инструмент. И травку уберет, и пионера остановит, и Бюджет попилит.»', cup: null, coin: null, saw: null }
 ];
 let bookUnlocked = new Set(['chain_1', 'chain_2', 'chain_3']);
 let purchases = { jurist: false, statue: false, infiniteMoney: false };
 function bookId(tile) {
-if (!tile || tile.level == null) return null;
+if (!tile) return null;
+if (tile.kind === 'statue') return 'statue';
+if (tile.kind === 'tool' && (tile.tool === 'sack' || tile.tool === 'saw')) return 'tool_' + tile.tool;
+if (tile.level == null) return null;
 if (tile.kind !== 'chain' && tile.kind !== 'care' && tile.kind !== 'income') return null;
 return tile.kind + '_' + tile.level;
 }
@@ -4837,22 +4785,20 @@ function markPurchase(id) {
 if (id !== 'jurist' && id !== 'statue' && id !== 'infiniteMoney') return;
 purchases[id] = true;
 savePurchases();
+if (id === 'statue') unlockBookKey('statue');
 paintShopStamps();
-paintPackStamp();
-}
-function paintPackStamp() {
-const stamp = document.getElementById('pack-inf-stamp');
-if (stamp) stamp.classList.toggle('on', !!purchases.infiniteMoney);
 }
 function paintShopStamps() {
 const j = document.getElementById('stamp-jurist');
 const s = document.getElementById('stamp-statue');
+const m = document.getElementById('stamp-money');
 if (j) j.classList.toggle('on', !!purchases.jurist);
 if (s) s.classList.toggle('on', !!purchases.statue);
+if (m) m.classList.toggle('on', !!purchases.infiniteMoney);
 }
 loadPurchases();
+if (purchases.statue) unlockBookKey('statue');
 paintShopStamps();
-paintPackStamp();
 window.markPurchase = markPurchase;
 
 let hintPage = 0;
@@ -4905,12 +4851,14 @@ return s;
 }
 function makeBookCard(item, placeholder) {
 const card = document.createElement('div');
-const open = !!(item && bookUnlocked.has(item.kind + '_' + item.level));
+const key = item && (item.key || (item.kind + '_' + item.level));
+const open = !!(item && key && bookUnlocked.has(key));
 card.className = 'pb-card' + (open ? '' : ' locked') + (placeholder ? ' placeholder' : '');
 const icon = document.createElement('div');
 icon.className = 'pb-icon';
 if (open) {
-icon.appendChild(trimmedBookIcon(getTileImage({ kind: item.kind, level: item.level })));
+const tile = item.kind === 'tool' ? { kind: 'tool', tool: item.tool } : (item.kind === 'statue' ? { kind: 'statue' } : { kind: item.kind, level: item.level });
+icon.appendChild(trimmedBookIcon(getTileImage(tile)));
 } else {
 const q = document.createElement('img');
 q.className = 'q-icon';
@@ -4922,10 +4870,18 @@ card.appendChild(icon);
 const body = document.createElement('div');
 body.className = 'pb-body';
 if (open) {
+if (item.name) {
+const name = document.createElement('div');
+name.className = 'pb-name';
+name.textContent = item.name;
+body.appendChild(name);
+}
+if (item.quote) {
 const quote = document.createElement('div');
 quote.className = 'pb-quote';
 quote.textContent = item.quote;
 body.appendChild(quote);
+}
 if (item.cup != null || item.coin != null || item.saw != null) {
 const stats = document.createElement('div');
 stats.className = 'pb-stats';
@@ -4964,7 +4920,7 @@ function renderPieceBook() {
 const track = document.getElementById('hint-track');
 const dots = document.getElementById('book-dots');
 if (!track || !dots) return;
-const items = BOOK.map(row => ({ kind: row[0], level: row[1], quote: row[2], cup: row[3], coin: row[4], saw: row[5] }));
+const items = BOOK.map(row => Array.isArray(row) ? { kind: row[0], level: row[1], quote: row[2], cup: row[3], coin: row[4], saw: row[5] } : row);
 hintPages = Math.ceil(items.length / BOOK_PER_PAGE);
 track.replaceChildren();
 dots.replaceChildren();
@@ -5333,7 +5289,7 @@ refreshGameOverActions();
 const wrap = document.getElementById('go-new-wrap');
 const girl = document.getElementById('go-girl');
 if (wrap) wrap.classList.remove('step2');
-if (girl) girl.src = 'img/gameover_step1.png?v=56';
+if (girl) girl.src = 'img/gameover_step1.png?v=57';
 openModal('gameover-modal');
 }
 let toastTimer = null;
@@ -5361,6 +5317,7 @@ openGameOver();
 function closeModal(id) {
 const el = document.getElementById(id);
 if (el) el.classList.remove('open');
+if (id === 'shop-modal' && el) el.classList.remove('money-open');
 }
 function askConfirm(text, onYes, onNo, extraLabel, extraFn) {
 document.getElementById('confirm-text').textContent = text;
@@ -5474,6 +5431,7 @@ charShown = (data.charShown && typeof data.charShown === 'object' && !Array.isAr
 charQueue = [];
 unitSeq = 1;
 lastDrop = null;
+lastSawnPioneer = null;
 for (let r = 0; r < SIZE; r++) for (let c = 0; c < SIZE; c++) {
 const t = grid[r][c];
 if (t && t.kind === 'pioneer' && t.movedSeq > unitSeq) unitSeq = t.movedSeq;
@@ -6049,17 +6007,15 @@ closeSizo();
 });
 const sizo = document.getElementById('sizo-modal');
 if (sizo) sizo.addEventListener('pointerdown', function (e) { if (e.target === sizo) closeSizo(); });
-const packsX = document.getElementById('packs-x');
-if (packsX) packsX.addEventListener('click', closeMoneyPacks);
-const packs = document.getElementById('packs-modal');
-if (packs) packs.addEventListener('pointerdown', function (e) { if (e.target === packs) closeMoneyPacks(); });
+const moneyX = document.getElementById('money-x');
+if (moneyX) moneyX.addEventListener('click', closeMoneyPacks);
 const goModal = document.getElementById('gameover-modal');
 if (goModal) goModal.addEventListener('click', function (e) {
 const wrap = document.getElementById('go-new-wrap');
 if (!wrap || wrap.classList.contains('step2')) return;
 if (e.target.closest && e.target.closest('.go-opt')) return;
 const girl = document.getElementById('go-girl');
-if (girl) girl.src = 'img/gameover_step2.png?v=56';
+if (girl) girl.src = 'img/gameover_step2.png?v=57';
 wrap.classList.add('step2');
 });
 window.addEventListener('resize', function () {
@@ -6082,11 +6038,11 @@ const re = /url\(([^)]+)\)/g;
 let m;
 while ((m = re.exec(styleText))) add(m[1]);
 for (let i = 1; i <= 28; i++) add('img/pasha_' + (i < 10 ? '0' + i : i) + '.png');
-add('img/sheep-src.png?v=56');
-add('img/voter-grandpa.png?v=56');
+add('img/sheep-src.png?v=57');
+add('img/voter-grandpa.png?v=57');
 for (let i = 1; i <= 20; i++) add('img/bear_' + i + '.png');
 for (let i = 1; i <= 5; i++) add('img/income_' + i + '.png');
-['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=56','img/voter-grandpa.png?v=56','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=56','img/jurist_sizo.jpg?v=56','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png'].forEach(add);
+['img/omon_1.png','img/omon_2.png','img/Pioner_1.png','img/pioner_1.png','img/tool_saw.png','img/tool_sack.png','img/tool_jurist.png','img/tool_jurist_bound.png?v=48','img/tool_nanobox.png','img/mission_elections.png','img/mission_forest.png','img/mission_saw.png','img/pause_bg.png','img/pause_top.png?v=47','img/pause_mid.png?v=47','img/pause_bot.png?v=47','img/hud_top.png?v=47','img/jail.png?v=52','img/next.png?v=52','img/hint.png?v=52','img/sheep-src.png?v=57','img/voter-grandpa.png?v=57','img/loading.jpg','img/play.png?v=47','img/forest_full.jpg?v=54','img/popup_statue.png?v=54','img/statue.png?v=55','img/popup_men_in_black.png?v=55','img/popup_after_mib.png?v=55','img/popup_after_mib2.png?v=55','img/popup_after_mib3.png?v=55','img/cup_1.png?v=54','img/clock_1.png?v=54','img/paid_trim.png?v=54','img/question_mark.png?v=54','img/cup_trim.png?v=54','img/coin_trim.png?v=54','img/saw_trim.png?v=54','img/popup_goat_tv.png?v=52','img/popup_deputy.png?v=52','img/popup_official.png?v=52','img/popup_minister.png?v=52','img/popup_church.png?v=52','img/popup_goszakaz.png?v=52','img/popup_rocket1.png?v=52','img/popup_president.png?v=52','img/popup_urna.png?v=52','img/popup_first_sheep.png?v=52','img/popup_goszakaz_tank.png?v=52','img/tut_welcome_goat.png?v=52','img/tut_task_goat.png?v=52','img/tut_drag.png?v=52','img/tut_trap_pioneers.png?v=52','img/tut_pioneer_stuck.png?v=52','img/tut_use_jurist.png?v=52','img/tut_drag_to_official.png?v=52','img/tut_next_to_official.png?v=52','img/tut_shop.png?v=52','img/tut_sack.png?v=52','img/tut_jail.png?v=52','img/blogger_help.png?v=57','img/jurist_sizo.jpg?v=57','img/cellar_bg.jpg?v=52','img/jar_v_lesu.png?v=52','img/jar_empty.png?v=52','img/jar_seliger.png?v=52','img/jar_kurban.png?v=52','img/jar_sprinter.png?v=52','img/jar_karusel.png?v=52','img/jar_1sept.png?v=52','img/jar_idiot.png?v=52','img/jar_stayer.png?v=52','img/jar_pila.png?v=52','img/title_bg.jpg?v=52','img/num_0.png','img/num_1.png','img/num_2.png','img/num_3.png','img/num_4.png','img/num_5.png','img/num_6.png','img/num_7.png','img/num_8.png','img/num_9.png','img/money_window.png?v=57','img/stars_badge_249.png?v=57'].forEach(add);
 let left = urls.size;
 const tick = () => { if (--left <= 0) requestAnimationFrame(() => requestAnimationFrame(finishBoot)); };
 if (!left) finishBoot();
